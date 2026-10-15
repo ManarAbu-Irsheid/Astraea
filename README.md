@@ -126,8 +126,8 @@ Structured in 3 vertical linear sections:
      *"Information not available in current run / لا تتوفر هذه المعلومة في نتائج التحليل الحالية"* with pointers to relevant pages.
 
 4. **Global Professional Scientific Footer**:
-   - **Creators & Core Team**: Prominently features Lead Systems Architect **Manar Abu-Irsheid** and the **Astraea Planetary Science Lab**.
-   - **Direct Contact & Links**: Includes verified direct email (`manar.abuirsheid@astraea.space`), official GitHub Repository link (`github.com/ManarAbu-Irsheid/Astraea`), and documentation links.
+   - **Project Team**: Developed by the **Astraea Team** and the **Astraea Planetary Science Lab**.
+   - **Contact & Links**: Includes project contact email (`contact@astraea.space`), project repository, and documentation links.
    - **Official Planetary Data Sources**: Detailed citations for NASA Planetary Data System (LRO LOLA/Diviner, MRO CRISM/HiRISE), ESA Copernicus Programme (Sentinel-2), and USGS / NASA JPL (SRTM, NASADEM, ASTER GEDv4).
    - **Sub-Bar**: Open Access CC-BY 4.0 Scientific License and copyright notice across all 4 pages.
 
