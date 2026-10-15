@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050a14"/>
+      <stop offset="50%" stop-color="#0b1728"/>
+      <stop offset="100%" stop-color="#020409"/>
+    </linearGradient>
+    <radialGradient id="marsGlow" cx="30%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c85a32" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#c85a32" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="earthGlow" cx="70%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00a3ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00a3ff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="720" fill="url(#bgGrad)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+
+  <!-- Planetary Glows -->
+  <circle cx="380" cy="360" r="320" fill="url(#marsGlow)"/>
+  <circle cx="900" cy="360" r="320" fill="url(#earthGlow)"/>
+
+  <!-- Orbits & Range Rings -->
+  <circle cx="640" cy="360" r="260" fill="none" stroke="rgba(0, 163, 255, 0.25)" stroke-dasharray="4 8" stroke-width="1.5"/>
+  <circle cx="640" cy="360" r="380" fill="none" stroke="rgba(200, 90, 50, 0.2)" stroke-dasharray="6 12" stroke-width="1.5"/>
+
+  <!-- Central Orbital Nodes -->
+  <g transform="translate(640, 360)">
+    <circle cx="0" cy="0" r="64" fill="rgba(8, 18, 33, 0.85)" stroke="#00a3ff" stroke-width="2.5"/>
+    <polygon points="-12,-20 24,0 -12,20" fill="#00a3ff"/>
+    <circle cx="0" cy="0" r="82" fill="none" stroke="#00d2ff" stroke-width="1" stroke-dasharray="12 6" opacity="0.6"/>
+  </g>
+
+  <!-- Left Telemetry Box (Mars / Target) -->
+  <g transform="translate(140, 240)">
+    <rect width="280" height="240" rx="8" fill="rgba(10, 22, 38, 0.75)" stroke="rgba(200, 90, 50, 0.4)" stroke-width="1.5"/>
+    <text x="24" y="44" fill="#ff7a45" font-family="'IBM Plex Sans', sans-serif" font-size="13" font-weight="700" letter-spacing="2">TARGET BODY: MARS</text>
+    <text x="24" y="78" fill="#ffffff" font-family="'IBM Plex Sans', sans-serif" font-size="20" font-weight="600">Jezero Crater Delta</text>
+    <text x="24" y="104" fill="#8ca0b8" font-family="monospace" font-size="12">COORD: 18.38°N, 77.58°E</text>
+    <text x="24" y="126" fill="#8ca0b8" font-family="monospace" font-size="12">SENSOR: MRO / CRISM + HiRISE</text>
+    <path d="M 24 150 L 256 150" stroke="rgba(255,255,255,0.1)"/>
+    <text x="24" y="180" fill="#a0b4cc" font-family="'IBM Plex Sans', sans-serif" font-size="13">Clay-Carbonate Delta Fan</text>
+    <text x="24" y="206" fill="#00e5a3" font-family="monospace" font-size="12">DESICCATION TOLERANCE: 99.1%</text>
+  </g>
+
+  <!-- Right Telemetry Box (Earth Analog) -->
+  <g transform="translate(860, 240)">
+    <rect width="280" height="240" rx="8" fill="rgba(10, 22, 38, 0.75)" stroke="rgba(0, 163, 255, 0.4)" stroke-width="1.5"/>
+    <text x="24" y="44" fill="#00a3ff" font-family="'IBM Plex Sans', sans-serif" font-size="13" font-weight="700" letter-spacing="2">EARTH ANALOG CELL</text>
+    <text x="24" y="78" fill="#ffffff" font-family="'IBM Plex Sans', sans-serif" font-size="20" font-weight="600">Yungay, Atacama</text>
+    <text x="24" y="104" fill="#8ca0b8" font-family="monospace" font-size="12">COORD: 24.08°S, 69.87°W</text>
+    <text x="24" y="126" fill="#8ca0b8" font-family="monospace" font-size="12">SENSOR: Sentinel-2 + SRTM</text>
+    <path d="M 24 150 L 256 150" stroke="rgba(255,255,255,0.1)"/>
+    <text x="24" y="180" fill="#a0b4cc" font-family="'IBM Plex Sans', sans-serif" font-size="13">Hyper-Arid Soil Analogy</text>
+    <text x="24" y="206" fill="#00e5a3" font-family="monospace" font-size="12">SIMILARITY MATCH: 89.2% ±3.4%</text>
+  </g>
+
+  <!-- Title Overlay -->
+  <text x="640" y="100" text-anchor="middle" fill="#00e5a3" font-family="'IBM Plex Sans', sans-serif" font-size="14" font-weight="700" letter-spacing="3">TERRATWIN VALIDATION DEMONSTRATION</text>
+  <text x="640" y="136" text-anchor="middle" fill="#ffffff" font-family="'IBM Plex Sans', sans-serif" font-size="28" font-weight="700">Multi-Spectral Raster Pipeline & Planetary Analog Ingestion</text>
+
+  <!-- Bottom Timeline Bar -->
+  <rect x="240" y="650" width="800" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+  <rect x="240" y="650" width="320" height="6" rx="3" fill="#00a3ff"/>
+  <circle cx="560" cy="653" r="6" fill="#ffffff"/>
+  <text x="240" y="640" fill="#8ca0b8" font-family="monospace" font-size="12">00:00 / 02:30</text>
+  <text x="1040" y="640" text-anchor="end" fill="#8ca0b8" font-family="monospace" font-size="12">421,800 CELLS INGESTED</text>
+</svg>

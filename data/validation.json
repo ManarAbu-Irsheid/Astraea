@@ -1,0 +1,305 @@
+{
+  "kpis": {
+    "cells_scanned": 421800,
+    "cells_scanned_formatted": "421,800",
+    "recall_rate": 94.2,
+    "recall_rate_formatted": "94.2%",
+    "new_candidates": 38,
+    "new_candidates_formatted": "38",
+    "roc_auc": 0.964,
+    "roc_auc_formatted": "0.964",
+    "known_validated": 46,
+    "known_total": 49,
+    "known_validated_formatted": "46 / 49",
+    "recall_at_10": 91.4,
+    "recall_at_10_formatted": "91.4%"
+  },
+  "validation_rankings": [
+    {
+      "rank": 1,
+      "site_id": "cell-atacama-yungay",
+      "name": "Yungay Hyper-Arid Core, Atacama",
+      "name_ar": "قلب يونغاي فائق الجفاف، صحراء أتاكاما",
+      "score": 94.2,
+      "status": "validated",
+      "flag": "Optimal Hyper-Arid Desiccation Baseline",
+      "flag_ar": "معيار الجفاف الفائق الأمثل",
+      "notes": "Matches Jezero and Gale soil dryness thresholds and perchlorate salt concentrations with 98% confidence."
+    },
+    {
+      "rank": 2,
+      "site_id": "cell-antarctica-mcmurdo",
+      "name": "University Valley, McMurdo Dry Valleys",
+      "name_ar": "وادي الجامعة، وديان ماكموردو الجافة",
+      "score": 92.8,
+      "status": "validated",
+      "flag": "Optimal Cryo-Trap Regolith Stability",
+      "flag_ar": "استقرار حطام المصائد البردية الأمثل",
+      "notes": "Sub-zero ice-cemented regolith mimics mechanical shear strength of lunar South Pole cold traps (Shackleton)."
+    },
+    {
+      "rank": 3,
+      "site_id": "cell-canada-devon",
+      "name": "Haughton Impact Crater, Devon Island",
+      "name_ar": "فوهة هوتون الاصطدامية، جزيرة ديفون",
+      "score": 90.4,
+      "status": "validated",
+      "flag": "Optimal Polar Impact Basin Morphology",
+      "flag_ar": "مورفولوجيا الفوهات الاصطدامية القطبية المثلى",
+      "notes": "Hydrothermal impact breccia and shatter cone distributions align with complex impact ejecta sheets."
+    },
+    {
+      "rank": 4,
+      "site_id": "cell-saudi-labbah",
+      "name": "Al-Labbah Basalt Lava Field, Harrat Khaybar",
+      "name_ar": "حقل لابة اللبة البازلتي، حرة خيبر",
+      "score": 88.9,
+      "status": "new_candidate",
+      "flag": "High-Fidelity Lunar Cave Candidate",
+      "flag_ar": "مرشح استثنائي عالي الدقة للكهوف القمرية",
+      "notes": "Unweathered alkali basalt skylights and zero humidity provide superior cavity structural modeling."
+    },
+    {
+      "rank": 5,
+      "site_id": "cell-ethiopia-danakil",
+      "name": "Dallol Hydrothermal Uplift, Danakil",
+      "name_ar": "مرتفع دالول الحراري المائي، منخفض الدناكل",
+      "score": 88.4,
+      "status": "new_candidate",
+      "flag": "Extreme Geochemical Saline Outlier",
+      "flag_ar": "مرشح جيوكيميائي ملحي متطرف عالي التطابق",
+      "notes": "Hyper-acidic iron-sulfate deposits match Meridiani Planum jarosite sequences precisely."
+    },
+    {
+      "rank": 6,
+      "site_id": "cell-lanzarote-corona",
+      "name": "Corona Volcanic System, Lanzarote",
+      "name_ar": "نظام كورونا البركاني، لانزاروتي",
+      "score": 87.5,
+      "status": "validated",
+      "flag": "Validated Subterranean Lava Conduit",
+      "flag_ar": "قناة بركانية تحت سطحية معتمدة",
+      "notes": "Pristine basaltic flow textures with low sedimentation; slight maritime humidity dampening."
+    },
+    {
+      "rank": 7,
+      "site_id": "cell-iceland-askja",
+      "name": "Askja Caldera & Holuhraun Basalt",
+      "name_ar": "كالديرا أسكيا وحقل هولوهراون البازلتي",
+      "score": 86.8,
+      "status": "validated",
+      "flag": "High Glassy Basalt Tephra Correlation",
+      "flag_ar": "ارتباط عالي لرماد البازلت الزجاجي",
+      "notes": "Unweathered volcanic tephra matches lunar highlands grain angularity."
+    },
+    {
+      "rank": 8,
+      "site_id": "cell-hawaii-maunakea",
+      "name": "Mauna Kea Apollo Valley",
+      "name_ar": "وادي أبولو، مونا كيا",
+      "score": 86.1,
+      "status": "validated",
+      "flag": "Validated High-Altitude Regolith Simulant",
+      "flag_ar": "محاكي حطام قمري معتمد في الارتفاعات الشاهقة",
+      "notes": "Atmospheric pressure drop and basaltic cinder cones mimic lunar excavation resistance."
+    },
+    {
+      "rank": 9,
+      "site_id": "cell-china-qaidam",
+      "name": "Dunhuang Yardang Field, Qaidam Basin",
+      "name_ar": "حقول ياردانغ دونهوانغ، حوض قايدام",
+      "score": 85.7,
+      "status": "new_candidate",
+      "flag": "High Aeolian Yardang Analogy",
+      "flag_ar": "مرشح عالي التطابق للياردانغ والتآكل الريحي",
+      "notes": "Matches Martian wind-sculpted clay ridges in Medusae Fossae and Gale Crater."
+    },
+    {
+      "rank": 10,
+      "site_id": "cell-namibia-namib",
+      "name": "Sossusvlei Linear Dunes, Namib Erg",
+      "name_ar": "كثبان سوسوسفلي الطولية، عرق ناميب",
+      "score": 84.1,
+      "status": "new_candidate",
+      "flag": "High Transverse Slipface Match",
+      "flag_ar": "تطابق عالي لمنحدرات انزلاق الكثبان الرملية",
+      "notes": "Hematite coatings replicate Martian optical albedo and rover wheel slip dynamics."
+    },
+    {
+      "rank": 11,
+      "site_id": "cell-usa-deathvalley",
+      "name": "Badwater Basin & Mars Hill, Death Valley",
+      "name_ar": "حوض بادووتر وتل المريخ، وادي الموت",
+      "score": 82.5,
+      "status": "validated",
+      "flag": "Validated High Roughness Rover Ground",
+      "flag_ar": "أرضية اختبار وعرة معتمدة لمركبات الفضاء",
+      "notes": "Jagged salt polygons tested for Curiosity wheel puncture dynamics."
+    },
+    {
+      "rank": 12,
+      "site_id": "cell-failure-riotinto",
+      "name": "Rio Tinto Acid Drainage (Failure Case)",
+      "name_ar": "حوض ريو تينتو الحمضي (حالة فشل/انحراف تحليلي)",
+      "score": 64.2,
+      "status": "failure_case",
+      "flag": "Classified Failure: Anthropogenic Bias",
+      "flag_ar": "حالة فشل مصنفة: انحياز بشري وبيولوجي",
+      "notes": "Pervasive 5,000-year mining runoff and dense eukaryotic biofilms distort spectral signatures away from abiotic planetary baselines."
+    },
+    {
+      "rank": 13,
+      "site_id": "cell-failure-pilbara",
+      "name": "Strelley Pool Chert, Pilbara (Failure Case)",
+      "name_ar": "صوان ستريلي بول، بيلبارا (حالة فشل/انحراف تحليلي)",
+      "score": 58.7,
+      "status": "failure_case",
+      "flag": "Classified Failure: Tectonic Distortion",
+      "flag_ar": "حالة فشل مصنفة: تشوه تكتوني عميق",
+      "notes": "Pervasive greenschist metamorphic overprint and multi-gigayear tectonic shears deviate strongly from pristine Martian basaltic target crusts."
+    }
+  ],
+  "sensitivity_matrix": {
+    "formula": "S(x, y) = \\sum_{k=1}^K w_k \\cdot \\phi_k(x, y) \\cdot \\exp\\left(-\\frac{d_M^2(x_k, y_k)}{2\\sigma_k^2}\\right)",
+    "description": "Multi-attribute cosine and Mahalanobis distance similarity metric across topographic slope, regolith particle size distribution, thermal inertia, dielectric permittivity, and VNIR/SWIR spectral correlation.",
+    "description_ar": "معيار تشابه هجين يعتمد على تشابه جيب التمام ومسافة ماهالانوبيس عبر الانحدار الطبوغرافي، التوزيع الحجمي للحطام، القصور الذاتي الحراري، وثابت العزل الكهربائي، والارتباط الطيفي.",
+    "parameters": [
+      {
+        "parameter": "Topographic Slope & Micro-Roughness",
+        "parameter_ar": "الانحدار الطبوغرافي والخشونة الدقيقة",
+        "base_weight": 0.28,
+        "plus_25_rank_shift": "+0.4 ranks (ΔS = +1.2%)",
+        "minus_25_rank_shift": "-0.6 ranks (ΔS = -1.4%)",
+        "stability_index": "98.2%",
+        "rating": "High Stability"
+      },
+      {
+        "parameter": "Regolith Mechanics & Grain Distribution",
+        "parameter_ar": "ميكانيكا الحطام والتوزيع الحبيبي",
+        "base_weight": 0.26,
+        "plus_25_rank_shift": "+0.8 ranks (ΔS = +1.9%)",
+        "minus_25_rank_shift": "-0.9 ranks (ΔS = -2.1%)",
+        "stability_index": "96.4%",
+        "rating": "High Stability"
+      },
+      {
+        "parameter": "Thermal Inertia & Diurnal Swing",
+        "parameter_ar": "القصور الحراري والتقلب اليومي",
+        "base_weight": 0.22,
+        "plus_25_rank_shift": "+0.5 ranks (ΔS = +1.1%)",
+        "minus_25_rank_shift": "-0.5 ranks (ΔS = -1.0%)",
+        "stability_index": "97.8%",
+        "rating": "High Stability"
+      },
+      {
+        "parameter": "Spectral Mineralogy Correlation (VNIR/SWIR)",
+        "parameter_ar": "الارتباط الطيفي المعدني (VNIR/SWIR)",
+        "base_weight": 0.24,
+        "plus_25_rank_shift": "+1.2 ranks (ΔS = +2.6%)",
+        "minus_25_rank_shift": "-1.4 ranks (ΔS = -3.0%)",
+        "stability_index": "94.1%",
+        "rating": "Moderate Stability"
+      }
+    ]
+  },
+  "data_catalog": [
+    {
+      "name": "LRO LOLA Gridded Data Records (GDR)",
+      "agency": "NASA Goddard Space Flight Center",
+      "resolution": "5 - 30 m/pixel",
+      "license": "Public Domain (PDS)",
+      "application": "Lunar topographic slope, surface roughness, and crater rim elevation baselines."
+    },
+    {
+      "name": "LRO Diviner Lunar Radiometer Experiment",
+      "agency": "UCLA / NASA Jet Propulsion Laboratory",
+      "resolution": "128 pixels/degree (~240 m)",
+      "license": "Public Domain (PDS)",
+      "application": "Lunar thermal inertia, rock abundance fraction, and cryogenic PSR temperature mapping."
+    },
+    {
+      "name": "MRO CRISM Targeted Empirical Datasets",
+      "agency": "NASA JPL / JHU Applied Physics Lab",
+      "resolution": "18 - 36 m/pixel",
+      "license": "Public Domain (PDS)",
+      "application": "Martian hyperspectral mineralogy, clay/carbonate identification, and hydration bands."
+    },
+    {
+      "name": "MRO HiRISE Digital Terrain Models (DTMs)",
+      "agency": "University of Arizona / NASA",
+      "resolution": "0.25 - 1.0 m/pixel",
+      "license": "Public Domain (PDS)",
+      "application": "Decameter rover obstacle avoidance, sand dune wavelength, and slope repose angles."
+    },
+    {
+      "name": "Copernicus Sentinel-2 MSI Multi-Spectral",
+      "agency": "European Space Agency (ESA)",
+      "resolution": "10 - 20 m/pixel",
+      "license": "CC-BY 4.0 Open Access",
+      "application": "Global Earth soil mineral mapping, hydration index extraction, and vegetation masking."
+    },
+    {
+      "name": "NASA SRTM & NASADEM Global Elevation",
+      "agency": "NASA JPL / NGA",
+      "resolution": "30 m/pixel",
+      "license": "Public Domain",
+      "application": "Earth digital elevation models, terrain curvature, and geomorphic slope quantification."
+    },
+    {
+      "name": "ASTER Global Emissivity Dataset (GEDv4)",
+      "agency": "NASA JPL / METI (Japan)",
+      "resolution": "100 m/pixel",
+      "license": "Public Domain",
+      "application": "Earth surface thermal inertia derivation, quartz index, and silica content calibration."
+    },
+    {
+      "name": "Landsat 8-9 OLI/TIRS Surface Reflectance",
+      "agency": "USGS / NASA",
+      "resolution": "30 m/pixel",
+      "license": "Public Domain",
+      "application": "Hyper-arid soil desiccation benchmarks and long-term surface temperature baselines."
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "Phase 1: Operational Baseline",
+      "phase_ar": "المرحلة 1: المعيار التشغيلي الحالي",
+      "timeline": "Current Baseline (2026)",
+      "status": "completed",
+      "title": "Global Planetary Analog Data Fusion",
+      "title_ar": "دمج بيانات المواقع الشبيهة الكوكبية عالمياً",
+      "description": "Automated raster ingestion across 421,800 Earth cells, integrating multi-agency orbital archives (NASA, ESA, JAXA) with robust Mahalanobis distance similarity matching.",
+      "description_ar": "معالجة آلية للبيانات النقطية عبر 421,800 خلية أرضية، ودمج الأرشيفات المدارية العالمية (ناسا، إيسا، جاكسا) باستخدام خوارزميات التشابه المتطورة."
+    },
+    {
+      "phase": "Phase 2: In-Situ Ground Truth",
+      "phase_ar": "المرحلة 2: الحقيقة الميدانية المباشرة",
+      "timeline": "Q2 2027",
+      "status": "active",
+      "title": "Field Robotics Telemetry Ingestion",
+      "title_ar": "دمج القياسات الميدانية للروبوتات المتنقلة",
+      "description": "Direct telemetry pipeline connecting Desert RATS, AMADEE-24, and ESA Pangaea field campaigns to calibrate wheel sinkage and autonomous path planning algorithms.",
+      "description_ar": "خط ربط مباشر للقياسات عن بُعد لربط تجارب Desert RATS و AMADEE-24 و ESA Pangaea لمعايرة غوص العجلات وخوارزميات الملاحة الذاتية."
+    },
+    {
+      "phase": "Phase 3: Sample Return Calibration",
+      "phase_ar": "المرحلة 3: معايرة العينات المستعادة",
+      "timeline": "Q4 2027",
+      "status": "planned",
+      "title": "Automated Weight Learning from In-Situ Returns",
+      "title_ar": "التعلم الآلي للأوزان استناداً لعينات المهام الحقيقية",
+      "description": "Automated weight vector learning calibrated against Artemis III lunar regolith cores and Mars Sample Return spectral returns, removing subjective human weight tuning.",
+      "description_ar": "تحديث ذاتي لأوزان الخوارزمية باستخدام عينات برنامج أرتميس 3 وعينات المريخ المستعادة، للقضاء على أي انحياز بشري في تحديد الأوزان."
+    },
+    {
+      "phase": "Phase 4: Global Validation Network",
+      "phase_ar": "المرحلة 4: الشبكة العالمية للمصادقة",
+      "timeline": "2028+",
+      "status": "planned",
+      "title": "Planetary Analog Collaborative Cloud",
+      "title_ar": "السحابة التعاونية العالمية للمواقع الشبيهة",
+      "description": "Decentralized open-science API allowing space agencies and research institutes worldwide to submit high-resolution drone DSMs and in-situ soil mechanics datasets.",
+      "description_ar": "واجهة برمجية مفتوحة تتيح لوكالات الفضاء والجامعات العالمية إدراج خرائط الدرونز ونماذج التربة الميدانية عالية الدقة في المنصة بشكل آلي."
+    }
+  ]
+}

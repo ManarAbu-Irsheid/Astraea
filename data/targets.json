@@ -1,0 +1,141 @@
+{
+  "targets": [
+    {
+      "id": "target-mars-jezero",
+      "body": "mars",
+      "name": "Jezero Crater Delta",
+      "name_ar": "دلتا فوهة جيزيرو",
+      "coordinates": "18.38° N, 77.58° E",
+      "elevation": "-2.5 km (MOLA)",
+      "geology": "Ancient fluvio-lacustrine sedimentary delta, phyllosilicates, olivine-carbonate lithology, active barchan dunes.",
+      "geology_ar": "دلتا رسوبية نهرية بحيرية قديمة، سيليكات صفائحية، صخور أوليفين وكربونات، وكثبان هلالية نشطة.",
+      "environment": "Hyper-arid, low pressure (6.1 mbar), diurnal range -90°C to +15°C, high UV flux.",
+      "environment_ar": "شديد الجفاف، ضغط منخفض (6.1 مليبار)، مدى حراري يومي من -90 إلى +15 درجة مئوية، وإشعاع فوق بنفسجي عالي.",
+      "baseline_weights": { "slope": 0.25, "ice_moisture": 0.15, "regolith": 0.35, "volcanic": 0.25 },
+      "primary_challenges": ["Dust accumulation on solar/optics", "Wheel slip in soft aeolian sand ripples", "Perchlorate chemistry"],
+      "primary_challenges_ar": ["تراكم الغبار على الألواح والعدسات", "انزلاق العجلات في الرمال الناعمة", "كيمياء البيركلورات"]
+    },
+    {
+      "id": "target-moon-marius",
+      "body": "moon",
+      "name": "Marius Hills Lava Tube Skylight",
+      "name_ar": "فتحة الأنبوب البركاني بتلال ماريوس",
+      "coordinates": "14.1° N, 56.7° W",
+      "elevation": "-2.6 km (LOLA)",
+      "geology": "Tholeiitic basalt flow fields, sinuous rilles, subsurface lava tube collapse pit (65m diameter, 80m depth).",
+      "geology_ar": "حقول تدفق بازلتي، أخاديد بركانية ملتوية، حفرة انهيار لأنبوب حمم تحت سطحي (قطر 65م وعمق 80م).",
+      "environment": "Vacuum (<1e-12 Torr), surface radiation 1.3 mSv/day, extreme diurnal swing (-180°C to +120°C).",
+      "environment_ar": "فراغ تام (<1e-12 تور)، إشعاع سطحي 1.3 مليسيفيرت/يوم، تفاوت حراري شديد (-180 إلى +120 درجة مئوية).",
+      "baseline_weights": { "slope": 0.30, "ice_moisture": 0.05, "regolith": 0.25, "volcanic": 0.40 },
+      "primary_challenges": ["Steep collapse pit rappelling", "Total loss of solar power inside cavern", "Abrasive electrostatically-charged dust"],
+      "primary_challenges_ar": ["الهبوط العمودي في حفر الانهيار", "فقدان الطاقة الشمسية كلياً داخل الكهف", "غبار حاد مشحون إلكتروستاتيكياً"]
+    },
+    {
+      "id": "target-moon-shackleton",
+      "body": "moon",
+      "name": "Shackleton Crater Rim (South Pole)",
+      "name_ar": "حافة فوهة شاكلتون (القطب الجنوبي للقمر)",
+      "coordinates": "89.9° S, 0.0° E",
+      "elevation": "+1.2 km (LOLA rim height)",
+      "geology": "Impact crater rim with perpetual illumination peaks (86-92% sun) adjacent to ultra-cold Permanently Shadowed Regions (PSR, 40 K).",
+      "geology_ar": "حافة فوهة اصطدامية ذات قمم إضاءة شبه دائمة تجاور مناطق ظلال أبدية متجمدة (40 كلفن).",
+      "environment": "Cryogenic thermal trap (40 K), hydrogen-rich water ice deposits, low grazing-angle solar illumination.",
+      "environment_ar": "مصيدة حرارية شديدة البرودة (40 كلفن)، رواسب جليد مائي غنية بالهيدروجين، وزوايا سقوط شمسية منخفضة جداً.",
+      "baseline_weights": { "slope": 0.35, "ice_moisture": 0.35, "regolith": 0.20, "volcanic": 0.10 },
+      "primary_challenges": ["Cryogenic bearing freeze", "Deep shadows with extreme contrast", "Steep 32° crater wall descent"],
+      "primary_challenges_ar": ["تجمد التروس والزيوت الحركية", "ظلال شديدة التباين تعيق الرؤية الملاحية", "الانحدار الشديد لجدران الفوهة (32 درجة)"]
+    },
+    {
+      "id": "target-mars-olympus",
+      "body": "mars",
+      "name": "Olympus Mons Aureole & Plains",
+      "name_ar": "سهول وحزام أوليمبوس مونس البركاني",
+      "coordinates": "18.65° N, 226.2° E",
+      "elevation": "+3.4 km to +21.9 km",
+      "geology": "Gigantic volcanic shield edifice, basalt sheet flows, catastrophic landslide aureole deposits, aeolian mantling.",
+      "geology_ar": "بنية بركانية درعية هائلة، تدفقات بازلتية طبقية، رواسب انهيارات أرضية ضخمة، وغطاء غباري ريحي.",
+      "environment": "Ultra-thin atmosphere (2 mbar at summit), extreme wind shear during global dust storms.",
+      "environment_ar": "غلاف جوي شديد التخلخل (2 مليبار عند القمة)، ورياح قوية أثناء العواصف الغبارية العالمية.",
+      "baseline_weights": { "slope": 0.20, "ice_moisture": 0.10, "regolith": 0.30, "volcanic": 0.40 },
+      "primary_challenges": ["Extreme altitude pressure drop", "High basalt roughness damaging rover treads", "Low atmospheric density for descent"],
+      "primary_challenges_ar": ["هبوط الضغط الجوي الشديد عند الارتفاعات العالية", "خشونة الصخور البازلتية المؤذية للإطارات", "انخفاض كثافة الهواء عند الهبوط"]
+    }
+  ],
+  "hero_pairs": [
+    {
+      "id": "pair-atacama-jezero",
+      "target_id": "target-mars-jezero",
+      "earth_cell_id": "cell-atacama-yungay",
+      "earth_name": "Yungay Hyper-Arid Core, Atacama",
+      "earth_name_ar": "قلب يونغاي فائق الجفاف، صحراء أتاكاما",
+      "earth_region": "Antofagasta, Chile (24.08° S, 69.87° W)",
+      "target_name": "Jezero Crater Delta, Mars",
+      "target_name_ar": "دلتا فوهة جيزيرو، المريخ",
+      "target_region": "Syrtis Major Quadrangle (18.38° N, 77.58° E)",
+      "similarity_score": 89.2,
+      "uncertainty": "±3.4%",
+      "recommended_profile": "rover",
+      "parameters": {
+        "slope_roughness": 88,
+        "spectral_mineralogy": 92,
+        "regolith_mechanics": 89,
+        "thermal_inertia": 85,
+        "volcanic_texture": 82
+      },
+      "key_insight": "Earth's driest soil matches Martian clay-perchlorate dryness limits and ancient fluvial sedimentation.",
+      "key_insight_ar": "أكثر تربة جفافاً على الأرض تطابق حدود الجفاف والبيركلورات في المريخ مع ترسبات دلتا نهرية عتيقة.",
+      "earth_img_label": "Earth EO SAR / Sentinel-2 VNIR",
+      "target_img_label": "Mars MRO / HiRISE + CRISM Composite"
+    },
+    {
+      "id": "pair-lanzarote-marius",
+      "target_id": "target-moon-marius",
+      "earth_cell_id": "cell-lanzarote-corona",
+      "earth_name": "Corona Lava Tube System, Lanzarote",
+      "earth_name_ar": "نظام أنبوب كورونا البركاني، لانزاروتي",
+      "earth_region": "Canary Islands, Spain (29.18° N, 13.48° W)",
+      "target_name": "Marius Hills Lava Tube, Moon",
+      "target_name_ar": "أنبوب تلال ماريوس البركاني، القمر",
+      "target_region": "Oceanus Procellarum (14.1° N, 56.7° W)",
+      "similarity_score": 86.5,
+      "uncertainty": "±4.1%",
+      "recommended_profile": "caves",
+      "parameters": {
+        "slope_roughness": 84,
+        "spectral_mineralogy": 89,
+        "regolith_mechanics": 79,
+        "thermal_inertia": 88,
+        "volcanic_texture": 96
+      },
+      "key_insight": "Pristine basaltic flow structures with 21km continuous tube morphology match lunar rille collapse geometry.",
+      "key_insight_ar": "بنى تدفق بازلتية نقية تمتد بطول 21 كم تطابق هندسة انهيارات الأخاديد البركانية القمرية.",
+      "earth_img_label": "Earth Airborne LiDAR / Drone DSM",
+      "target_img_label": "Moon LRO / LROC NAC Orthomosaic"
+    },
+    {
+      "id": "pair-mcmurdo-shackleton",
+      "target_id": "target-moon-shackleton",
+      "earth_cell_id": "cell-antarctica-mcmurdo",
+      "earth_name": "University Valley, McMurdo Dry Valleys",
+      "earth_name_ar": "وادي الجامعة، وديان ماكموردو الجافة",
+      "earth_region": "Victoria Land, Antarctica (77.85° S, 160.72° E)",
+      "target_name": "Shackleton Crater Rim, Moon",
+      "target_name_ar": "حافة فوهة شاكلتون، القطب الجنوبي للقمر",
+      "target_region": "South Pole Aitken Basin (89.9° S, 0.0° E)",
+      "similarity_score": 91.8,
+      "uncertainty": "±2.8%",
+      "recommended_profile": "base",
+      "parameters": {
+        "slope_roughness": 90,
+        "spectral_mineralogy": 87,
+        "regolith_mechanics": 93,
+        "thermal_inertia": 94,
+        "volcanic_texture": 74
+      },
+      "key_insight": "Permafrost ice-cemented ground and sub-zero regolith mimic lunar polar cryo-trap physical cohesion.",
+      "key_insight_ar": "التربة الصقيعية الإسمنتية المجمدة تحاكي التماسك الميكانيكي لحطام القطب القمري في المصائد البردية.",
+      "earth_img_label": "Earth WorldView-3 / Ground GPR",
+      "target_img_label": "Moon LRO LOLA Topography + Diviner"
+    }
+  ]
+}

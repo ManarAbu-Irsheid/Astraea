@@ -1,0 +1,539 @@
+/* TerraTwin - Page 2: Site Finder Specific Styles */
+
+.finder-dashboard {
+  display: grid;
+  grid-template-columns: 310px 1fr 360px;
+  gap: 1.25rem;
+  height: calc(100vh - var(--header-height) - var(--footer-height) - 4rem);
+  min-height: 640px;
+  position: relative;
+}
+
+/* ==========================================================================
+   LEFT PANEL: CRITERIA & FILTERS
+   ========================================================================== */
+.finder-left-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-section-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Target Body Switcher (Moon / Mars / All) */
+.target-body-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.35rem;
+  background: var(--bg-secondary);
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.body-toggle-btn {
+  padding: 0.45rem 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.body-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.body-toggle-btn.active {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--accent-blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.body-toggle-btn[data-body="mars"].active {
+  color: var(--accent-mars);
+  border-color: rgba(255, 90, 54, 0.4);
+}
+
+.body-toggle-btn[data-body="moon"].active {
+  color: #b0c8e6;
+  border-color: rgba(180, 200, 230, 0.4);
+}
+
+/* Profile Weights Summary Box */
+.profile-weights-box {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.weights-pill-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.weight-mini-pill {
+  font-size: 0.72rem;
+  background: var(--bg-card);
+  padding: 0.25rem 0.45rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.weight-mini-val {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+/* Terrain Classification Filter Chips */
+.terrain-chips-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.terrain-chip {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.terrain-chip:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.terrain-chip.active {
+  background: var(--badge-bg);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+/* Crucial Discovery Switch */
+.discovery-switch-box {
+  background: rgba(245, 166, 35, 0.06);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+}
+
+.discovery-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.discovery-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.discovery-radio-label input[type="radio"] {
+  accent-color: var(--accent-gold);
+}
+
+/* Map Legend in Left Panel */
+.map-legend-box {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.legend-symbol {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.legend-symbol.star {
+  color: var(--accent-gold);
+}
+
+.legend-symbol.circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+}
+
+/* ==========================================================================
+   CENTER CANVAS: INTERACTIVE GEOSPATIAL MAP
+   ========================================================================== */
+.finder-center-canvas {
+  background: #030712;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+#leafletMap {
+  width: 100%;
+  height: 100%;
+  background: #020610;
+  z-index: 1;
+}
+
+/* Custom Map Overlay Overlays */
+.map-top-bar {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 500;
+  pointer-events: none;
+}
+
+.map-status-pill {
+  pointer-events: auto;
+  background: rgba(5, 10, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-status-val {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+/* Custom Marker Styling for Leaflet */
+.custom-leaflet-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.custom-leaflet-marker:hover {
+  transform: scale(1.3);
+  z-index: 1000 !important;
+}
+
+.marker-known-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(0, 229, 212, 0.8);
+  transition: all var(--transition-fast);
+}
+
+.marker-candidate-star {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--accent-gold);
+  filter: drop-shadow(0 0 8px rgba(245, 166, 35, 0.9));
+  animation: starPulse 2.2s infinite ease-in-out;
+}
+
+@keyframes starPulse {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(245, 166, 35, 0.8)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 14px rgba(245, 166, 35, 1)); transform: scale(1.15); }
+}
+
+/* ==========================================================================
+   RIGHT PANEL: SITE DETAIL CARD
+   ========================================================================== */
+.finder-right-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.panel-placeholder-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  color: var(--text-muted);
+  padding: 2rem 1rem;
+  gap: 1rem;
+}
+
+.placeholder-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.detail-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.85rem;
+}
+
+.detail-site-name {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.detail-score-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-secondary);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.detail-score-val {
+  font-family: var(--font-mono);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--accent-cyan);
+}
+
+.detail-score-uncertainty {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Radar Chart Canvas Container */
+.radar-chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.radar-title {
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  align-self: flex-start;
+}
+
+#radarCanvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Why It Matches & Scientific Divergences */
+.detail-bullet-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.detail-bullet-title {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.detail-bullet-title.matches {
+  color: var(--accent-green);
+}
+
+.detail-bullet-title.divergences {
+  color: var(--accent-mars);
+}
+
+.detail-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.detail-bullet-list li {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  position: relative;
+  padding-left: 0.85rem;
+}
+
+[dir="rtl"] .detail-bullet-list li {
+  padding-left: 0;
+  padding-right: 0.85rem;
+}
+
+.detail-bullet-list li::before {
+  content: '▪';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+[dir="rtl"] .detail-bullet-list li::before {
+  left: auto;
+  right: 0;
+}
+
+/* Detail Card Action Buttons */
+.detail-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-detail-action {
+  flex: 1;
+  padding: 0.55rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-detail-compare {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border: 1px solid var(--accent-blue);
+}
+
+.btn-detail-compare:hover {
+  background: #0088dd;
+  box-shadow: 0 0 12px rgba(0, 163, 255, 0.4);
+}
+
+.btn-detail-export {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.btn-detail-export:hover {
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   MOBILE BOTTOM SHEET RESPONSIVENESS
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .finder-dashboard {
+    grid-template-columns: 260px 1fr;
+    height: auto;
+  }
+  .finder-right-panel {
+    grid-column: 1 / -1;
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .finder-dashboard {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .finder-left-panel {
+    order: 2;
+  }
+  .finder-center-canvas {
+    order: 1;
+    height: 420px;
+  }
+  .finder-right-panel {
+    order: 3;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    z-index: 1000;
+    transform: translateY(calc(100% - 48px));
+    transition: transform 0.3s ease;
+  }
+  .finder-right-panel.sheet-expanded {
+    transform: translateY(0);
+  }
+}

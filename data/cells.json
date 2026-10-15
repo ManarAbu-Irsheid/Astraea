@@ -1,0 +1,616 @@
+{
+  "cells": [
+    {
+      "id": "cell-atacama-yungay",
+      "name": "Yungay Hyper-Arid Core, Atacama",
+      "name_ar": "قلب يونغاي فائق الجفاف، صحراء أتاكاما",
+      "country": "Chile",
+      "country_ar": "تشيلي",
+      "lat": -24.08,
+      "lon": -69.87,
+      "is_candidate": false,
+      "target_affinity": "mars",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "desert",
+      "similarity_score": 89.2,
+      "uncertainty": "±3.4%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 89.2, "base": 82.5, "isru": 77.8, "caves": 42.1 },
+      "radar_parameters": {
+        "slope": 88,
+        "regolith": 89,
+        "thermal": 85,
+        "radiation": 91,
+        "mineralogy": 92
+      },
+      "why_matches": [
+        "Precipitation < 1 mm/year mimicking hyper-arid Martian desiccation limit.",
+        "High nitrate and perchlorate salt concentrations mirroring Phoenix/Curiosity chemistry.",
+        "Soil microbial biomass below detection limits across 10-50 cm depth horizons."
+      ],
+      "why_matches_ar": [
+        "معدل هطول < 1 مم/سنة يماثل أقصى درجات الجفاف المريخي.",
+        "تراكيز عالية لأملاح النترات والبيركلورات تطابق كيمياء مسباري فينكس وكيوريوسيتي.",
+        "الكتلة الحيوية للميكروبات أقل من حدود الكشف حتى عمق 50 سم."
+      ],
+      "why_not": [
+        "Atmospheric pressure is 1013 mbar versus 6 mbar on Mars (affects dust suspension mechanics).",
+        "Terrestrial 1.0G gravity alters rover traction and slip dynamics compared to 0.38G."
+      ],
+      "why_not_ar": [
+        "الضغط الجوي 1013 مليبار مقارنة بـ 6 مليبار في المريخ (يؤثر على ميكانيكا تعليق الغبار).",
+        "الجاذبية الأرضية (1G) تغير ديناميكا سحب وانزلاق العجلات مقارنة بجاذبية المريخ (0.38G)."
+      ],
+      "physical_metrics": {
+        "slope_deg": 4.2,
+        "grain_size_microns": 140,
+        "bulk_density_g_cm3": 1.48,
+        "thermal_inertia_si": 280,
+        "dielectric_constant": 3.1,
+        "hydration_index": 0.2
+      }
+    },
+    {
+      "id": "cell-lanzarote-corona",
+      "name": "Corona Volcanic System, Lanzarote",
+      "name_ar": "نظام كورونا البركاني، لانزاروتي",
+      "country": "Spain",
+      "country_ar": "إسبانيا",
+      "lat": 29.18,
+      "lon": -13.48,
+      "is_candidate": false,
+      "target_affinity": "moon",
+      "target_id": "target-moon-marius",
+      "terrain_type": "volcanic",
+      "similarity_score": 86.5,
+      "uncertainty": "±4.1%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 78.4, "base": 88.0, "isru": 72.1, "caves": 94.6 },
+      "radar_parameters": {
+        "slope": 84,
+        "regolith": 79,
+        "thermal": 88,
+        "radiation": 76,
+        "mineralogy": 96
+      },
+      "why_matches": [
+        "21 km continuous basaltic lava tube with uncollapsed roof spans up to 25 meters.",
+        "Pristine basaltic flow morphologies (pahoehoe and aa) identical to lunar mare flows.",
+        "Extensive skylights suitable for testing autonomous cave rappelling and drone lidar."
+      ],
+      "why_matches_ar": [
+        "أنبوب حمم بازلتية متصل بطول 21 كم مع أسقف غير منهارة تمتد بعرض يصل إلى 25 متراً.",
+        "بنى تدفق بازلتية نقية (باهوهو وآا) متطابقة مع بحار الحمم القمرية.",
+        "فتحات انهيار صخرية ملائمة لاختبار تقنيات النزول الروبوتي ورسم الخرائط بالليدار."
+      ],
+      "why_not": [
+        "Humid maritime atmospheric ingress causes secondary mineral weathering absent on the Moon.",
+        "Presence of endemic troglobitic fauna and terrestrial biosignatures."
+      ],
+      "why_not_ar": [
+        "دخول الهواء البحري الرطب يسبب تجوية معدنية ثانوية غير موجودة على القمر.",
+        "وجود كائنات كهفية حية وبصمات حيوية أرضية أصيلة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 12.8,
+        "grain_size_microns": 850,
+        "bulk_density_g_cm3": 2.75,
+        "thermal_inertia_si": 620,
+        "dielectric_constant": 6.8,
+        "hydration_index": 1.4
+      }
+    },
+    {
+      "id": "cell-antarctica-mcmurdo",
+      "name": "University Valley, McMurdo Dry Valleys",
+      "name_ar": "وادي الجامعة، وديان ماكموردو الجافة",
+      "country": "Antarctica",
+      "country_ar": "القارة القطبية الجنوبية",
+      "lat": -77.85,
+      "lon": 160.72,
+      "is_candidate": false,
+      "target_affinity": "both",
+      "target_id": "target-moon-shackleton",
+      "terrain_type": "polar",
+      "similarity_score": 91.8,
+      "uncertainty": "±2.8%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 83.1, "base": 91.8, "isru": 89.4, "caves": 35.0 },
+      "radar_parameters": {
+        "slope": 90,
+        "regolith": 93,
+        "thermal": 94,
+        "radiation": 88,
+        "mineralogy": 87
+      },
+      "why_matches": [
+        "Ice-cemented regolith situated just 2 cm beneath dry, cohesionless lag gravel.",
+        "Sub-zero mean annual temperature (-23°C) preserving cryogenic mechanical stability.",
+        "Solar radiation regime and katabatic winds resembling lunar South Pole and Martian polar scarps."
+      ],
+      "why_matches_ar": [
+        "تربة حطامية إسمنتية متجمدة تقع مباشرة على عمق 2 سم تحت حصى سطحي جاف وغير متماسك.",
+        "متوسط درجة حرارة سنوي سالب (-23°م) يحافظ على الاستقرار الميكانيكي الحفظي للجليد.",
+        "بيئة إشعاع ورياح هابطة تحاكي قمم القطب الجنوبي القمري والجروف القطبية المريخية."
+      ],
+      "why_not": [
+        "Terrestrial permafrost temperature (-25°C) is significantly warmer than lunar PSRs (40 K).",
+        "Ambient atmospheric pressure permits liquid water films at sub-zero brines during peak summer."
+      ],
+      "why_not_ar": [
+        "حرارة الصقيع الأرضي (-25°م) أكثر دفئاً بكثير من مناطق الظلال القمرية المتجمدة (40 كلفن).",
+        "الضغط الجوي يسمح بوجود أغشية مائية سائلة مفرطة الملوحة خلال ذروة الصيف."
+      ],
+      "physical_metrics": {
+        "slope_deg": 18.5,
+        "grain_size_microns": 210,
+        "bulk_density_g_cm3": 1.72,
+        "thermal_inertia_si": 340,
+        "dielectric_constant": 4.2,
+        "hydration_index": 4.8
+      }
+    },
+    {
+      "id": "cell-saudi-labbah",
+      "name": "Al-Labbah Basalt Lava Field, Harrat Khaybar",
+      "name_ar": "حقل لابة اللبة البازلتي، حرة خيبر",
+      "country": "Saudi Arabia",
+      "country_ar": "المملكة العربية السعودية",
+      "lat": 25.68,
+      "lon": 39.92,
+      "is_candidate": true,
+      "target_affinity": "moon",
+      "target_id": "target-moon-marius",
+      "terrain_type": "volcanic",
+      "similarity_score": 87.8,
+      "uncertainty": "±3.9%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 81.2, "base": 86.4, "isru": 79.5, "caves": 92.3 },
+      "radar_parameters": {
+        "slope": 86,
+        "regolith": 84,
+        "thermal": 91,
+        "radiation": 82,
+        "mineralogy": 95
+      },
+      "why_matches": [
+        "Rare white comenditic domes flanked by young alkali basalt flows mimicking silicic lunar volcanism.",
+        "Deep pristine lava tube conduits with negligible chemical weathering due to arid climate.",
+        "High thermal contrast and rock-strewn terrain matching lunar mare roughness curves."
+      ],
+      "why_matches_ar": [
+        "قباب كومنديتية بيضاء نادرة تجاور تدفقات بازلتية قلوية حديثة تحاكي البراكين القمرية السيليكية.",
+        "قنوات أنابيب بركانية عميقة وسليمة تكاد تنعدم فيها التجوية الكيميائية بفعل المناخ الصحراوي.",
+        "تباين حراري مرتفع وتضاريس صخرية وعرة تطابق منحنيات الخشونة لبحار القمر."
+      ],
+      "why_not": [
+        "Sub-surface temperatures remain at +24°C year-round due to geothermal gradient.",
+        "Atmospheric oxygen preserves ferric crust rather than pure metallic iron (Fe0) nanophases."
+      ],
+      "why_not_ar": [
+        "تظل درجات الحرارة تحت السطحية عند 24°م على مدار العام بسبب التدرج الحراري الأرضي.",
+        "أكسجين الغلاف الجوي يولد قشوراً حديدية حديدية بدلاً من جسيمات الحديد النانوية المعدنية الحرة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 14.2,
+        "grain_size_microns": 920,
+        "bulk_density_g_cm3": 2.82,
+        "thermal_inertia_si": 590,
+        "dielectric_constant": 7.1,
+        "hydration_index": 0.4
+      }
+    },
+    {
+      "id": "cell-ethiopia-danakil",
+      "name": "Dallol Hydrothermal Uplift, Danakil",
+      "name_ar": "مرتفع دالول الحراري المائي، منخفض الدناكل",
+      "country": "Ethiopia",
+      "country_ar": "إثيوبيا",
+      "lat": 14.24,
+      "lon": 40.30,
+      "is_candidate": true,
+      "target_affinity": "mars",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "hydrothermal",
+      "similarity_score": 88.4,
+      "uncertainty": "±4.6%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 79.5, "base": 68.2, "isru": 88.4, "caves": 31.0 },
+      "radar_parameters": {
+        "slope": 78,
+        "regolith": 86,
+        "thermal": 92,
+        "radiation": 89,
+        "mineralogy": 97
+      },
+      "why_matches": [
+        "Superheated, hyper-saline, hyper-acidic (pH < 0) brine pools saturated with iron and sulphur.",
+        "Precipitation of jarosite, halite, and iron oxides identical to Meridiani and Jezero mineral assemblages.",
+        "Poly-extreme geochemical envelope establishing abiotic boundaries for biosignature preservation."
+      ],
+      "why_matches_ar": [
+        "برك ملحية حارة وحمضية فائقة (الرقم الهيدروجيني < 0) مشبعة بالحديد والكبريت.",
+        "ترسبات معادن الجاروسيت والهاليت وأكاسيد الحديد المطابقة لمرتفعات ميريدياني وفوهة جيزيرو.",
+        "بيئة جيوكيميائية قاسية تثبت الحدود غير الحيوية لحفظ البصمات الحيوية."
+      ],
+      "why_not": [
+        "Near-sea-level elevation and toxic chlorine gas emission requiring specialised PPE.",
+        "High active water activity (aw) exceeding Martian thermodynamic stability limits."
+      ],
+      "why_not_ar": [
+        "ارتفاع قريب من مستوى سطح البحر مع انبعاثات غاز الكلور السام التي تتطلب عزل وحماية مشددة.",
+        "نشاط مائي سطحي فعال يتجاوز حدود الاستقرار الديناميكي الحراري للمريخ."
+      ],
+      "physical_metrics": {
+        "slope_deg": 6.8,
+        "grain_size_microns": 180,
+        "bulk_density_g_cm3": 2.15,
+        "thermal_inertia_si": 410,
+        "dielectric_constant": 5.4,
+        "hydration_index": 3.2
+      }
+    },
+    {
+      "id": "cell-china-qaidam",
+      "name": "Dunhuang Yardang Field, Qaidam Basin",
+      "name_ar": "حقول ياردانغ دونهوانغ، حوض قايدام",
+      "country": "China",
+      "country_ar": "الصين",
+      "lat": 37.85,
+      "lon": 93.65,
+      "is_candidate": true,
+      "target_affinity": "mars",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "desert",
+      "similarity_score": 85.7,
+      "uncertainty": "±3.8%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 91.0, "base": 84.1, "isru": 78.6, "caves": 38.0 },
+      "radar_parameters": {
+        "slope": 91,
+        "regolith": 87,
+        "thermal": 82,
+        "radiation": 84,
+        "mineralogy": 85
+      },
+      "why_matches": [
+        "World's largest yardang field shaped by hyper-arid aeolian deflation and salt-cemented mudstones.",
+        "High-altitude plateau (2800 m) with severe diurnal thermal fluctuations and intense UV exposure.",
+        "Extensive sulfate-rich playa deposits analogous to Gale and Jezero mudstone formations."
+      ],
+      "why_matches_ar": [
+        "أكبر حقل ياردانغ ريحي في العالم تشكل بفعل الرياح الشديدة والوحل الأسمنتي الملحي.",
+        "هضبة مرتفعة (2800 م) تعاني من تقلبات حرارية يومية حادة وإشعاع فوق بنفسجي شديد.",
+        "ترسبات طينية غنية بالكبريتات مماثلة لتكوينات صخور الطين في فوهتي غيل وجيزيرو."
+      ],
+      "why_not": [
+        "Occasional summer cloudburst events inject episodic moisture into yardang flanks.",
+        "Thicker atmospheric column attenuates high-energy cosmic rays."
+      ],
+      "why_not_ar": [
+        "حدوث عواصف مطرية صيفية عابرة تضخ رطوبة دورية في سفوح الياردانغ.",
+        "سماكة الغلاف الجوي تحد من اختراق الأشعة الكونية عالية الطاقة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 22.4,
+        "grain_size_microns": 160,
+        "bulk_density_g_cm3": 1.65,
+        "thermal_inertia_si": 310,
+        "dielectric_constant": 3.6,
+        "hydration_index": 0.9
+      }
+    },
+    {
+      "id": "cell-bolivia-uyuni",
+      "name": "Salar de Uyuni Lithium Flats",
+      "name_ar": "مسطحات سالار دي أويوني الملحية والليثيوم",
+      "country": "Bolivia",
+      "country_ar": "بوليفيا",
+      "lat": -20.13,
+      "lon": -67.48,
+      "is_candidate": true,
+      "target_affinity": "both",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "desert",
+      "similarity_score": 83.2,
+      "uncertainty": "±5.0%",
+      "confidence": "Med",
+      "confidence_ar": "متوسط",
+      "profile_scores": { "rover": 76.5, "base": 81.0, "isru": 92.5, "caves": 20.0 },
+      "radar_parameters": {
+        "slope": 98,
+        "regolith": 74,
+        "thermal": 79,
+        "radiation": 93,
+        "mineralogy": 82
+      },
+      "why_matches": [
+        "10,500 km² ultra-flat salt crust used globally for satellite radar altimeter calibration.",
+        "High altitude (3,656 m) resulting in 30% lower atmospheric attenuation and intense UV radiation.",
+        "Complex evaporitic mineral sequence providing testing beds for in-situ salt extraction."
+      ],
+      "why_matches_ar": [
+        "قشرة ملحية مستوية تمتد لـ 10,500 كم² تستخدم عالمياً لمعايرة مقاييس الارتفاع بالرادار للأقمار الاصطناعية.",
+        "ارتفاع شاهق (3,656 م) يوفر توهيناً جوياً أقل بنسبة 30% وإشعاعاً فوق بنفسجي فائق.",
+        "تسلسل معدني متبخر معقد يوفر بيئة مثالية لاختبار تقنيات استخلاص المعادن الموضعية."
+      ],
+      "why_not": [
+        "Annual rainy season creates a 10-30 cm standing water mirror surface.",
+        "Subsurface brine saturated with lithium/potassium differs from Martian magnesium perchlorate salts."
+      ],
+      "why_not_ar": [
+        "موسم الأمطار السنوي يحول المسطح إلى مرآة مائية بعمق 10-30 سم.",
+        "المحاليل الملحية الجوفية المشبعة بالليثيوم والبوتاسيوم تختلف عن أملاح بيركلورات المغنيسيوم المريخية."
+      ],
+      "physical_metrics": {
+        "slope_deg": 0.2,
+        "grain_size_microns": 320,
+        "bulk_density_g_cm3": 1.95,
+        "thermal_inertia_si": 480,
+        "dielectric_constant": 5.9,
+        "hydration_index": 1.1
+      }
+    },
+    {
+      "id": "cell-iceland-askja",
+      "name": "Askja Caldera & Holuhraun Basalt",
+      "name_ar": "كالديرا أسكيا وحقل هولوهراون البازلتي",
+      "country": "Iceland",
+      "country_ar": "آيسلندا",
+      "lat": 65.03,
+      "lon": -16.75,
+      "is_candidate": false,
+      "target_affinity": "both",
+      "target_id": "target-moon-marius",
+      "terrain_type": "volcanic",
+      "similarity_score": 87.2,
+      "uncertainty": "±3.5%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 88.5, "base": 82.0, "isru": 79.0, "caves": 84.0 },
+      "radar_parameters": {
+        "slope": 85,
+        "regolith": 86,
+        "thermal": 89,
+        "radiation": 78,
+        "mineralogy": 98
+      },
+      "why_matches": [
+        "Historic Apollo training grounds for lunar field geology (Neil Armstrong & Buzz Aldrin, 1967).",
+        "Pristine glassy tholeiitic basalt with near-zero chemical alteration and lack of vegetation.",
+        "Wide variety of volcanic tephra, scoria cones, and rubbly aa lava flows mirroring lunar highlands."
+      ],
+      "why_matches_ar": [
+        "موقع التدريب الميداني التاريخي لرواد فضاء رحلات أبولو (نيل أرمسترونغ وبز ألدرين 1967).",
+        "بازلت ثوليتي زجاجي نقي مع انعدام شبه تام للتجوية الكيميائية وخلو تام من الغطاء النباتي.",
+        "تنوع هائل في الرماد البركاني ومخاريط السكوريا وحمم الـ'آا' الوعرة المحاكية لمرتفعات القمر."
+      ],
+      "why_not": [
+        "Seasonal snow cover and high precipitation index limit continuous field trials to midsummer.",
+        "Hydrous alterations caused by glacial meltwater interaction."
+      ],
+      "why_not_ar": [
+        "الغطاء الثلجي الموسمي وهطول الأمطار يحدان من التجارب الميدانية المستمرة خارج منتصف الصيف.",
+        "تغيرات مائية معدنية ناتجة عن تفاعل المياه الجليدية الذائبة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 16.4,
+        "grain_size_microns": 780,
+        "bulk_density_g_cm3": 2.65,
+        "thermal_inertia_si": 540,
+        "dielectric_constant": 6.2,
+        "hydration_index": 1.8
+      }
+    },
+    {
+      "id": "cell-usa-deathvalley",
+      "name": "Badwater Basin & Mars Hill, Death Valley",
+      "name_ar": "حوض بادووتر وتل المريخ، وادي الموت",
+      "country": "United States",
+      "country_ar": "الولايات المتحدة",
+      "lat": 36.24,
+      "lon": -116.82,
+      "is_candidate": false,
+      "target_affinity": "mars",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "desert",
+      "similarity_score": 82.5,
+      "uncertainty": "±4.3%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 85.0, "base": 78.0, "isru": 84.5, "caves": 25.0 },
+      "radar_parameters": {
+        "slope": 82,
+        "regolith": 81,
+        "thermal": 84,
+        "radiation": 80,
+        "mineralogy": 85
+      },
+      "why_matches": [
+        "Tested by Curiosity and Perseverance rover operations teams for wheel abrasion metrics.",
+        "Jagged halite salt polygons resembling polygon terrain discovered in Martian mid-latitudes.",
+        "Extreme ground temperatures reaching 56.7°C stressing mobility thermal management units."
+      ],
+      "why_matches_ar": [
+        "موقع اختبار رسمي لفرق تشغيل مركبتي كيوريوسيتي وبيرسيفيرنس لقياس تآكل العجلات.",
+        "مضلعات ملحية مسننة تحاكي التضاريس المضلعة المكتشفة في خطوط العرض المتوسطة للمريخ.",
+        "درجات حرارة سطحية تصل إلى 56.7°م تختبر أنظمة الإدارة الحرارية للمركبات."
+      ],
+      "why_not": [
+        "Lowest elevation in North America (-86m) yields high atmospheric density (1020 mbar).",
+        "High tourist and park infrastructure interference requires restricted test corridors."
+      ],
+      "why_not_ar": [
+        "أدنى نقطة في أمريكا الشمالية (-86 م) ذات كثافة غلاف جوي عالية (1020 مليبار).",
+        "وجود حركة سياحية وبنية تحتية للمتنزه الوطني يفرض مسارات تجارب محددة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 5.4,
+        "grain_size_microns": 290,
+        "bulk_density_g_cm3": 1.82,
+        "thermal_inertia_si": 360,
+        "dielectric_constant": 4.8,
+        "hydration_index": 2.1
+      }
+    },
+    {
+      "id": "cell-namibia-namib",
+      "name": "Sossusvlei Linear Dunes, Namib Erg",
+      "name_ar": "كثبان سوسوسفلي الطولية، عرق ناميب",
+      "country": "Namibia",
+      "country_ar": "ناميبيا",
+      "lat": -24.72,
+      "lon": 15.28,
+      "is_candidate": true,
+      "target_affinity": "mars",
+      "target_id": "target-mars-jezero",
+      "terrain_type": "desert",
+      "similarity_score": 84.1,
+      "uncertainty": "±3.7%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 87.2, "base": 79.5, "isru": 76.0, "caves": 20.0 },
+      "radar_parameters": {
+        "slope": 92,
+        "regolith": 86,
+        "thermal": 78,
+        "radiation": 82,
+        "mineralogy": 83
+      },
+      "why_matches": [
+        "Iron oxide hematite-coated quartz grains generating brilliant red pigmentation matching Martian regolith.",
+        "Hyper-developed megaripples and slipfaces with critical repose angles (34°) for rover traverse tests.",
+        "Stable wind regimes producing unimodal transverse dune geometries mirroring Bagnold Dunes."
+      ],
+      "why_matches_ar": [
+        "حبيبات كوارتز مغلفة بأكاسيد الهيماتيت الحديدية تعطي لوناً أحمر ساطعاً يماثل حطام المريخ.",
+        "تموجات رملية عملاقة ومنحدرات انزلاق بزوايا حرجة (34 درجة) لاختبار عبور المركبات.",
+        "أنظمة رياح مستقرة تنتج كثباناً عرضية تحاكي كثبان باغنولد على المريخ."
+      ],
+      "why_not": [
+        "Advection sea fogs from Benguela current introduce morning moisture pulses.",
+        "Silica-rich quartz dominant over Martian basaltic/mafic sand fractions."
+      ],
+      "why_not_ar": [
+        "ضباب المحيط القادم من تيار بنغويلا يضخ نبضات رطوبة صباحية دورية.",
+        "سيادة الكوارتز الغني بالسيليكا مقارنة بالرمال البازلتية المافية السائدة في المريخ."
+      ],
+      "physical_metrics": {
+        "slope_deg": 31.0,
+        "grain_size_microns": 240,
+        "bulk_density_g_cm3": 1.52,
+        "thermal_inertia_si": 260,
+        "dielectric_constant": 2.9,
+        "hydration_index": 0.3
+      }
+    },
+    {
+      "id": "cell-hawaii-maunakea",
+      "name": "Mauna Kea Apollo Valley & Puʻu Haiwahine",
+      "name_ar": "وادي أبولو وبوو هايواهيني، مونا كيا",
+      "country": "United States",
+      "country_ar": "الولايات المتحدة",
+      "lat": 19.82,
+      "lon": -155.47,
+      "is_candidate": false,
+      "target_affinity": "both",
+      "target_id": "target-moon-shackleton",
+      "terrain_type": "volcanic",
+      "similarity_score": 86.9,
+      "uncertainty": "±3.2%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 86.9, "base": 88.5, "isru": 85.0, "caves": 65.0 },
+      "radar_parameters": {
+        "slope": 84,
+        "regolith": 90,
+        "thermal": 87,
+        "radiation": 88,
+        "mineralogy": 85
+      },
+      "why_matches": [
+        "High-altitude summit (4,207 m) basaltic tephra used for NASA and PISCES ISRU regolith excavation tests.",
+        "Pervasive periglacial stone stripes and frost heave sorting structures resembling Martian cryoturbation.",
+        "Atmospheric water vapor column < 1.5 mm creating extreme optical and spectral transparency."
+      ],
+      "why_matches_ar": [
+        "قمة بركانية شاهقة (4,207 م) غنية بالرماد البازلتي المستخدم لاختبارات الحفر والاستخلاص لناسا.",
+        "تراكيب فرز صخرية صقيعية تحاكي الاضطراب الجليدي على سطح المريخ.",
+        "عمود بخار الماء الجوي < 1.5 مم مما يوفر نقاء بصرياً وطيفياً استثنائياً."
+      ],
+      "why_not": [
+        "Culturally sacred native Hawaiian summit requiring strict environmental permits and non-destructive protocols.",
+        "Strong seasonal trade wind inversions and precipitation snowcaps."
+      ],
+      "why_not_ar": [
+        "قمة مقدسة لسكان هاواي الأصليين تقتضي تصاريح بيئية صارمة وبروتوكولات غير مدمرة.",
+        "انقلابات حرارية قوية للرياح التجارية وهطول ثلوج شتوية متفرقة."
+      ],
+      "physical_metrics": {
+        "slope_deg": 19.8,
+        "grain_size_microns": 650,
+        "bulk_density_g_cm3": 1.88,
+        "thermal_inertia_si": 450,
+        "dielectric_constant": 5.1,
+        "hydration_index": 2.5
+      }
+    },
+    {
+      "id": "cell-canada-devon",
+      "name": "Haughton Impact Crater, Devon Island",
+      "name_ar": "فوهة هوتون الاصطدامية، جزيرة ديفون",
+      "country": "Canada",
+      "country_ar": "كندا",
+      "lat": 75.38,
+      "lon": -89.68,
+      "is_candidate": false,
+      "target_affinity": "both",
+      "target_id": "target-moon-shackleton",
+      "terrain_type": "polar",
+      "similarity_score": 90.4,
+      "uncertainty": "±2.9%",
+      "confidence": "High",
+      "confidence_ar": "عالي",
+      "profile_scores": { "rover": 88.0, "base": 90.4, "isru": 82.0, "caves": 40.0 },
+      "radar_parameters": {
+        "slope": 89,
+        "regolith": 92,
+        "thermal": 90,
+        "radiation": 91,
+        "mineralogy": 90
+      },
+      "why_matches": [
+        "23 km diameter impact crater in cold polar desert hosting the long-term NASA Haughton-Mars Project (HMP).",
+        "Hydrothermal impact melt breccias, paleolakes, and inverted fluvio-glacial valleys mimicking Mars.",
+        "Pervasive ground permafrost with shatter cones and shock metamorphism minerals."
+      ],
+      "why_matches_ar": [
+        "فوهة اصطدامية بقطر 23 كم في صحراء قطبية باردة تحتضن مشروع ناسا هوتون-المريخ (HMP).",
+        "صخور مصهورة بريشيا مائية حرارية، وبحيرات قديمة، ووديان جليدية مقلوبة تحاكي المريخ.",
+        "صقيع تربة دائم مع مخاريط تفتت صدمية ومعادن متحولة بالاصطدام."
+      ],
+      "why_not": [
+        "Sedimentary dolomite-limestone target rocks differ from purely basaltic lunar/Martian crusts.",
+        "Extreme logistical remoteness accessible only 6 weeks per year."
+      ],
+      "why_not_ar": [
+        "الصخور المستهدفة رسوبية من الدولومايت والحجر الجيري تختلف عن القشرة البازلتية للقمر والمريخ.",
+        "عزلة لوجستية قطبية شديدة حيث لا يمكن الوصول للموقع إلا لـ 6 أسابيع فقط سنوياً."
+      ],
+      "physical_metrics": {
+        "slope_deg": 15.6,
+        "grain_size_microns": 410,
+        "bulk_density_g_cm3": 2.20,
+        "thermal_inertia_si": 490,
+        "dielectric_constant": 5.5,
+        "hydration_index": 3.8
+      }
+    }
+  ]
+}

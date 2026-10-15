@@ -1,0 +1,18 @@
+WEBVTT
+Kind: captions
+Language: en
+
+00:00:01.000 --> 00:00:05.500
+Welcome to TerraTwin, the planetary analog matching platform comparing Earth sites to the Moon and Mars.
+
+00:00:06.000 --> 00:00:12.000
+Using multi-spectral raster fusion and 30-meter elevation models, TerraTwin screens over 420,000 terrestrial cells.
+
+00:00:12.500 --> 00:00:18.500
+By balancing slope, thermal inertia, regolith mechanics, and spectral mineralogy, we achieve a 94.2% recall rate on historic analog sites.
+
+00:00:19.000 --> 00:00:26.000
+Crucially, our pipeline discovered 38 new candidate sites—from the volcanic lava tubes of Harrat Khaybar to the hyper-arid flats of Qaidam.
+
+00:00:26.500 --> 00:00:32.000
+Explore the site finder and side-by-side benchmarking matrix to prepare your next planetary surface exploration campaign.

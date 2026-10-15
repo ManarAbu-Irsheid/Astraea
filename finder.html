@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraTwin — Site Finder (Geospatial Analytics)</title>
+  <meta name="description" content="Geospatial exploration dashboard screening planetary analog sites on Earth against lunar and Martian baseline targets.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/finder.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       PERSISTENT NAVIGATION HEADER
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="brand-link" title="TerraTwin Home">
+        <div class="brand-logo-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00a3ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-30 12 12)"></ellipse>
+            <circle cx="12" cy="12" r="2.5" fill="#00e5d4"></circle>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-title">TerraTwin<span class="brand-dot"></span></span>
+          <span class="brand-subtitle" data-i18n="nav.brand_subtitle">Planetary Analog Intelligence</span>
+        </div>
+      </a>
+
+      <!-- Page Links (4 Pages) -->
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-link" data-page="home" data-i18n="nav.home">Home</a>
+        <a href="finder.html" class="nav-link" data-page="finder" data-i18n="nav.finder">Site Finder</a>
+        <a href="compare.html" class="nav-link" data-page="compare" data-i18n="nav.compare">Compare Sites</a>
+        <a href="evidence.html" class="nav-link" data-page="evidence" data-i18n="nav.evidence">Evidence & Method</a>
+      </nav>
+
+      <!-- Header Controls: Mission Profile, Lang, Tour, Theme -->
+      <div class="header-actions">
+        
+        <!-- Mission Profile Selector Badge & Dropdown -->
+        <div class="profile-selector-container">
+          <button class="profile-badge-btn" id="profileBadgeBtn" aria-haspopup="true" aria-expanded="false" title="Configure Mission Profile & Weights">
+            <span class="profile-indicator-dot"></span>
+            <span id="activeProfileLabel">Rover Testing</span>
+            <span class="profile-chevron">▼</span>
+          </button>
+
+          <!-- Dropdown Panel (Internal weights sliders editable exclusively inside) -->
+          <div class="profile-dropdown-panel" id="profileDropdownPanel">
+            <div class="profile-panel-header">
+              <span class="profile-panel-title" data-i18n="nav.profile_label">Mission Profile</span>
+            </div>
+
+            <div class="profile-options-grid">
+              <button class="profile-option-btn active" data-profile="rover" data-i18n="nav.profile_rover">Rover Testing</button>
+              <button class="profile-option-btn" data-profile="base" data-i18n="nav.profile_base">Human Base</button>
+              <button class="profile-option-btn" data-profile="isru" data-i18n="nav.profile_isru">ISRU Resources</button>
+              <button class="profile-option-btn" data-profile="caves" data-i18n="nav.profile_caves">Lava Tube Shelters</button>
+            </div>
+
+            <div class="weights-section-title">
+              <span data-i18n="nav.weights_title">Internal Weight Tuning</span>
+            </div>
+
+            <div class="weight-slider-group">
+              <div class="weight-slider-header">
+                <span data-i18n="nav.weight_slope">Slope & Roughness</span>
+                <span class="weight-val" id="weightVal_slope">35%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_slope" min="0.05" max="0.70" step="0.05" value="0.35">
+            </div>
+
+            <div class="weight-slider-group">
+              <div class="weight-slider-header">
+                <span data-i18n="nav.weight_ice">Ice & Volatiles</span>
+                <span class="weight-val" id="weightVal_ice">10%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_ice" min="0.05" max="0.70" step="0.05" value="0.10">
+            </div>
+
+            <div class="weight-slider-group">
+              <div class="weight-slider-header">
+                <span data-i18n="nav.weight_regolith">Regolith Mechanics</span>
+                <span class="weight-val" id="weightVal_regolith">40%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_regolith" min="0.05" max="0.70" step="0.05" value="0.40">
+            </div>
+
+            <div class="weight-slider-group">
+              <div class="weight-slider-header">
+                <span data-i18n="nav.weight_volcanic">Volcanic / Cavities</span>
+                <span class="weight-val" id="weightVal_volcanic">15%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_volcanic" min="0.05" max="0.70" step="0.05" value="0.15">
+            </div>
+
+            <button class="weights-reset-btn" id="resetWeightsBtn" data-i18n="nav.reset_weights">Reset Defaults</button>
+          </div>
+        </div>
+
+        <!-- Language Switcher [ EN | AR ] -->
+        <button class="btn-control lang-toggle-btn" id="langToggleBtn" title="Switch Language">
+          عربي
+        </button>
+
+        <!-- Theme Toggle [ 🌙 / ☀️ ] -->
+        <button class="btn-control" id="themeToggleBtn" title="Toggle Dark/Light Mode">
+          ☀️
+        </button>
+
+        <!-- Tour Guide Trigger [ ? Page Tour ] -->
+        <button class="btn-control btn-tour" id="tourGuideBtn" title="Launch Interactive Tour" data-i18n="nav.tour_btn">
+          ? Page Tour
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       PAGE 2 CONTENT: SITE FINDER (3-COLUMN DASHBOARD)
+       ========================================================================== -->
+  <main class="page-container" style="padding-top: 1.25rem; padding-bottom: 1.25rem;">
+    <div class="finder-dashboard">
+      
+      <!-- ==================================================================
+           LEFT PANEL: CRITERIA & FILTERS
+           ================================================================== -->
+      <aside class="finder-left-panel" id="finderCriteriaSpotlight">
+        
+        <div>
+          <div class="filter-section-title">
+            <span data-i18n="finder.target_select_label">Target Body Baseline</span>
+          </div>
+          <!-- Target Selector: Moon / Mars / All -->
+          <div class="target-body-toggle">
+            <button class="body-toggle-btn active" data-body="all" data-i18n="finder.body_all">All Bodies</button>
+            <button class="body-toggle-btn" data-body="moon" data-i18n="finder.body_moon">Moon</button>
+            <button class="body-toggle-btn" data-body="mars" data-i18n="finder.body_mars">Mars</button>
+          </div>
+        </div>
+
+        <!-- Active Weights Summary Indicator -->
+        <div>
+          <div class="filter-section-title">
+            <span data-i18n="finder.profile_summary_title">Active Mission Weights</span>
+          </div>
+          <div class="profile-weights-box">
+            <div class="weights-pill-row">
+              <div class="weight-mini-pill">
+                <span data-i18n="nav.weight_slope">Slope</span>
+                <span class="weight-mini-val" id="miniWeight_slope">35%</span>
+              </div>
+              <div class="weight-mini-pill">
+                <span data-i18n="nav.weight_ice">Ice/Vol</span>
+                <span class="weight-mini-val" id="miniWeight_ice">10%</span>
+              </div>
+            </div>
+            <div class="weights-pill-row">
+              <div class="weight-mini-pill">
+                <span data-i18n="nav.weight_regolith">Regolith</span>
+                <span class="weight-mini-val" id="miniWeight_regolith">40%</span>
+              </div>
+              <div class="weight-mini-pill">
+                <span data-i18n="nav.weight_volcanic">Volcanic</span>
+                <span class="weight-mini-val" id="miniWeight_volcanic">15%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terrain Classification Toggles -->
+        <div>
+          <div class="filter-section-title">
+            <span data-i18n="finder.terrain_filter_label">Terrain Classification</span>
+          </div>
+          <div class="terrain-chips-group">
+            <button class="terrain-chip active" data-terrain="all" data-i18n="finder.terrain_all">All</button>
+            <button class="terrain-chip" data-terrain="desert" data-i18n="finder.terrain_desert">Desert</button>
+            <button class="terrain-chip" data-terrain="volcanic" data-i18n="finder.terrain_volcanic">Volcanic</button>
+            <button class="terrain-chip" data-terrain="polar" data-i18n="finder.terrain_polar">Polar / Permafrost</button>
+            <button class="terrain-chip" data-terrain="hydrothermal" data-i18n="finder.terrain_hydrothermal">Hydrothermal</button>
+          </div>
+        </div>
+
+        <!-- Crucial Discovery Switch: New Candidates vs Known Analogs -->
+        <div class="discovery-switch-box">
+          <div class="filter-section-title" style="margin-bottom:0.25rem;">
+            <span data-i18n="finder.discovery_switch_label">Discovery Filter</span>
+          </div>
+          <div class="discovery-options">
+            <label class="discovery-radio-label">
+              <input type="radio" name="discoveryFilter" value="all" checked>
+              <span data-i18n="finder.discovery_all">All Planetary Analogs</span>
+            </label>
+            <label class="discovery-radio-label">
+              <input type="radio" name="discoveryFilter" value="candidates_only">
+              <strong style="color:var(--accent-gold);" data-i18n="finder.discovery_candidates_only">★ New Candidates Only</strong>
+            </label>
+            <label class="discovery-radio-label">
+              <input type="radio" name="discoveryFilter" value="known_only">
+              <span data-i18n="finder.discovery_known_only">● Known Historic Analogs</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Map Legend -->
+        <div class="map-legend-box">
+          <div class="filter-section-title" style="margin-bottom: 0.2rem;">
+            <span data-i18n="finder.map_legend_title">Map Legend</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol star">★</span>
+            <span data-i18n="finder.legend_candidate">New Validated Candidate</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-symbol circle"></span>
+            <span data-i18n="finder.legend_known">Known Historic Analog</span>
+          </div>
+          <div class="legend-item">
+            <span style="width:10px; height:10px; border-radius:50%; background:#00e5a3;"></span>
+            <span data-i18n="finder.legend_high_score">Similarity &gt; 88%</span>
+          </div>
+          <div class="legend-item">
+            <span style="width:10px; height:10px; border-radius:50%; background:#00a3ff;"></span>
+            <span data-i18n="finder.legend_mid_score">Similarity 80 - 88%</span>
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- ==================================================================
+           CENTER CANVAS: INTERACTIVE GEOSPATIAL MAP
+           ================================================================== -->
+      <section class="finder-center-canvas" id="finderMapSpotlight">
+        <div class="map-top-bar">
+          <div class="map-status-pill">
+            <span>RASTER ENGINE:</span>
+            <span class="map-status-val" id="mapFilteredCount">12 / 12 Sites</span>
+          </div>
+          <div class="map-status-pill">
+            <span>COORDINATE DATUM:</span>
+            <span class="map-status-val">WGS-84 / EGM96</span>
+          </div>
+        </div>
+        <div id="leafletMap"></div>
+      </section>
+
+      <!-- ==================================================================
+           RIGHT PANEL: SITE DETAIL CARD (Radar Chart & Telemetry)
+           ================================================================== -->
+      <aside class="finder-right-panel" id="finderDetailSpotlight">
+        
+        <!-- Placeholder State -->
+        <div class="panel-placeholder-state" id="finderDetailPlaceholder">
+          <div class="placeholder-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <p data-i18n="finder.panel_detail_placeholder">
+            Select an analog marker on the map to inspect multi-parameter telemetry, radar charts, and mission suitability.
+          </p>
+        </div>
+
+        <!-- Populated Detail Content -->
+        <div id="finderDetailContent" style="display:none; flex-direction:column; gap:1rem; height:100%;">
+          
+          <div class="detail-card-header">
+            <div>
+              <span id="detailCandidateBadge" class="sci-badge validated">● Historic Analog</span>
+            </div>
+            <h2 class="detail-site-name" id="detailSiteName">Site Name</h2>
+            <div class="site-card-region" id="detailSiteRegion">Country • Coordinates</div>
+          </div>
+
+          <!-- Score Banner (Score with Uncertainty & Confidence Rating) -->
+          <div class="detail-score-banner">
+            <div>
+              <div class="detail-score-val" id="detailScoreVal">89.2%</div>
+              <div class="detail-score-uncertainty" id="detailUncertaintyVal">±3.4% uncertainty</div>
+            </div>
+            <div style="text-align:end;">
+              <span class="sci-badge" style="background:rgba(0,229,212,0.1); border-color:rgba(0,229,212,0.3); color:var(--accent-cyan);" id="detailConfidenceVal">
+                HIGH CONFIDENCE
+              </span>
+            </div>
+          </div>
+
+          <!-- Radar Chart (Multi-parameter matching breakdown) -->
+          <div class="radar-chart-container">
+            <span class="radar-title" data-i18n="finder.radar_chart_title">Multi-Parameter Matching Breakdown</span>
+            <canvas id="radarCanvas" width="260" height="200"></canvas>
+          </div>
+
+          <!-- Why It Matches -->
+          <div class="detail-bullet-section">
+            <div class="detail-bullet-title matches">
+              <span>✓</span> <span data-i18n="finder.why_matches_title">Why It Matches</span>
+            </div>
+            <ul class="detail-bullet-list" id="detailWhyMatchesList"></ul>
+          </div>
+
+          <!-- Scientific Divergences / Why Not -->
+          <div class="detail-bullet-section">
+            <div class="detail-bullet-title divergences">
+              <span>⚠</span> <span data-i18n="finder.why_not_title">Scientific Divergences & Limitations</span>
+            </div>
+            <ul class="detail-bullet-list" id="detailWhyNotList"></ul>
+          </div>
+
+          <!-- Action Buttons Inside Card -->
+          <div class="detail-card-actions">
+            <button class="btn-detail-action btn-detail-compare" id="btnDetailCompare" data-i18n="finder.btn_compare">
+              Compare This Site
+            </button>
+            <button class="btn-detail-action btn-detail-export" id="btnDetailExport" data-i18n="finder.btn_export_pdf">
+              Export Site Brief
+            </button>
+          </div>
+
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- ==========================================================================
+       GLOBAL PROFESSIONAL SCIENTIFIC FOOTER (Creators, Team, Contacts & Sources)
+       ========================================================================== -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      
+      <!-- 4-Column Main Grid -->
+      <div class="footer-main-grid">
+        
+        <!-- Col 1: Platform & Mission -->
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin / Astraea</div>
+          <p class="footer-about-text" data-i18n="footer.about_desc">
+            An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.
+          </p>
+          <div class="footer-badges-group" style="margin-top:0.4rem;">
+            <span class="sci-badge validated">OPEN ACCESS</span>
+            <span class="sci-badge mars">MARS 2020 / ARTEMIS</span>
+          </div>
+        </div>
+
+        <!-- Col 2: Creators & Core Team -->
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.creators_title">Creators & Core Team</div>
+          <div class="footer-team-card">
+            <div class="team-member-name">
+              <span>🚀</span>
+              <span data-i18n="footer.lead_name">Manar Abu-Irsheid</span>
+            </div>
+            <div class="team-member-role" data-i18n="footer.lead_role">Lead Planetary Systems & Mission Architecture</div>
+          </div>
+          <div class="footer-team-card">
+            <div class="team-member-name">
+              <span>🛰️</span>
+              <span data-i18n="footer.consortium_name">Astraea Planetary Science Lab</span>
+            </div>
+            <div class="team-member-role" data-i18n="footer.consortium_role">Geospatial Pipeline & Analog Models</div>
+          </div>
+        </div>
+
+        <!-- Col 3: Contact & Links -->
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.contact_title">Contact & Links</div>
+          <ul class="footer-contact-list">
+            <li class="footer-contact-item">
+              <span>✉️</span>
+              <a href="mailto:manar.abuirsheid@astraea.space" id="footerContactEmail" data-i18n="footer.contact_email">manar.abuirsheid@astraea.space</a>
+            </li>
+            <li class="footer-contact-item">
+              <span>🐙</span>
+              <a href="https://github.com/ManarAbu-Irsheid/Astraea" target="_blank" rel="noopener noreferrer" data-i18n="footer.github_link">GitHub Repository</a>
+            </li>
+            <li class="footer-contact-item">
+              <span>📑</span>
+              <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Official Data Sources -->
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.sources_title">Primary Data Sources</div>
+          <ul class="footer-sources-list">
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_nasa">NASA Planetary Data System (LRO LOLA, Diviner, MRO CRISM/HiRISE)</span>
+            </li>
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_esa">ESA Copernicus Programme (Sentinel-2 Multi-Spectral)</span>
+            </li>
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_usgs">USGS / NASA JPL (SRTM, NASADEM, ASTER GEDv4)</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Sub-Bar -->
+      <div class="footer-bottom-bar">
+        <div class="footer-copyright" data-i18n="footer.copyright">
+          © 2026 TerraTwin • Developed by Manar Abu-Irsheid & Astraea Team.
+        </div>
+        <div class="footer-badges-group">
+          <span class="mono">v2.4-RELEASE</span>
+          <span class="footer-citation-icon">⚖️ CC-BY 4.0 Scientific License</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Data & Scripts -->
+  <script src="data/data-store.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/tour.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/finder.js"></script>
+</body>
+</html>
