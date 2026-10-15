@@ -484,21 +484,351 @@ a:hover {
 }
 
 /* ==========================================================================
-   PROFESSIONAL SCIENTIFIC FOOTER (Creators, Team, Contacts & Sources)
+   RESEARCHER USER PROFILE BADGE & DROPDOWN
    ========================================================================== */
-.site-footer {
-  margin-top: auto;
-  border-top: 1px solid var(--border-color);
-  background: linear-gradient(180deg, rgba(8, 16, 29, 0.95) 0%, rgba(4, 8, 16, 0.98) 100%);
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  padding: 3rem 1.5rem 1.75rem 1.5rem;
-  transition: background var(--transition-fast);
+.user-profile-container {
   position: relative;
 }
 
+.user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.3rem 0.75rem 0.3rem 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-profile-btn:hover,
+.user-profile-btn.active {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 212, 0.25);
+  background: rgba(0, 163, 255, 0.08);
+}
+
+.user-avatar-badge {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 163, 255, 0.25), rgba(0, 229, 212, 0.2));
+  border: 1px solid rgba(0, 229, 212, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+}
+
+.user-status-dot {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  border: 1.5px solid var(--bg-primary);
+  box-shadow: 0 0 6px var(--accent-green);
+}
+
+.user-meta-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.15;
+}
+
+[dir="rtl"] .user-meta-text {
+  align-items: flex-end;
+}
+
+.user-display-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.user-role-tag {
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  letter-spacing: 0.05em;
+}
+
+/* User Profile Dropdown Card */
+.user-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-cyan);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), 0 0 28px rgba(0, 163, 255, 0.25);
+  backdrop-filter: blur(16px);
+  padding: 1.15rem;
+  display: none;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[dir="rtl"] .user-profile-dropdown {
+  right: auto;
+  left: 0;
+}
+
+.user-profile-dropdown.open {
+  display: block;
+}
+
+.user-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.user-dropdown-avatar {
+  font-size: 1.6rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(0, 163, 255, 0.15);
+  border: 1px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-dropdown-name {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.user-dropdown-role {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.user-dropdown-email {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent-cyan);
+}
+
+.user-dropdown-badge-strip {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.65rem 0;
+}
+
+.user-dropdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  padding: 0.25rem 0;
+}
+
+.dropdown-row-label {
+  color: var(--text-muted);
+}
+
+.dropdown-row-val {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.user-dropdown-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+}
+
+.user-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.user-dropdown-link:hover {
+  background: rgba(0, 163, 255, 0.1);
+  color: var(--accent-cyan);
+}
+
+/* ==========================================================================
+   3-DOTS KEBAB MENU (De-clutter Top Navigation)
+   ========================================================================== */
+.kebab-menu-container {
+  position: relative;
+}
+
+.btn-kebab {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.btn-kebab:hover,
+.btn-kebab.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 212, 0.3);
+}
+
+.kebab-icon-dots {
+  display: inline-block;
+  transform: translateY(-1px);
+}
+
+.kebab-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg), 0 0 24px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  padding: 0.65rem;
+  display: none;
+  z-index: 1000;
+  animation: dropdownFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[dir="rtl"] .kebab-dropdown-panel {
+  right: auto;
+  left: 0;
+}
+
+.kebab-dropdown-panel.open {
+  display: block;
+}
+
+.kebab-panel-header {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.5rem 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.35rem;
+}
+
+.kebab-item-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast);
+}
+
+[dir="rtl"] .kebab-item-btn {
+  text-align: right;
+}
+
+.kebab-item-btn:hover {
+  background: rgba(0, 163, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.kebab-item-icon {
+  font-size: 1rem;
+}
+
+.kebab-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.35rem 0;
+}
+
+/* ==========================================================================
+   HIGH-CONTRAST DISTINCT TECHNICAL SCIENTIFIC FOOTER
+   ========================================================================== */
+.site-footer {
+  margin-top: auto;
+  position: relative;
+  background: #020610;
+  border-top: 2px solid;
+  border-image: linear-gradient(90deg, #0055ff 0%, #00e5d4 35%, #ff5a36 70%, #f5a623 100%) 1;
+  box-shadow: 0 -6px 36px rgba(0, 163, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 0.82rem;
+  padding: 3.5rem 1.75rem 2rem 1.75rem;
+  transition: background var(--transition-fast);
+}
+
 [data-theme="light"] .site-footer {
-  background: linear-gradient(180deg, #edf3fa 0%, #e2ebf5 100%);
+  background: #e2ecf8;
+  border-top: 3px solid #0077cc;
+  box-shadow: 0 -6px 28px rgba(0, 0, 0, 0.08);
+  color: #475569;
+}
+
+/* Futuristic Technical Header Ribbon inside Footer */
+.footer-tech-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.65rem 1.25rem;
+  background: rgba(0, 163, 255, 0.06);
+  border: 1px solid rgba(0, 163, 255, 0.2);
+  border-radius: var(--radius-sm);
+  margin-bottom: 2.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.footer-tech-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-tech-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 8px var(--accent-green);
 }
 
 .footer-container {

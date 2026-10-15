@@ -115,15 +115,82 @@
           عربي
         </button>
 
-        <!-- Theme Toggle [ 🌙 / ☀️ ] -->
-        <button class="btn-control" id="themeToggleBtn" title="Toggle Dark/Light Mode">
-          ☀️
-        </button>
+        <!-- User Profile Badge & Dropdown -->
+        <div class="user-profile-container">
+          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile">
+            <div class="user-avatar-badge">
+              <span>👨‍🚀</span>
+              <span class="user-status-dot" title="Status: Online"></span>
+            </div>
+            <div class="user-meta-text">
+              <span class="user-display-name" data-i18n="nav.user_name">Dr. Researcher</span>
+              <span class="user-role-tag" data-i18n="nav.user_role">ASTRAEA LAB</span>
+            </div>
+            <span class="profile-chevron">▼</span>
+          </button>
+          
+          <div class="user-profile-dropdown" id="userProfileDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-avatar">👨‍🚀</div>
+              <div class="user-dropdown-info">
+                <div class="user-dropdown-name" data-i18n="nav.user_name">Dr. Researcher</div>
+                <div class="user-dropdown-role">Planetary Analog Specialist</div>
+                <div class="user-dropdown-email">researcher@astraea.space</div>
+              </div>
+            </div>
+            <div class="user-dropdown-badge-strip">
+              <span class="sci-badge validated">LEVEL-4 ACCESS</span>
+              <span class="sci-badge mars">ORBITAL DATA</span>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <div class="user-dropdown-row">
+              <span class="dropdown-row-label">Assigned Mission:</span>
+              <span class="dropdown-row-val" id="userProfileActiveMission">Rover Testing</span>
+            </div>
+            <div class="user-dropdown-row">
+              <span class="dropdown-row-label">Data Clearance:</span>
+              <span class="dropdown-row-val" style="color:var(--accent-green);">NASA PDS / ESA Sentinel</span>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <div class="user-dropdown-links">
+              <a href="finder.html" class="user-dropdown-link">🗺️ Site Finder Dashboard</a>
+              <a href="compare.html" class="user-dropdown-link">⚖️ Benchmark Comparison</a>
+              <a href="evidence.html#dataCatalogSection" class="user-dropdown-link">📑 Catalog & Datasets</a>
+            </div>
+          </div>
+        </div>
 
-        <!-- Tour Guide Trigger [ ? Page Tour ] -->
-        <button class="btn-control btn-tour" id="tourGuideBtn" title="Launch Interactive Tour" data-i18n="nav.tour_btn">
-          ? Page Tour
-        </button>
+        <!-- 3-Dots Quick Settings Menu [ ⋮ ] (De-clutter top bar) -->
+        <div class="kebab-menu-container">
+          <button class="btn-control btn-kebab" id="kebabMenuBtn" aria-haspopup="true" aria-expanded="false" title="More Quick Controls">
+            <span class="kebab-icon-dots">⋮</span>
+          </button>
+          
+          <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
+            <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
+            <button class="kebab-item-btn" id="kebabThemeBtn">
+              <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
+              <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabTourBtn">
+              <span class="kebab-item-icon">🧭</span>
+              <span class="kebab-item-text" data-i18n="nav.tour_btn">? Page Guided Tour</span>
+            </button>
+            <div class="kebab-divider"></div>
+            <button class="kebab-item-btn" id="kebabChatbotBtn">
+              <span class="kebab-item-icon">🤖</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_ai">AI Science Assistant</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabResetWeightsBtn">
+              <span class="kebab-item-icon">🔄</span>
+              <span class="kebab-item-text" data-i18n="nav.reset_weights">Reset Defaults</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hidden Tour & Theme triggers for compatibility with existing scripts -->
+        <button class="btn-control" id="themeToggleBtn" style="display:none;" aria-hidden="true"></button>
+        <button class="btn-control" id="tourGuideBtn" style="display:none;" aria-hidden="true"></button>
 
       </div>
     </div>
@@ -276,6 +343,15 @@
   <footer class="site-footer">
     <div class="footer-container">
       
+      <!-- High-Tech Telemetry Banner -->
+      <div class="footer-tech-banner">
+        <div class="footer-tech-banner-left">
+          <span class="footer-tech-dot"></span>
+          <span>TERRATWIN PLANETARY ANALOG INTELLIGENCE ARCHIVE // NASA PDS • ESA COPERNICUS • USGS</span>
+        </div>
+        <div class="mono" style="font-size:0.68rem; opacity:0.85;">STATUS: OPERATIONAL // TELEMETRY: ACTIVE</div>
+      </div>
+
       <!-- 4-Column Main Grid -->
       <div class="footer-main-grid">
         

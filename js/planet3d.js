@@ -147,18 +147,18 @@ const Planetary3D = {
   },
 
   setupLights() {
-    // Key Sun Directional Light
-    const sunLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    sunLight.position.set(5, 3, 5);
+    // Key Sun Directional Light (Crisp, high-intensity sunlight in vacuum)
+    const sunLight = new THREE.DirectionalLight(0xfffaee, 1.75);
+    sunLight.position.set(6, 2.5, 4.5);
     this.scene.add(sunLight);
 
-    // Subtle Ambient Starlight
-    const ambientLight = new THREE.AmbientLight(0x1a2638, 0.4);
+    // Subtle Ambient Starlight (Preserves deep shadow on night side)
+    const ambientLight = new THREE.AmbientLight(0x0a1424, 0.24);
     this.scene.add(ambientLight);
 
     // Cinematic Cool Backlight / Rim Glow
-    const rimLight = new THREE.DirectionalLight(0x00d2ff, 0.6);
-    rimLight.position.set(-5, -2, -4);
+    const rimLight = new THREE.DirectionalLight(0x00c8ff, 0.45);
+    rimLight.position.set(-6, -1.8, -4);
     this.scene.add(rimLight);
   },
 
@@ -347,6 +347,49 @@ const Planetary3D = {
   },
 
   /* ==========================================================================
+     TEXTURE LOADER & CACHING FOR NASA PHOTOREALISTIC MAPS
+     ========================================================================== */
+  textureLoader: null,
+  textureCache: {},
+
+  getTextureLoader() {
+    if (!this.textureLoader && typeof THREE !== 'undefined') {
+      this.textureLoader = new THREE.TextureLoader();
+    }
+    return this.textureLoader;
+  },
+
+  loadTextureSafe(localPath, fallbackGenerator) {
+    const loader = this.getTextureLoader();
+    if (this.textureCache[localPath]) {
+      return this.textureCache[localPath];
+    }
+    if (!loader) {
+      return fallbackGenerator ? fallbackGenerator.call(this) : null;
+    }
+
+    try {
+      const tex = loader.load(
+        localPath,
+        (loaded) => {
+          loaded.needsUpdate = true;
+          if (this.renderer && this.scene && this.camera) {
+            this.renderer.render(this.scene, this.camera);
+          }
+        },
+        undefined,
+        (err) => {
+          console.warn('Fallback to procedural texture for:', localPath);
+        }
+      );
+      this.textureCache[localPath] = tex;
+      return tex;
+    } catch (e) {
+      return fallbackGenerator ? fallbackGenerator.call(this) : null;
+    }
+  },
+
+  /* ==========================================================================
      LOAD & SWITCH PLANET
      ========================================================================== */
   loadPlanet(planetKey) {
@@ -363,25 +406,49 @@ const Planetary3D = {
 
     // 1. Globe Core Sphere
     const geometry = new THREE.SphereGeometry(radius, segments, segments);
-    const texture = this.generatePlanetTexture(planetKey);
 
     let material;
     if (planetKey === 'earth') {
+      // Authentic axial tilt: 23.4°
+      this.planetGroup.rotation.z = 23.44 * (Math.PI / 180);
+
+      const earthMap = this.loadTextureSafe('assets/textures/earth_atmos_2048.jpg', () => this.generatePlanetTexture('earth'));
+      const earthNormal = this.loadTextureSafe('assets/textures/earth_normal_2048.jpg');
+      const earthSpecular = this.loadTextureSafe('assets/textures/earth_specular_2048.jpg');
+
       material = new THREE.MeshPhongMaterial({
-        map: texture,
-        shininess: 25,
-        specular: new THREE.Color(0x224466)
+        map: earthMap,
+        normalMap: earthNormal,
+        normalScale: new THREE.Vector2(0.85, 0.85),
+        specularMap: earthSpecular,
+        specular: new THREE.Color(0x285078),
+        shininess: 25
       });
     } else if (planetKey === 'mars') {
-      material = new THREE.MeshLambertMaterial({
-        map: texture
+      // Authentic axial tilt: 25.2°
+      this.planetGroup.rotation.z = 25.19 * (Math.PI / 180);
+
+      const marsMap = this.loadTextureSafe('assets/textures/mars_2k.jpg', () => this.generatePlanetTexture('mars'));
+
+      material = new THREE.MeshStandardMaterial({
+        map: marsMap,
+        bumpMap: marsMap,
+        bumpScale: 0.045,
+        roughness: 0.88,
+        metalness: 0.04
       });
     } else {
-      // Moon
+      // Moon - Authentic axial tilt: 1.5°
+      this.planetGroup.rotation.z = 1.54 * (Math.PI / 180);
+
+      const moonMap = this.loadTextureSafe('assets/textures/moon_1024.jpg', () => this.generatePlanetTexture('moon'));
+
       material = new THREE.MeshStandardMaterial({
-        map: texture,
-        roughness: 0.95,
-        metalness: 0.05
+        map: moonMap,
+        bumpMap: moonMap,
+        bumpScale: 0.038,
+        roughness: 0.96,
+        metalness: 0.02
       });
     }
 
@@ -391,11 +458,13 @@ const Planetary3D = {
     // 2. Earth Clouds Layer
     if (planetKey === 'earth') {
       const cloudGeom = new THREE.SphereGeometry(radius * 1.018, segments, segments);
+      const cloudMap = this.loadTextureSafe('assets/textures/earth_clouds_1024.png', () => this.generateCloudsTexture());
       const cloudMat = new THREE.MeshPhongMaterial({
-        map: this.generateCloudsTexture(),
+        map: cloudMap,
         transparent: true,
-        opacity: 0.45,
-        blending: THREE.NormalBlending
+        opacity: 0.85,
+        blending: THREE.NormalBlending,
+        depthWrite: false
       });
       this.cloudsMesh = new THREE.Mesh(cloudGeom, cloudMat);
       this.planetGroup.add(this.cloudsMesh);
@@ -413,8 +482,8 @@ const Planetary3D = {
         fragmentShader: `
           varying vec3 vNormal;
           void main() {
-            float intensity = pow(0.68 - dot(vNormal, vec3(0, 0, 1.0)), 2.2);
-            gl_FragColor = vec4(0.0, 0.8, 1.0, 1.0) * intensity;
+            float intensity = pow(0.68 - dot(vNormal, vec3(0, 0, 1.0)), 2.4);
+            gl_FragColor = vec4(0.1, 0.7, 1.0, 1.0) * intensity;
           }
         `,
         blending: THREE.AdditiveBlending,
