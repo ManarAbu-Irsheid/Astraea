@@ -1195,7 +1195,12 @@ window.__TERRATWIN_DATA__ = {
         "reset_weights": "Reset Defaults",
         "tour_btn": "? Page Tour",
         "theme_dark": "Dark Mode",
-        "theme_light": "Light Mode"
+        "theme_light": "Light Mode",
+        "user_name": "Dr. Researcher",
+        "user_role": "ASTRAEA LAB",
+        "kebab_header": "Quick Controls",
+        "theme_toggle": "Toggle Dark/Light Theme",
+        "kebab_ai": "AI Science Assistant"
       },
       "tour": {
         "step_count": "Step {current} of {total}",
@@ -1376,7 +1381,12 @@ window.__TERRATWIN_DATA__ = {
         "reset_weights": "استعادة الافتراضي",
         "tour_btn": "؟ دليل الصفحة",
         "theme_dark": "الوضع الداكن",
-        "theme_light": "الوضع الفاتح"
+        "theme_light": "الوضع الفاتح",
+        "user_name": "د. الباحث الفلكي",
+        "user_role": "مختبر أستريا",
+        "kebab_header": "أدوات النظام السريعة",
+        "theme_toggle": "تبديل الوضع الداكن/الفاتح",
+        "kebab_ai": "المساعد العلمي الذكي"
       },
       "tour": {
         "step_count": "خطوة {current} من {total}",
