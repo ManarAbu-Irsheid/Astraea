@@ -171,22 +171,30 @@
           
           <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
             <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
-            <button class="kebab-item-btn" id="kebabThemeBtn">
-              <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
-              <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
+            <button class="kebab-item-btn" id="kebabProfileBtn">
+              <span class="kebab-item-icon">👤</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
             </button>
             <button class="kebab-item-btn" id="kebabTourBtn">
               <span class="kebab-item-icon">🧭</span>
               <span class="kebab-item-text" data-i18n="nav.tour_btn">? Page Guided Tour</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabContactBtn">
+              <span class="kebab-item-icon">📬</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Astraea Team</span>
             </button>
             <div class="kebab-divider"></div>
             <button class="kebab-item-btn" id="kebabChatbotBtn">
               <span class="kebab-item-icon">🤖</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_ai">AI Science Assistant</span>
             </button>
-            <button class="kebab-item-btn" id="kebabResetWeightsBtn">
-              <span class="kebab-item-icon">🔄</span>
-              <span class="kebab-item-text" data-i18n="nav.reset_weights">Reset Defaults</span>
+            <button class="kebab-item-btn" id="kebabThemeBtn">
+              <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
+              <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabAuthBtn">
+              <span class="kebab-item-icon">🔐</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_auth">Account & Sign In</span>
             </button>
           </div>
         </div>
@@ -320,6 +328,23 @@
             <span>RASTER ENGINE:</span>
             <span class="map-status-val" id="mapFilteredCount">12 / 12 Sites</span>
           </div>
+
+          <!-- Scientific Tile Layer Selector (Real Satellite Imagery) -->
+          <div class="map-layer-switcher" id="mapLayerSwitcher">
+            <button class="layer-switch-btn active" data-layer="satellite" id="layerBtnSatellite">
+              <span>🛰️</span>
+              <span>Satellite (أقمار صناعية حقيقية)</span>
+            </button>
+            <button class="layer-switch-btn" data-layer="topo" id="layerBtnTopo">
+              <span>🏔️</span>
+              <span>Topography (تضاريس)</span>
+            </button>
+            <button class="layer-switch-btn" data-layer="dark" id="layerBtnDark">
+              <span>🌌</span>
+              <span>Cyber Dark</span>
+            </button>
+          </div>
+
           <div class="map-status-pill">
             <span>COORDINATE DATUM:</span>
             <span class="map-status-val">WGS-84 / EGM96</span>
@@ -409,6 +434,19 @@
 
     </div>
   </main>
+
+  <!-- ==========================================================================
+       DISTINCT MISSION BOUNDARY (Clearly separates content from footer)
+       ========================================================================== -->
+  <div class="footer-mission-boundary">
+    <div class="footer-boundary-bar">
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <span class="footer-boundary-pulse"></span>
+        <span>/// END OF SURFACE TELEMETRY FEED // MISSION RECONNAISSANCE BASE ///</span>
+      </div>
+      <div class="mono" style="opacity:0.85; font-size:0.68rem;">ARCHIVE SECURITY: OPEN ACCESS (CC-BY 4.0)</div>
+    </div>
+  </div>
 
   <!-- ==========================================================================
        GLOBAL PROFESSIONAL SCIENTIFIC FOOTER (Creators, Team, Contacts & Sources)
@@ -520,6 +558,7 @@
   <script src="data/data-store.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/profile.js"></script>
+  <script src="js/user-system.js"></script>
   <script src="js/tour.js"></script>
   <script src="js/chatbot.js"></script>
   <script src="js/app.js"></script>

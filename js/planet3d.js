@@ -693,6 +693,11 @@ const Planetary3D = {
     const title = isAr ? site.name_ar : site.name;
     const target = isAr ? site.target_ar : site.target;
 
+    // Award Gamification XP for exploring 3D Planet site
+    if (window.UserSystem) {
+      window.UserSystem.discoverSite(site.id || site.name, title);
+    }
+
     const popup = document.getElementById('planetSiteSelectedPopup');
     if (popup) {
       popup.innerHTML = `

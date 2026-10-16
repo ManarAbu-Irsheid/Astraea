@@ -28,6 +28,9 @@ const SiteFinder = {
   map: null,
   markersLayer: null,
 
+  tileLayers: {},
+  currentLayer: 'satellite',
+
   init(cells, targets) {
     this.cells = cells;
     this.targets = targets;
@@ -61,20 +64,59 @@ const SiteFinder = {
         // Initialize Leaflet Map
         this.map = L.map('leafletMap', {
           center: [20, 10],
-          zoom: 2.2,
+          zoom: 2.3,
           minZoom: 1.8,
-          maxZoom: 14,
+          maxZoom: 18,
           zoomControl: false
         });
 
         L.control.zoom({ position: 'topright' }).addTo(this.map);
 
-        // Dark matter / space agency tile layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap',
+        // 1. Authentic High-Resolution True Satellite Imagery (NASA / USGS / ESRI)
+        this.tileLayers.satellite = L.layerGroup([
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics, USDA, USGS',
+            maxZoom: 18
+          }),
+          L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '',
+            maxZoom: 18,
+            opacity: 0.8
+          })
+        ]);
+
+        // 2. High-Precision Geological Terrain Relief
+        this.tileLayers.topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri &mdash; USGS, NOAA',
+          maxZoom: 18
+        });
+
+        // 3. Cyber Dark Deep Space Radar Map
+        this.tileLayers.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; CARTO &copy; OpenStreetMap',
           subdomains: 'abcd',
           maxZoom: 19
-        }).addTo(this.map);
+        });
+
+        // Set default layer to True Satellite Imagery
+        this.tileLayers.satellite.addTo(this.map);
+        this.currentLayer = 'satellite';
+
+        // Layer Switcher Buttons
+        const switcherBtns = document.querySelectorAll('.layer-switch-btn');
+        switcherBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const layerKey = btn.getAttribute('data-layer');
+            if (this.tileLayers[layerKey] && layerKey !== this.currentLayer) {
+              this.map.removeLayer(this.tileLayers[this.currentLayer]);
+              this.tileLayers[layerKey].addTo(this.map);
+              this.currentLayer = layerKey;
+              switcherBtns.forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+            }
+          });
+        });
 
         this.markersLayer = L.layerGroup().addTo(this.map);
       } else {
@@ -124,6 +166,8 @@ const SiteFinder = {
       countBadge.textContent = `${filtered.length} / ${this.cells.length} Sites`;
     }
 
+    const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+
     filtered.forEach(cell => {
       const isCandidate = cell.is_candidate;
       let score = cell.similarity_score;
@@ -131,28 +175,52 @@ const SiteFinder = {
         score = window.MissionProfileManager.calculateScore(cell.radar_parameters);
       }
 
-      // Marker Icon creation
-      let iconHtml = '';
-      if (isCandidate) {
-        // Golden Star Marker for New Candidates
-        iconHtml = `<div class="marker-candidate-star" title="${cell.name} (★ Candidate)">★</div>`;
-      } else {
-        // Circular Marker for Known Sites (Color graduation based on score)
-        const markerBg = score >= 88 ? '#00e5a3' : score >= 80 ? '#00a3ff' : '#f5a623';
-        iconHtml = `<div class="marker-known-circle" style="background-color: ${markerBg};" title="${cell.name}"></div>`;
-      }
+      const scoreClass = score >= 88 ? 'high' : 'med';
+      const scoreFormatted = score.toFixed(1) + '%';
+      const displayName = isAr ? cell.name_ar : cell.name;
+      const displayCountry = isAr ? cell.country_ar : cell.country;
+
+      // Creative High-Tech Sonar Radar Marker with Floating Badge
+      let iconHtml = `
+        <div class="sonar-pin-container" title="${displayName} (${scoreFormatted})">
+          <div class="pin-floating-score ${isCandidate ? 'candidate-badge' : scoreClass}">${scoreFormatted}</div>
+          <div class="sonar-wave ${isCandidate ? 'candidate' : 'known'}"></div>
+          <div class="pin-core-icon ${isCandidate ? 'candidate' : 'known'}">
+            ${isCandidate ? '★' : '◉'}
+          </div>
+        </div>
+      `;
 
       const customIcon = L.divIcon({
         className: 'custom-leaflet-marker',
         html: iconHtml,
-        iconSize: isCandidate ? [24, 24] : [16, 16],
-        iconAnchor: isCandidate ? [12, 12] : [8, 8]
+        iconSize: [36, 42],
+        iconAnchor: [18, 24]
       });
 
       const marker = L.marker([cell.lat, cell.lon], { icon: customIcon });
 
+      // Interactive Scientific Tooltip
+      marker.bindTooltip(`
+        <div style="font-family:var(--font-sans); line-height:1.35; padding:2px;">
+          <div style="font-weight:800; color:#ffffff; font-size:0.85rem;">${displayName}</div>
+          <div style="color:var(--text-secondary); font-size:0.72rem;">${displayCountry} • (${cell.lat.toFixed(2)}°, ${cell.lon.toFixed(2)}°)</div>
+          <div style="margin-top:3px; display:flex; justify-content:space-between; gap:8px;">
+            <span style="color:${isCandidate ? '#ffd700' : '#00e5a3'}; font-weight:800;">${isCandidate ? (isAr ? '★ مرشح جديد' : '★ New Candidate') : (isAr ? 'موقع معروف' : 'Known Analog')}</span>
+            <span style="font-family:var(--font-mono); font-weight:700; color:var(--accent-cyan);">${scoreFormatted}</span>
+          </div>
+        </div>
+      `, {
+        className: 'scientific-tooltip',
+        offset: [0, -18],
+        direction: 'top'
+      });
+
       marker.on('click', () => {
         this.selectSite(cell);
+        if (window.UserSystem) {
+          window.UserSystem.discoverSite(cell.id, displayName);
+        }
       });
 
       marker.addTo(this.markersLayer);
@@ -162,6 +230,16 @@ const SiteFinder = {
   selectSite(cell) {
     this.selectedSite = cell;
     this.renderSiteDetail(cell);
+
+    if (this.map) {
+      this.map.panTo([cell.lat, cell.lon], { animate: true, duration: 0.8 });
+    }
+
+    // Award XP via Gamification Engine
+    if (window.UserSystem) {
+      const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+      window.UserSystem.discoverSite(cell.id, isAr ? cell.name_ar : cell.name);
+    }
 
     // Expand mobile bottom sheet if on mobile view
     const rightPanel = document.querySelector('.finder-right-panel');

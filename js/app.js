@@ -105,13 +105,11 @@ const App = {
     });
 
     // Sub-buttons inside 3-dots kebab menu
-    const kebabThemeBtn = document.getElementById('kebabThemeBtn');
-    if (kebabThemeBtn) {
-      kebabThemeBtn.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme') || 'dark';
-        const next = current === 'dark' ? 'light' : 'dark';
-        this.setTheme(next);
+    const kebabProfileBtn = document.getElementById('kebabProfileBtn');
+    if (kebabProfileBtn) {
+      kebabProfileBtn.addEventListener('click', () => {
         kebabDropdown.classList.remove('open');
+        if (window.UserSystem) window.UserSystem.openEditProfileModal();
       });
     }
 
@@ -125,12 +123,38 @@ const App = {
       });
     }
 
+    const kebabContactBtn = document.getElementById('kebabContactBtn');
+    if (kebabContactBtn) {
+      kebabContactBtn.addEventListener('click', () => {
+        kebabDropdown.classList.remove('open');
+        if (window.UserSystem) window.UserSystem.openContactModal();
+      });
+    }
+
     const kebabChatbotBtn = document.getElementById('kebabChatbotBtn');
     if (kebabChatbotBtn) {
       kebabChatbotBtn.addEventListener('click', () => {
         kebabDropdown.classList.remove('open');
         const botBtn = document.getElementById('chatbotTriggerBtn');
         if (botBtn) botBtn.click();
+      });
+    }
+
+    const kebabThemeBtn = document.getElementById('kebabThemeBtn');
+    if (kebabThemeBtn) {
+      kebabThemeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = current === 'dark' ? 'light' : 'dark';
+        this.setTheme(next);
+        kebabDropdown.classList.remove('open');
+      });
+    }
+
+    const kebabAuthBtn = document.getElementById('kebabAuthBtn');
+    if (kebabAuthBtn) {
+      kebabAuthBtn.addEventListener('click', () => {
+        kebabDropdown.classList.remove('open');
+        if (window.UserSystem) window.UserSystem.openAuthModal();
       });
     }
 

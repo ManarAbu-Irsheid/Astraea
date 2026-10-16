@@ -230,6 +230,17 @@ const EvidenceController = {
   },
 
   bindEvents() {
+    // Video play awards XP
+    const video = document.getElementById('demoVideo');
+    if (video) {
+      video.addEventListener('play', () => {
+        if (window.UserSystem && !this._videoXpAwarded) {
+          this._videoXpAwarded = true;
+          window.UserSystem.addXP(30, 'Viewed technical demonstration video', 'مشاهدة العرض التقني الميداني');
+        }
+      });
+    }
+
     // Search input in Data Catalog
     const searchInput = document.getElementById('catalogSearchInput');
     if (searchInput) {
