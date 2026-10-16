@@ -1199,6 +1199,11 @@ window.__TERRATWIN_DATA__ = {
         "user_name": "Dr. Researcher",
         "user_role": "ASTRAEA LAB",
         "kebab_header": "Quick Controls",
+        "kebab_profile": "Researcher Profile & Level",
+        "kebab_contact": "Contact Astraea Team",
+        "kebab_auth": "Account & Sign In",
+        "edit_profile": "Edit Profile & Info",
+        "sign_out": "Sign Out / Switch",
         "theme_toggle": "Toggle Dark/Light Theme",
         "kebab_ai": "AI Science Assistant"
       },
@@ -1385,6 +1390,11 @@ window.__TERRATWIN_DATA__ = {
         "user_name": "د. الباحث الفلكي",
         "user_role": "مختبر أستريا",
         "kebab_header": "أدوات النظام السريعة",
+        "kebab_profile": "الملف الشخصي والمستوى",
+        "kebab_contact": "تواصل معنا (فريق أستريا)",
+        "kebab_auth": "الحساب وبوابة الدخول",
+        "edit_profile": "تعديل الملف الشخصي",
+        "sign_out": "تسجيل الخروج / تبديل الحساب",
         "theme_toggle": "تبديل الوضع الداكن/الفاتح",
         "kebab_ai": "المساعد العلمي الذكي"
       },
