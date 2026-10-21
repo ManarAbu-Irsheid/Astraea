@@ -186,7 +186,7 @@ const EvidenceController = {
   
   /**
    * 1. KPI Strip: 4 compact horizontal cards
-   * Recall, ROC-AUC, Validated: blue gradient ring gauge.
+   * Recall, ROC-AUC, Validated: glowing blue gradient ring gauges with IntersectionObserver scroll draw-in.
    * New Candidates (38): big number filled with yellow->orange gradient text.
    */
   renderKpiStrip() {
@@ -211,17 +211,62 @@ const EvidenceController = {
 
     // Recall: 91.4%
     const recallVal = (kpis.recall_at_10 || 91.4) / 100;
-    if (ringRecall) ringRecall.style.strokeDashoffset = (C * (1 - recallVal)).toFixed(1);
+    const recallOffset = (C * (1 - recallVal)).toFixed(1);
 
     // ROC-AUC: 0.964 -> 96.4%
     const rocAucVal = kpis.roc_auc || 0.964;
-    if (ringRocAuc) ringRocAuc.style.strokeDashoffset = (C * (1 - rocAucVal)).toFixed(1);
+    const rocAucOffset = (C * (1 - rocAucVal)).toFixed(1);
 
     // Validated: 46 / 49 = 93.88%
     const validVal = (kpis.known_validated && kpis.known_total) 
       ? (kpis.known_validated / kpis.known_total) 
       : 0.9388;
-    if (ringValidated) ringValidated.style.strokeDashoffset = (C * (1 - validVal)).toFixed(1);
+    const validOffset = (C * (1 - validVal)).toFixed(1);
+
+    const ringTargets = [
+      { el: ringRecall, target: recallOffset },
+      { el: ringRocAuc, target: rocAucOffset },
+      { el: ringValidated, target: validOffset }
+    ];
+
+    const strip = document.getElementById('evidenceKpiStrip');
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced || !('IntersectionObserver' in window)) {
+      ringTargets.forEach(r => {
+        if (r.el) {
+          r.el.style.strokeDasharray = `${C} ${C}`;
+          r.el.style.strokeDashoffset = r.target;
+          r.el.style.transition = 'none';
+        }
+      });
+      return;
+    }
+
+    // Set initial full circumference offset (unfilled)
+    ringTargets.forEach(r => {
+      if (r.el) {
+        r.el.style.strokeDasharray = `${C} ${C}`;
+        r.el.style.strokeDashoffset = C.toFixed(1);
+      }
+    });
+
+    if (strip) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            ringTargets.forEach(r => {
+              if (r.el) {
+                r.el.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+                r.el.style.strokeDashoffset = r.target;
+              }
+            });
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      observer.observe(strip);
+    }
   },
 
   /**
@@ -313,7 +358,13 @@ const EvidenceController = {
       `;
     }).join('');
 
-    container.innerHTML = legendHtml + axisHtml + rowsHtml;
+    const rowsListHtml = `
+      <div class="ranking-rows-list" id="rankingRowsList">
+        ${rowsHtml}
+      </div>
+    `;
+
+    container.innerHTML = legendHtml + axisHtml + rowsListHtml;
 
     // Attach row selection listeners (highlight row and update Site Details card)
     container.querySelectorAll('.rank-bar-row').forEach(row => {
@@ -419,10 +470,16 @@ const EvidenceController = {
    * 3. Two Donut Cards Stacked in Right Column:
    * Donut A: "Sites by status" (validated blue, new candidate orange, failure red-orange, total in center).
    * Donut B: "Base weights" (#0072FF, #00C6FF, #FFB800, #FF8A00 only, with legend).
+   * Both styled like home page similarity ring with round caps, 2-3° gap, glowing drop-shadows,
+   * IntersectionObserver 1.2s draw-in animation, and bidirectional hover interactions.
    */
   renderDonuts() {
     const lang = window.I18n ? window.I18n.currentLang : 'en';
     const isAr = lang === 'ar';
+    const C = 251.33; // 2 * PI * 40
+    const gapDeg = 2.8; // 2-3° gap between segments
+    const capDeg = 7.162; // Round cap angular extension on radius 40 (5px / 40 * 180 / PI)
+    const twoCapsDeg = 14.324;
 
     // --- Donut 1: Sites by Status ---
     const sitesContainer = document.getElementById('sitesStatusDonutContainer');
@@ -438,71 +495,156 @@ const EvidenceController = {
       });
 
       const total = validated + candidate + failure;
-      const C = 263.89; // Circumference for radius 42
 
-      const valLen = (validated / total) * C;
-      const candLen = (candidate / total) * C;
-      const failLen = (failure / total) * C;
+      const statusItems = [
+        {
+          key: 'validated',
+          idx: 0,
+          count: validated,
+          gradId: 'donut1_grad_val',
+          c1: '#0072FF',
+          c2: '#00C6FF',
+          segClass: 'seg-validated',
+          dotClass: 'dot-validated',
+          label: isAr ? 'معتمد' : 'Validated',
+          nameClass: ''
+        },
+        {
+          key: 'candidate',
+          idx: 1,
+          count: candidate,
+          gradId: 'donut1_grad_cand',
+          c1: '#FFE53B',
+          c2: '#FF8A00',
+          segClass: 'seg-candidate',
+          dotClass: 'dot-candidate',
+          label: isAr ? 'مرشح' : 'New',
+          nameClass: 'legend-candidate-text'
+        },
+        {
+          key: 'failure',
+          idx: 2,
+          count: failure,
+          gradId: 'donut1_grad_fail',
+          c1: '#FF8A00',
+          c2: '#FF2525',
+          segClass: 'seg-failure',
+          dotClass: 'dot-failure',
+          label: isAr ? 'فشل' : 'Failure',
+          nameClass: ''
+        }
+      ];
 
-      const valOffset = 0;
-      const candOffset = -valLen;
-      const failOffset = -(valLen + candLen);
+      // Calculate arc angles with round caps and 2.8° gap
+      let accumAngle = 0;
+      const defsGrads = statusItems.map(item => `
+        <linearGradient id="${item.gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${item.c1}"/>
+          <stop offset="100%" stop-color="${item.c2}"/>
+        </linearGradient>
+      `).join('');
+
+      const segmentsHtml = statusItems.map(item => {
+        if (item.count <= 0) return '';
+        const fraction = item.count / total;
+        const spanDeg = fraction * 360;
+        const dashDeg = spanDeg - gapDeg - twoCapsDeg;
+        const dashLen = Math.max(2, (dashDeg / 360) * C);
+        const startAngle = -90 + accumAngle + capDeg + (gapDeg / 2);
+        accumAngle += spanDeg;
+
+        return `
+          <circle cx="50" cy="50" r="40" 
+            class="donut-seg ${item.segClass}"
+            transform="rotate(${startAngle.toFixed(2)} 50 50)"
+            style="stroke-dasharray: ${dashLen.toFixed(1)} ${C.toFixed(1)}; stroke-dashoffset: ${dashLen.toFixed(1)};"
+            data-dash-len="${dashLen.toFixed(1)}"
+            data-donut="status"
+            data-seg-idx="${item.idx}"
+            tabindex="0"
+            role="graphics-symbol"
+            aria-label="${item.label}: ${item.count} (${Math.round((item.count / total) * 100)}%)"></circle>
+        `;
+      }).join('');
+
+      const legendHtml = statusItems.map(item => {
+        const pct = total > 0 ? Math.round((item.count / total) * 100) : 0;
+        return `
+          <div class="donut-legend-item" data-donut="status" data-seg-idx="${item.idx}" tabindex="0" role="listitem">
+            <span class="donut-legend-dot ${item.dotClass}"></span>
+            <span class="donut-legend-name ${item.nameClass}">${item.label}</span>
+            <span class="donut-legend-val mono">${item.count} (${pct}%)</span>
+          </div>
+        `;
+      }).join('');
 
       sitesContainer.innerHTML = `
         <div class="donut-svg-wrap">
           <svg class="donut-svg" viewBox="0 0 100 100" aria-label="Sites by Status Donut Chart">
-            <circle cx="50" cy="50" r="42" class="donut-track"></circle>
-            <!-- Validated (Blue) -->
-            <circle cx="50" cy="50" r="42" class="donut-seg seg-validated" 
-              style="stroke-dasharray: ${valLen.toFixed(1)} ${C}; stroke-dashoffset: ${valOffset.toFixed(1)};"></circle>
-            <!-- Candidate (Orange) -->
-            <circle cx="50" cy="50" r="42" class="donut-seg seg-candidate" 
-              style="stroke-dasharray: ${candLen.toFixed(1)} ${C}; stroke-dashoffset: ${candOffset.toFixed(1)};"></circle>
-            <!-- Failure (Red-Orange) -->
-            <circle cx="50" cy="50" r="42" class="donut-seg seg-failure" 
-              style="stroke-dasharray: ${failLen.toFixed(1)} ${C}; stroke-dashoffset: ${failOffset.toFixed(1)};"></circle>
+            <defs>
+              ${defsGrads}
+            </defs>
+            <circle cx="50" cy="50" r="40" class="donut-track"></circle>
+            ${segmentsHtml}
           </svg>
           <div class="donut-center-overlay">
             <span class="donut-center-big mono">${total}</span>
-            <span class="donut-center-label">${isAr ? 'موقعاً' : 'SITES'}</span>
+            <span class="donut-center-label">${isAr ? 'مواقع' : 'Sites'}</span>
           </div>
         </div>
 
-        <div class="donut-legend-list">
-          <div class="donut-legend-item">
-            <span class="donut-legend-dot dot-validated"></span>
-            <span class="donut-legend-name">${isAr ? 'معتمد' : 'Validated'}</span>
-            <span class="donut-legend-val mono">${validated} (${Math.round((validated/total)*100)}%)</span>
-          </div>
-          <div class="donut-legend-item">
-            <span class="donut-legend-dot dot-candidate"></span>
-            <span class="donut-legend-name legend-candidate-text">${isAr ? 'مرشح' : 'New'}</span>
-            <span class="donut-legend-val mono">${candidate} (${Math.round((candidate/total)*100)}%)</span>
-          </div>
-          <div class="donut-legend-item">
-            <span class="donut-legend-dot dot-failure"></span>
-            <span class="donut-legend-name">${isAr ? 'فشل' : 'Failure'}</span>
-            <span class="donut-legend-val mono">${failure} (${Math.round((failure/total)*100)}%)</span>
-          </div>
+        <div class="donut-legend-list" role="list" aria-label="${isAr ? 'دليل الحالات' : 'Status Legend'}">
+          ${legendHtml}
         </div>
       `;
+
+      this.setupDonutInteractions(sitesContainer, 'status');
+      this.setupDonutAnimation(sitesContainer, 'status');
     }
 
     // --- Donut 2: Base Weights (4 Distinct Shades: #0072FF, #00C6FF, #FFB800, #FF8A00) ---
     const weightsContainer = document.getElementById('baseWeightsDonutContainer');
     if (weightsContainer && this.data.sensitivity_matrix && this.data.sensitivity_matrix.parameters) {
       const params = this.data.sensitivity_matrix.parameters;
-      const C = 263.89; // Circumference for radius 42
-      const colors = ['#0072FF', '#00C6FF', '#FFB800', '#FF8A00'];
-      
-      let currentOffset = 0;
+      const weightConfigs = [
+        { gradId: 'donut2_grad_0', c1: '#0052D4', c2: '#0072FF', dotBg: '#0072FF', segClass: 'seg-weight-0' },
+        { gradId: 'donut2_grad_1', c1: '#0072FF', c2: '#00C6FF', dotBg: '#00C6FF', segClass: 'seg-weight-1' },
+        { gradId: 'donut2_grad_2', c1: '#FFE53B', c2: '#FFB800', dotBg: '#FFB800', segClass: 'seg-weight-2' },
+        { gradId: 'donut2_grad_3', c1: '#FFB800', c2: '#FF8A00', dotBg: '#FF8A00', segClass: 'seg-weight-3' }
+      ];
+
+      const defsGrads = weightConfigs.map(cfg => `
+        <linearGradient id="${cfg.gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${cfg.c1}"/>
+          <stop offset="100%" stop-color="${cfg.c2}"/>
+        </linearGradient>
+      `).join('');
+
+      let accumAngle = 0;
       const segmentsHtml = params.map((p, idx) => {
-        const segLen = p.base_weight * C;
-        const offset = currentOffset;
-        currentOffset -= segLen;
+        const cfg = weightConfigs[idx % weightConfigs.length];
+        const fraction = p.base_weight;
+        const spanDeg = fraction * 360;
+        const dashDeg = spanDeg - gapDeg - twoCapsDeg;
+        const dashLen = Math.max(2, (dashDeg / 360) * C);
+        const startAngle = -90 + accumAngle + capDeg + (gapDeg / 2);
+        accumAngle += spanDeg;
+
+        const shortNamesEn = ['Slope', 'Regolith', 'Thermal', 'Spectral'];
+        const shortNamesAr = ['انحدار', 'حطام', 'حراري', 'طيفي'];
+        const label = isAr ? (shortNamesAr[idx] || p.parameter_ar) : (shortNamesEn[idx] || p.parameter);
+
         return `
-          <circle cx="50" cy="50" r="42" class="donut-seg"
-            style="stroke: ${colors[idx % colors.length]}; stroke-dasharray: ${segLen.toFixed(1)} ${C}; stroke-dashoffset: ${offset.toFixed(1)}; filter: drop-shadow(0 0 4px ${colors[idx % colors.length]}55);"></circle>
+          <circle cx="50" cy="50" r="40"
+            class="donut-seg ${cfg.segClass}"
+            transform="rotate(${startAngle.toFixed(2)} 50 50)"
+            style="stroke-dasharray: ${dashLen.toFixed(1)} ${C.toFixed(1)}; stroke-dashoffset: ${dashLen.toFixed(1)};"
+            data-dash-len="${dashLen.toFixed(1)}"
+            data-donut="weights"
+            data-seg-idx="${idx}"
+            tabindex="0"
+            role="graphics-symbol"
+            aria-label="${label}: ${Math.round(p.base_weight * 100)}%"></circle>
         `;
       }).join('');
 
@@ -510,10 +652,11 @@ const EvidenceController = {
       const shortNamesAr = ['انحدار', 'حطام', 'حراري', 'طيفي'];
 
       const legendHtml = params.map((p, idx) => {
+        const cfg = weightConfigs[idx % weightConfigs.length];
         const label = isAr ? (shortNamesAr[idx] || p.parameter_ar) : (shortNamesEn[idx] || p.parameter);
         return `
-          <div class="donut-legend-item">
-            <span class="donut-legend-dot" style="background:${colors[idx]}; box-shadow:0 0 6px ${colors[idx]}88;"></span>
+          <div class="donut-legend-item" data-donut="weights" data-seg-idx="${idx}" tabindex="0" role="listitem">
+            <span class="donut-legend-dot" style="background:${cfg.dotBg}; box-shadow:0 0 6px ${cfg.dotBg}88;"></span>
             <span class="donut-legend-name" title="${isAr ? p.parameter_ar : p.parameter}">${label}</span>
             <span class="donut-legend-val mono">${Math.round(p.base_weight * 100)}%</span>
           </div>
@@ -523,20 +666,110 @@ const EvidenceController = {
       weightsContainer.innerHTML = `
         <div class="donut-svg-wrap">
           <svg class="donut-svg" viewBox="0 0 100 100" aria-label="Base Parameter Weights Donut Chart">
-            <circle cx="50" cy="50" r="42" class="donut-track"></circle>
+            <defs>
+              ${defsGrads}
+            </defs>
+            <circle cx="50" cy="50" r="40" class="donut-track"></circle>
             ${segmentsHtml}
           </svg>
           <div class="donut-center-overlay">
             <span class="donut-center-big mono">100%</span>
-            <span class="donut-center-label">${isAr ? 'الأوزان' : 'WEIGHTS'}</span>
+            <span class="donut-center-label">${isAr ? 'أوزان' : 'Weights'}</span>
           </div>
         </div>
 
-        <div class="donut-legend-list weights-grid">
+        <div class="donut-legend-list weights-grid" role="list" aria-label="${isAr ? 'دليل الأوزان' : 'Weights Legend'}">
           ${legendHtml}
         </div>
       `;
+
+      this.setupDonutInteractions(weightsContainer, 'weights');
+      this.setupDonutAnimation(weightsContainer, 'weights');
     }
+  },
+
+  /**
+   * Helper: Bidirectional hover interactions between donut segments and legend items
+   */
+  setupDonutInteractions(container, donutId) {
+    if (!container) return;
+    const segments = container.querySelectorAll(`.donut-seg[data-donut="${donutId}"]`);
+    const legends = container.querySelectorAll(`.donut-legend-item[data-donut="${donutId}"]`);
+    const svg = container.querySelector('.donut-svg');
+
+    const highlight = (idx) => {
+      if (svg) svg.classList.add('has-hover');
+      segments.forEach(seg => {
+        if (seg.getAttribute('data-seg-idx') === String(idx)) {
+          seg.classList.add('hovered');
+        } else {
+          seg.classList.remove('hovered');
+        }
+      });
+      legends.forEach(leg => {
+        if (leg.getAttribute('data-seg-idx') === String(idx)) {
+          leg.classList.add('highlighted');
+        } else {
+          leg.classList.remove('highlighted');
+        }
+      });
+    };
+
+    const clear = () => {
+      if (svg) svg.classList.remove('has-hover');
+      segments.forEach(seg => seg.classList.remove('hovered'));
+      legends.forEach(leg => leg.classList.remove('highlighted'));
+    };
+
+    segments.forEach(seg => {
+      const idx = seg.getAttribute('data-seg-idx');
+      seg.addEventListener('mouseenter', () => highlight(idx));
+      seg.addEventListener('mouseleave', clear);
+      seg.addEventListener('focus', () => highlight(idx));
+      seg.addEventListener('blur', clear);
+    });
+
+    legends.forEach(leg => {
+      const idx = leg.getAttribute('data-seg-idx');
+      leg.addEventListener('mouseenter', () => highlight(idx));
+      leg.addEventListener('mouseleave', clear);
+      leg.addEventListener('focus', () => highlight(idx));
+      leg.addEventListener('blur', clear);
+    });
+  },
+
+  /**
+   * Helper: IntersectionObserver scroll-triggered draw-in animation for donut charts
+   */
+  setupDonutAnimation(container, donutId) {
+    if (!container) return;
+    const segments = container.querySelectorAll(`.donut-seg[data-donut="${donutId}"]`);
+    if (!segments.length) return;
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced || !('IntersectionObserver' in window)) {
+      segments.forEach(seg => {
+        seg.style.strokeDashoffset = '0';
+        seg.style.transition = 'none';
+      });
+      return;
+    }
+
+    const card = container.closest('.donut-card') || container;
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          segments.forEach(seg => {
+            seg.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)';
+            seg.style.strokeDashoffset = '0';
+          });
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    observer.observe(card);
   },
 
   /**
