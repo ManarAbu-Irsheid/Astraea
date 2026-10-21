@@ -30,6 +30,23 @@ const EvidenceController = {
     this.data = validationData;
     this.catalogItems = [...(validationData.data_catalog || [])];
 
+    // Register translation keys for video fallback overlay
+    if (window.I18n && window.I18n.translations) {
+      const tr = window.I18n.translations;
+      if (tr.en) {
+        tr.en.evidence = tr.en.evidence || {};
+        tr.en.evidence.video_missing_title = tr.en.evidence.video_missing_title || 'Demo video not added yet';
+        tr.en.evidence.video_missing_desc = tr.en.evidence.video_missing_desc || 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
+        tr.en.evidence.video_missing_btn = tr.en.evidence.video_missing_btn || 'Switch to YouTube / Vimeo';
+      }
+      if (tr.ar) {
+        tr.ar.evidence = tr.ar.evidence || {};
+        tr.ar.evidence.video_missing_title = tr.ar.evidence.video_missing_title || 'لم تتم إضافة الفيديو التوضيحي بعد';
+        tr.ar.evidence.video_missing_desc = tr.ar.evidence.video_missing_desc || 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو';
+        tr.ar.evidence.video_missing_btn = tr.ar.evidence.video_missing_btn || 'التبديل إلى يوتيوب / فيميو';
+      }
+    }
+
     this.initVideoPlayer();
     this.renderKpiStrip();
     this.renderValidationRankPlot();
@@ -47,6 +64,18 @@ const EvidenceController = {
       this.renderSensitivityMatrix();
       this.renderDataCatalogTable();
       this.renderRoadmap();
+
+      const fallbackOverlay = document.getElementById('videoFallbackOverlay');
+      if (fallbackOverlay) {
+        const lang = window.I18n ? window.I18n.currentLang : 'en';
+        const isAr = lang === 'ar';
+        const titleEl = fallbackOverlay.querySelector('.video-fallback-title');
+        const descEl = fallbackOverlay.querySelector('.video-fallback-desc');
+        const btnEl = fallbackOverlay.querySelector('.btn-switch-embed');
+        if (titleEl) titleEl.textContent = isAr ? 'لم تتم إضافة الفيديو التوضيحي بعد' : 'Demo video not added yet';
+        if (descEl) descEl.textContent = isAr ? 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو' : 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
+        if (btnEl) btnEl.textContent = isAr ? 'التبديل إلى يوتيوب / فيميو' : 'Switch to YouTube / Vimeo';
+      }
     });
   },
 
@@ -76,6 +105,29 @@ const EvidenceController = {
             Your browser does not support HTML5 video.
           </video>
         `;
+
+        const videoEl = playerContainer.querySelector('#demoVideo');
+        const sourceEl = videoEl?.querySelector('source');
+
+        const handleError = () => {
+          this.showVideoFallback(playerContainer, setSource);
+        };
+
+        sourceEl?.addEventListener('error', handleError);
+        videoEl?.addEventListener('error', handleError);
+
+        // Immediate check if media source failed to load
+        if (videoEl && (videoEl.networkState === HTMLMediaElement.NETWORK_NO_SOURCE || videoEl.error)) {
+          handleError();
+        }
+
+        // Attach video play XP award
+        videoEl?.addEventListener('play', () => {
+          if (window.UserSystem && !this._videoXpAwarded) {
+            this._videoXpAwarded = true;
+            window.UserSystem.addXP(30, 'Viewed technical demonstration video', 'مشاهدة العرض التقني الميداني');
+          }
+        });
       } else {
         const url = embedInput?.value.trim() || 'https://www.youtube-nocookie.com/embed/g2qJgW9V6lU?autoplay=1';
         playerContainer.innerHTML = `
@@ -92,6 +144,36 @@ const EvidenceController = {
     });
 
     setSource('local');
+  },
+
+  showVideoFallback(container, setSource) {
+    if (!container || container.querySelector('#videoFallbackOverlay')) return;
+
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'video-fallback-overlay';
+    overlay.id = 'videoFallbackOverlay';
+    overlay.innerHTML = `
+      <div class="video-fallback-icon" aria-hidden="true">🎬</div>
+      <h3 class="video-fallback-title" data-i18n="evidence.video_missing_title">
+        ${isAr ? 'لم تتم إضافة الفيديو التوضيحي بعد' : 'Demo video not added yet'}
+      </h3>
+      <p class="video-fallback-desc" data-i18n="evidence.video_missing_desc">
+        ${isAr ? 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو' : 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link'}
+      </p>
+      <button class="btn-switch-embed" id="btnSwitchToEmbed" data-i18n="evidence.video_missing_btn">
+        ${isAr ? 'التبديل إلى يوتيوب / فيميو' : 'Switch to YouTube / Vimeo'}
+      </button>
+    `;
+
+    const switchBtn = overlay.querySelector('#btnSwitchToEmbed');
+    switchBtn?.addEventListener('click', () => {
+      setSource('embed');
+    });
+
+    container.appendChild(overlay);
   },
 
   /* ==========================================================================
@@ -487,21 +569,33 @@ const EvidenceController = {
     const lang = window.I18n ? window.I18n.currentLang : 'en';
     const isAr = lang === 'ar';
 
-    container.innerHTML = this.data.roadmap.map(item => {
-      const phase = isAr ? item.phase_ar : item.phase;
+    const statusLabels = {
+      completed: { en: 'Done', ar: 'مكتمل' },
+      active: { en: 'In progress', ar: 'قيد التنفيذ' },
+      planned: { en: 'Planned', ar: 'مخطط' }
+    };
+
+    const totalItems = this.data.roadmap.length;
+
+    container.innerHTML = this.data.roadmap.map((item, idx) => {
+      const status = item.status || 'planned';
+      const statusText = isAr ? statusLabels[status]?.ar || status : statusLabels[status]?.en || status;
       const title = isAr ? item.title_ar : item.title;
       const desc = isAr ? item.description_ar : item.description;
+      const isLast = idx === totalItems - 1;
 
       return `
-        <div class="roadmap-phase-card ${item.status}">
-          <div class="phase-top-bar">
-            <span class="sci-badge ${item.status === 'completed' ? 'validated' : item.status === 'active' ? 'candidate' : 'moon'}">
-              ${phase}
-            </span>
-            <span class="phase-timeline-badge">${item.timeline}</span>
+        <div class="roadmap-phase-card phase-${status}" data-status="${status}">
+          <div class="timeline-dot-wrapper">
+            <div class="timeline-dot dot-${status}" aria-label="${statusText}"></div>
+            ${!isLast ? `<div class="timeline-connector connector-${status}"></div>` : ''}
           </div>
-          <div class="phase-title">${title}</div>
-          <div class="phase-desc">${desc}</div>
+          <div class="timeline-content">
+            <span class="timeline-status-text status-${status}">${statusText}</span>
+            <div class="timeline-date mono">${item.timeline}</div>
+            <h4 class="timeline-title">${title}</h4>
+            <p class="timeline-desc">${desc}</p>
+          </div>
         </div>
       `;
     }).join('');
