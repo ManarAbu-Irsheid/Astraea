@@ -385,6 +385,49 @@
 
         </div>
 
+        <!-- Mission Suitability Heatmap Card (Full Width) -->
+        <div class="heatmap-card" id="evidenceHeatmapCard">
+          <div class="card-header-row">
+            <div>
+              <h3 class="dashboard-card-title" data-i18n="evidence.heatmap_title">Best mission fit per site</h3>
+              <p class="dashboard-card-sub" data-i18n="evidence.heatmap_subtitle">Suitability scores across four planetary exploration mission profiles.</p>
+            </div>
+          </div>
+          <div class="heatmap-table-wrapper" id="heatmapContainer"></div>
+        </div>
+
+        <!-- Analytics 2-Column Grid: Box Plot & Histogram -->
+        <div class="charts-2col-grid">
+          
+          <!-- Box Plot Card -->
+          <div class="boxplot-card" id="evidenceBoxplotCard">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.boxplot_title">How sites score on each attribute</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.boxplot_subtitle">Statistical distribution of analog fidelity across five radar attributes.</p>
+              </div>
+            </div>
+            <div class="boxplot-visual-wrapper" id="boxplotContainer"></div>
+          </div>
+
+          <!-- Histogram Card -->
+          <div class="histogram-card" id="evidenceHistogramCard">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.histogram_title">Score distribution</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.histogram_subtitle">Distribution of benchmarked validation and failure scores in 5-point bins.</p>
+              </div>
+              <div class="histogram-legend">
+                <span class="hist-legend-item"><span class="hist-dot dot-val"></span><span data-i18n="evidence.legend_validated">Validated</span></span>
+                <span class="hist-legend-item"><span class="hist-dot dot-cand"></span><span data-i18n="evidence.legend_candidate">New candidate</span></span>
+                <span class="hist-legend-item"><span class="hist-dot dot-fail"></span><span data-i18n="evidence.legend_failure">Failure case</span></span>
+              </div>
+            </div>
+            <div class="histogram-visual-wrapper" id="histogramContainer"></div>
+          </div>
+
+        </div>
+
         <!-- 3. Methodology & Weight Sensitivity Matrix Card (MathML Formula + Diverging Bar Chart) -->
         <div class="methodology-card">
           <div class="card-header-row">

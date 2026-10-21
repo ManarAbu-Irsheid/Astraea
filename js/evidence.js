@@ -8,26 +8,31 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await window.App.init('evidence');
 
-  const validationData = await window.App.fetchData('validation');
+  const [validationData, cellsData] = await Promise.all([
+    window.App.fetchData('validation'),
+    window.App.fetchData('cells')
+  ]);
 
   if (!validationData) {
     console.error('Validation data missing for Evidence page');
     return;
   }
 
-  EvidenceController.init(validationData);
+  EvidenceController.init(validationData, cellsData);
 });
 
 const EvidenceController = {
   data: null,
+  cells: [],
   catalogItems: [],
   catalogSortCol: 'name',
   catalogSortAsc: true,
   selectedRank: 1, // Default selected rank for Site Details card
   activeBodyFilter: 'all', // 'all', 'moon', 'mars', 'earth'
 
-  init(validationData) {
+  init(validationData, cellsData) {
     this.data = validationData;
+    this.cells = cellsData ? (cellsData.cells || []) : [];
     this.catalogItems = [...(validationData.data_catalog || [])];
 
     // Register translation keys for video fallback, sensitivity, and data catalog
@@ -58,6 +63,10 @@ const EvidenceController = {
     this.renderValidationRankPlot();
     this.renderDonuts();
     this.renderSiteDetails();
+    this.renderHeatmap();
+    this.renderBoxplot();
+    this.renderHistogram();
+    this.setupChartAnimations();
     this.renderSensitivityMatrix();
     this.renderDataCatalogTable();
     this.renderRoadmap();
@@ -69,6 +78,9 @@ const EvidenceController = {
       this.renderValidationRankPlot();
       this.renderDonuts();
       this.renderSiteDetails();
+      this.renderHeatmap();
+      this.renderBoxplot();
+      this.renderHistogram();
       this.renderSensitivityMatrix();
       this.renderDataCatalogTable();
       this.renderRoadmap();
@@ -805,6 +817,415 @@ const EvidenceController = {
     }, { threshold: 0.15 });
 
     observer.observe(card);
+  },
+
+  /**
+   * 2A. Mission Suitability Heatmap Card: Best mission fit per site
+   * Rows = 12 sites from cellsData.cells. Columns = 4 mission profiles: rover, base, isru, caves.
+   * Color scale: low (≤40) dark blue-gray -> mid (~70) blue #0072FF -> high (≥90) bright #00C6FF with glow.
+   * Best column per row highlighted with thin orange border (#FF8A00).
+   * Hover cell: tooltip "site — mission: score".
+   * Sites with is_candidate === true get a small "New" pill.
+   */
+  renderHeatmap() {
+    const container = document.getElementById('heatmapContainer');
+    if (!container || !this.cells || this.cells.length === 0) return;
+
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
+    const profiles = [
+      { key: 'rover', en: 'Rover testing', ar: 'اختبار المركبات' },
+      { key: 'base', en: 'Human base', ar: 'قاعدة بشرية' },
+      { key: 'isru', en: 'Resources (ISRU)', ar: 'استخراج الموارد' },
+      { key: 'caves', en: 'Lava-tube shelter', ar: 'ملاجئ الأنابيب البركانية' }
+    ];
+
+    const colHeadersHtml = profiles.map(p => {
+      const label = isAr ? p.ar : p.en;
+      return `<th scope="col">${label}</th>`;
+    }).join('');
+
+    const rowsHtml = this.cells.map(cell => {
+      const name = isAr ? (cell.name_ar || cell.name) : cell.name;
+      const isCand = Boolean(cell.is_candidate);
+      const pillHtml = isCand ? `<span class="pill-new">${isAr ? 'جديد' : 'NEW'}</span>` : '';
+
+      // Find the highest scoring profile in this row to highlight with best column border
+      let maxScore = -Infinity;
+      let bestProfileKey = null;
+      profiles.forEach(p => {
+        const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
+          ? cell.profile_scores[p.key] 
+          : 0;
+        if (score > maxScore) {
+          maxScore = score;
+          bestProfileKey = p.key;
+        }
+      });
+
+      const cellsHtml = profiles.map(p => {
+        const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
+          ? cell.profile_scores[p.key] 
+          : 0;
+        const isBest = p.key === bestProfileKey;
+        const pLabel = isAr ? p.ar : p.en;
+
+        let tier = 'low';
+        if (score >= 90) tier = 'peak';
+        else if (score >= 75) tier = 'high';
+        else if (score > 40) tier = 'mid';
+
+        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}`;
+
+        return `
+          <td class="heatmap-cell ${isBest ? 'is-best' : ''} chart-anim-elem" 
+              data-tier="${tier}"
+              tabindex="0"
+              role="gridcell"
+              aria-label="${tooltip}"
+              title="${tooltip}">
+            ${score.toFixed(1)}
+          </td>
+        `;
+      }).join('');
+
+      return `
+        <tr>
+          <th scope="row" class="heatmap-row-site">
+            <span>${name}</span>
+            ${pillHtml}
+          </th>
+          ${cellsHtml}
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <table class="heatmap-table" role="grid" aria-label="${isAr ? 'أفضل مهمة لكل موقع' : 'Best mission fit per site'}">
+        <thead>
+          <tr>
+            <th scope="col" class="col-site-header">${isAr ? 'الموقع' : 'Site'}</th>
+            ${colHeadersHtml}
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+  },
+
+  /**
+   * 2B. Box Plot: How sites score on each attribute
+   * 5 vertical box plots from cell.radar_parameters: slope, regolith, thermal, radiation, mineralogy.
+   * Min, Q1, Median, Q3, Max computed across the 12 sites.
+   * Fill: blue gradient at 35% opacity, median line bright #00C6FF, whiskers thin. Y-axis 60–100.
+   */
+  renderBoxplot() {
+    const container = document.getElementById('boxplotContainer');
+    if (!container || !this.cells || this.cells.length === 0) return;
+
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
+    const attrs = [
+      { key: 'slope', en: 'Slope', ar: 'الانحدار' },
+      { key: 'regolith', en: 'Regolith', ar: 'التربة' },
+      { key: 'thermal', en: 'Thermal', ar: 'الحرارة' },
+      { key: 'radiation', en: 'Radiation', ar: 'الإشعاع' },
+      { key: 'mineralogy', en: 'Mineralogy', ar: 'المعادن' }
+    ];
+
+    const stats = attrs.map(attr => {
+      const vals = this.cells
+        .map(c => (c.radar_parameters && typeof c.radar_parameters[attr.key] === 'number') ? c.radar_parameters[attr.key] : null)
+        .filter(v => v !== null)
+        .sort((a, b) => a - b);
+
+      if (vals.length === 0) return null;
+
+      const n = vals.length;
+      const min = vals[0];
+      const max = vals[n - 1];
+      const mid = Math.floor(n / 2);
+      const median = (n % 2 === 0) ? (vals[mid - 1] + vals[mid]) / 2 : vals[mid];
+
+      const lowerHalf = vals.slice(0, mid);
+      const q1Mid = Math.floor(lowerHalf.length / 2);
+      const q1 = (lowerHalf.length % 2 === 0) 
+        ? (lowerHalf[q1Mid - 1] + lowerHalf[q1Mid]) / 2 
+        : lowerHalf[q1Mid];
+
+      const upperHalf = (n % 2 === 0) ? vals.slice(mid) : vals.slice(mid + 1);
+      const q3Mid = Math.floor(upperHalf.length / 2);
+      const q3 = (upperHalf.length % 2 === 0) 
+        ? (upperHalf[q3Mid - 1] + upperHalf[q3Mid]) / 2 
+        : upperHalf[q3Mid];
+
+      return {
+        ...attr,
+        name: isAr ? attr.ar : attr.en,
+        min,
+        q1,
+        median,
+        q3,
+        max
+      };
+    }).filter(Boolean);
+
+    // SVG coordinates:
+    // Y-axis 60 to 100: y = 25 at 100, y = 225 at 60 (height 200)
+    const yTop = 25;
+    const yBot = 225;
+    const h = yBot - yTop; // 200
+    const getY = (val) => yTop + ((100 - val) / 40) * h;
+
+    const xStart = 55;
+    const xEnd = 495;
+    const colWidth = (xEnd - xStart) / stats.length;
+    const boxWidth = 36;
+    const capWidth = 14;
+
+    const gridTicks = [60, 70, 80, 90, 100];
+    const gridLinesHtml = gridTicks.map(t => {
+      const y = getY(t);
+      return `
+        <line x1="${xStart - 5}" y1="${y.toFixed(1)}" x2="${xEnd + 5}" y2="${y.toFixed(1)}" class="boxplot-grid-line"/>
+        <text x="${xStart - 12}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" class="boxplot-axis-text mono">${t}</text>
+      `;
+    }).join('');
+
+    const boxplotsHtml = stats.map((st, i) => {
+      const cx = xStart + (i + 0.5) * colWidth;
+      const yMax = getY(st.max);
+      const yQ3 = getY(st.q3);
+      const yMed = getY(st.median);
+      const yQ1 = getY(st.q1);
+      const yMin = getY(st.min);
+
+      const boxTop = yQ3;
+      const boxHeight = Math.max(2, yQ1 - yQ3);
+      const boxLeft = cx - boxWidth / 2;
+
+      const tooltip = `${st.name} — Min: ${st.min}, Q1: ${st.q1}, Med: ${st.median}, Q3: ${st.q3}, Max: ${st.max}`;
+
+      return `
+        <g class="boxplot-col-group" tabindex="0" role="graphics-symbol" aria-label="${tooltip}">
+          <title>${tooltip}</title>
+          <!-- Upper Whisker & Cap -->
+          <line x1="${cx.toFixed(1)}" y1="${yQ3.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMax.toFixed(1)}" class="boxplot-whisker-line chart-anim-elem"/>
+          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMax.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMax.toFixed(1)}" class="boxplot-cap-line chart-anim-elem"/>
+          
+          <!-- Lower Whisker & Cap -->
+          <line x1="${cx.toFixed(1)}" y1="${yQ1.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMin.toFixed(1)}" class="boxplot-whisker-line chart-anim-elem"/>
+          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMin.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMin.toFixed(1)}" class="boxplot-cap-line chart-anim-elem"/>
+
+          <!-- IQR Box (Q3 to Q1) -->
+          <rect x="${boxLeft.toFixed(1)}" y="${boxTop.toFixed(1)}" width="${boxWidth}" height="${boxHeight.toFixed(1)}" class="boxplot-rect chart-anim-elem"/>
+
+          <!-- Median Line -->
+          <line x1="${boxLeft.toFixed(1)}" y1="${yMed.toFixed(1)}" x2="${(boxLeft + boxWidth).toFixed(1)}" y2="${yMed.toFixed(1)}" class="boxplot-median-line chart-anim-elem"/>
+
+          <!-- Attribute Label -->
+          <text x="${cx.toFixed(1)}" y="252" class="boxplot-attr-label">${st.name}</text>
+        </g>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <svg class="boxplot-svg" viewBox="0 0 520 270" role="img" aria-label="${isAr ? 'توزيع درجات المواقع لكل خاصية' : 'How sites score on each attribute'}">
+        <defs>
+          <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0072FF"/>
+            <stop offset="100%" stop-color="#00C6FF"/>
+          </linearGradient>
+        </defs>
+        ${gridLinesHtml}
+        <line x1="${xStart - 5}" y1="${yBot}" x2="${xEnd + 5}" y2="${yBot}" class="boxplot-axis-line"/>
+        ${boxplotsHtml}
+      </svg>
+    `;
+  },
+
+  /**
+   * 2C. Histogram: Score distribution in 5-point bins from 55 to 100
+   * Stacked bars: validated (blue #0072FF->#00C6FF), new candidate (yellow->orange #FFE53B->#FF8A00), failure (orange->red #FF8A00->#FF2525).
+   * Count label on top of non-zero bars. Hover tooltip with site names in that bin.
+   */
+  renderHistogram() {
+    const container = document.getElementById('histogramContainer');
+    if (!container || !this.data.validation_rankings) return;
+
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
+    const binDefinitions = [
+      { min: 55, max: 60, label: '55-60' },
+      { min: 60, max: 65, label: '60-65' },
+      { min: 65, max: 70, label: '65-70' },
+      { min: 70, max: 75, label: '70-75' },
+      { min: 75, max: 80, label: '75-80' },
+      { min: 80, max: 85, label: '80-85' },
+      { min: 85, max: 90, label: '85-90' },
+      { min: 90, max: 95, label: '90-95' },
+      { min: 95, max: 100, label: '95-100' }
+    ];
+
+    const bins = binDefinitions.map(b => ({
+      ...b,
+      validated: [],
+      candidate: [],
+      failure: []
+    }));
+
+    this.data.validation_rankings.forEach(item => {
+      const score = item.score;
+      const status = item.status;
+      const name = isAr ? (item.name_ar || item.name) : item.name;
+
+      for (let i = 0; i < bins.length; i++) {
+        const b = bins[i];
+        const matches = (i === bins.length - 1) 
+          ? (score >= b.min && score <= b.max) 
+          : (score >= b.min && score < b.max);
+
+        if (matches) {
+          if (status === 'failure_case') {
+            b.failure.push(name);
+          } else if (status === 'new_candidate') {
+            b.candidate.push(name);
+          } else {
+            b.validated.push(name);
+          }
+          break;
+        }
+      }
+    });
+
+    const maxCount = 7;
+    const yZero = 225;
+    const yMax = 35;
+    const plotH = yZero - yMax; // 190
+    const unitH = plotH / maxCount; // ~27.143
+
+    const xStart = 48;
+    const xEnd = 498;
+    const binW = (xEnd - xStart) / bins.length;
+    const barW = 34;
+
+    const yTicks = [0, 2, 4, 6];
+    const gridLinesHtml = yTicks.map(t => {
+      const y = yZero - t * unitH;
+      return `
+        <line x1="${xStart - 5}" y1="${y.toFixed(1)}" x2="${xEnd + 5}" y2="${y.toFixed(1)}" class="boxplot-grid-line"/>
+        <text x="${xStart - 12}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" class="boxplot-axis-text mono">${t}</text>
+      `;
+    }).join('');
+
+    const barsHtml = bins.map((b, i) => {
+      const cx = xStart + (i + 0.5) * binW;
+      const barLeft = cx - barW / 2;
+
+      const cVal = b.validated.length;
+      const cCand = b.candidate.length;
+      const cFail = b.failure.length;
+      const total = cVal + cCand + cFail;
+
+      const hVal = cVal * unitH;
+      const hCand = cCand * unitH;
+      const hFail = cFail * unitH;
+
+      const yVal = yZero - hVal;
+      const yCand = yVal - hCand;
+      const yFail = yCand - hFail;
+
+      const allSites = [...b.validated, ...b.candidate, ...b.failure];
+      const tooltip = allSites.length > 0 
+        ? `${b.label} (${total}):\n• ${allSites.join('\n• ')}`
+        : `${b.label}: 0`;
+
+      return `
+        <g class="hist-bar-group" tabindex="0" role="graphics-symbol" aria-label="${b.label}: ${total}">
+          <title>${tooltip}</title>
+          
+          <!-- Stack segment: Validated (Bottom) -->
+          ${cVal > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yVal.toFixed(1)}" width="${barW}" height="${hVal.toFixed(1)}" class="hist-seg seg-val chart-anim-elem"/>` : ''}
+
+          <!-- Stack segment: New Candidate (Middle) -->
+          ${cCand > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yCand.toFixed(1)}" width="${barW}" height="${hCand.toFixed(1)}" class="hist-seg seg-cand chart-anim-elem"/>` : ''}
+
+          <!-- Stack segment: Failure Case (Top) -->
+          ${cFail > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yFail.toFixed(1)}" width="${barW}" height="${hFail.toFixed(1)}" class="hist-seg seg-fail chart-anim-elem"/>` : ''}
+
+          <!-- Count label on top of non-zero bars -->
+          ${total > 0 ? `<text x="${cx.toFixed(1)}" y="${(yFail - 5).toFixed(1)}" class="hist-count-text chart-anim-elem">${total}</text>` : ''}
+
+          <!-- Bin range label -->
+          <text x="${cx.toFixed(1)}" y="244" class="hist-bin-label">${b.label}</text>
+        </g>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <svg class="histogram-svg" viewBox="0 0 520 270" role="img" aria-label="${isAr ? 'توزيع الدرجات' : 'Score distribution'}">
+        <defs>
+          <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#0072FF"/>
+            <stop offset="100%" stop-color="#00C6FF"/>
+          </linearGradient>
+          <linearGradient id="svgGradCandidate" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FFE53B"/>
+            <stop offset="100%" stop-color="#FF8A00"/>
+          </linearGradient>
+          <linearGradient id="svgGradAlert" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#FF8A00"/>
+            <stop offset="100%" stop-color="#FF2525"/>
+          </linearGradient>
+        </defs>
+        ${gridLinesHtml}
+        <line x1="${xStart - 5}" y1="${yZero}" x2="${xEnd + 5}" y2="${yZero}" class="boxplot-axis-line"/>
+        ${barsHtml}
+      </svg>
+    `;
+  },
+
+  /**
+   * Scroll grow-in animation observer for the 3 Section 2 charts.
+   * Triggered once on viewport scroll-in, disabled under prefers-reduced-motion.
+   */
+  setupChartAnimations() {
+    const cards = [
+      document.getElementById('evidenceHeatmapCard'),
+      document.getElementById('evidenceBoxplotCard'),
+      document.getElementById('evidenceHistogramCard')
+    ].filter(Boolean);
+
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      cards.forEach(card => card.classList.add('chart-animated'));
+      return;
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('chart-animated');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+
+      cards.forEach(card => {
+        if (!card.classList.contains('chart-animated')) {
+          observer.observe(card);
+        }
+      });
+    } else {
+      cards.forEach(card => card.classList.add('chart-animated'));
+    }
   },
 
   /**

@@ -171,6 +171,12 @@
 .donut-card:focus-within,
 .site-details-card:hover,
 .site-details-card:focus-within,
+.heatmap-card:hover,
+.heatmap-card:focus-within,
+.boxplot-card:hover,
+.boxplot-card:focus-within,
+.histogram-card:hover,
+.histogram-card:focus-within,
 .methodology-card:hover,
 .methodology-card:focus-within,
 .catalog-card:hover,
@@ -194,6 +200,9 @@
   .validation-plot-card,
   .donut-card,
   .site-details-card,
+  .heatmap-card,
+  .boxplot-card,
+  .histogram-card,
   .methodology-card,
   .catalog-card,
   .roadmap-section-card,
@@ -212,8 +221,11 @@
   .formula-display-banner,
   .formula-mathml-box math,
   .formula-key-item,
-  .formula-key-item .formula-sym {
+  .formula-key-item .formula-sym,
+  .chart-anim-elem {
     transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
@@ -1128,6 +1140,363 @@ html[dir="rtl"] .rank-bar-row.selected {
   color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
+}
+
+/* ==========================================================================
+   2B. MISSION HEATMAP & ANALYTICS CHARTS (BOX PLOT & HISTOGRAM)
+   ========================================================================== */
+.heatmap-card,
+.boxplot-card,
+.histogram-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: clamp(14px, 1.2vw, 24px);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  --card-accent: #00C6FF;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+/* 2-Column Grid for Box Plot & Histogram */
+.charts-2col-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(14px, 1.2vw, 24px);
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .charts-2col-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- HEATMAP TABLE STYLES --- */
+.heatmap-table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+.heatmap-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4px;
+  min-width: 620px;
+  font-size: 0.82rem;
+  padding: 8px;
+}
+
+.heatmap-table th {
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-weight: 700;
+  border: 1px solid var(--border-color);
+}
+
+.heatmap-table th.col-site-header {
+  text-align: start;
+  min-width: 200px;
+}
+
+.heatmap-row-site {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.heatmap-cell {
+  padding: 0.55rem 0.75rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  outline: none;
+}
+
+/* Tier Colors: low (≤40) dark blue-gray -> mid (~70) blue #0072FF -> high (≥90) bright #00C6FF with glow */
+.heatmap-cell[data-tier="low"] {
+  background: rgba(26, 38, 57, 0.75);
+  color: var(--text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+[data-theme="light"] .heatmap-cell[data-tier="low"] {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.heatmap-cell[data-tier="mid"] {
+  background: rgba(0, 114, 255, 0.28);
+  color: #e2e8f0;
+  border: 1px solid rgba(0, 114, 255, 0.35);
+}
+[data-theme="light"] .heatmap-cell[data-tier="mid"] {
+  background: rgba(0, 114, 255, 0.14);
+  color: #0056b3;
+  border: 1px solid rgba(0, 114, 255, 0.28);
+}
+
+.heatmap-cell[data-tier="high"] {
+  background: rgba(0, 198, 255, 0.45);
+  color: #ffffff;
+  border: 1px solid rgba(0, 198, 255, 0.55);
+  box-shadow: 0 0 8px rgba(0, 198, 255, 0.25);
+}
+[data-theme="light"] .heatmap-cell[data-tier="high"] {
+  background: rgba(0, 198, 255, 0.25);
+  color: #004d80;
+  border: 1px solid rgba(0, 198, 255, 0.45);
+}
+
+.heatmap-cell[data-tier="peak"] {
+  background: rgba(0, 198, 255, 0.85);
+  color: #051428;
+  font-weight: 800;
+  border: 1px solid #00C6FF;
+  box-shadow: 0 0 14px rgba(0, 198, 255, 0.6);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+}
+[data-theme="light"] .heatmap-cell[data-tier="peak"] {
+  background: linear-gradient(135deg, #0072FF, #00C6FF);
+  color: #ffffff;
+  border: 1px solid #0072FF;
+  box-shadow: 0 0 12px rgba(0, 198, 255, 0.5);
+  text-shadow: none;
+}
+
+.heatmap-cell:hover,
+.heatmap-cell:focus-visible {
+  transform: scale(1.06);
+  z-index: 3;
+  border-color: #00C6FF !important;
+  box-shadow: 0 0 14px rgba(0, 198, 255, 0.6) !important;
+}
+
+.heatmap-cell.is-best {
+  border: 1.5px solid #FF8A00 !important;
+  box-shadow: 0 0 8px rgba(255, 138, 0, 0.4);
+}
+
+.heatmap-cell.is-best:hover,
+.heatmap-cell.is-best:focus-visible {
+  box-shadow: 0 0 16px rgba(255, 138, 0, 0.75), 0 0 0 1px #FF8A00 !important;
+}
+
+/* --- BOX PLOT STYLES --- */
+.boxplot-visual-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.boxplot-svg {
+  width: 100%;
+  max-width: 560px;
+  min-width: 300px;
+  height: auto;
+  overflow: visible;
+}
+
+.boxplot-axis-line {
+  stroke: var(--border-color);
+  stroke-width: 1;
+}
+
+.boxplot-grid-line {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-dasharray: 3 3;
+  stroke-width: 1;
+}
+
+[data-theme="light"] .boxplot-grid-line {
+  stroke: rgba(10, 22, 38, 0.08);
+}
+
+.boxplot-axis-text {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  fill: var(--text-muted);
+}
+
+.boxplot-col-group {
+  cursor: pointer;
+  outline: none;
+  transition: filter 0.25s ease;
+}
+
+.boxplot-col-group:hover,
+.boxplot-col-group:focus-visible {
+  filter: brightness(1.25) drop-shadow(0 0 8px rgba(0, 198, 255, 0.5));
+}
+
+.boxplot-whisker-line {
+  stroke: #00C6FF;
+  stroke-width: 1.5;
+  stroke-dasharray: 2 2;
+  opacity: 0.8;
+}
+
+.boxplot-cap-line {
+  stroke: #00C6FF;
+  stroke-width: 1.75;
+}
+
+.boxplot-rect {
+  fill: url(#svgGradMain);
+  fill-opacity: 0.35;
+  stroke: #00C6FF;
+  stroke-width: 1.5;
+  rx: 4;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  transform-origin: center bottom;
+}
+
+.boxplot-median-line {
+  stroke: #00C6FF;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 0 4px #00C6FF);
+}
+
+.boxplot-attr-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+}
+
+/* --- HISTOGRAM STYLES --- */
+.histogram-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.hist-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hist-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.hist-dot.dot-val {
+  background: var(--grad-main);
+  box-shadow: var(--glow-main);
+}
+
+.hist-dot.dot-cand {
+  background: var(--grad-candidate);
+  box-shadow: var(--glow-candidate);
+}
+
+.hist-dot.dot-fail {
+  background: var(--grad-alert);
+  box-shadow: var(--glow-alert);
+}
+
+.histogram-visual-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.histogram-svg {
+  width: 100%;
+  max-width: 560px;
+  min-width: 300px;
+  height: auto;
+  overflow: visible;
+}
+
+.hist-bar-group {
+  cursor: pointer;
+  outline: none;
+  transition: filter 0.25s ease;
+}
+
+.hist-bar-group:hover,
+.hist-bar-group:focus-visible {
+  filter: brightness(1.25) drop-shadow(0 0 8px rgba(0, 198, 255, 0.4));
+}
+
+.hist-seg {
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  transform-origin: center bottom;
+  rx: 2;
+}
+
+.hist-seg.seg-val {
+  fill: url(#svgGradMain);
+  filter: drop-shadow(0 0 4px rgba(0, 114, 255, 0.35));
+}
+
+.hist-seg.seg-cand {
+  fill: url(#svgGradCandidate);
+  filter: drop-shadow(0 0 4px rgba(255, 138, 0, 0.35));
+}
+
+.hist-seg.seg-fail {
+  fill: url(#svgGradAlert);
+  filter: drop-shadow(0 0 4px rgba(255, 37, 37, 0.35));
+}
+
+.hist-count-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--text-primary);
+  text-anchor: middle;
+}
+
+.hist-bin-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  fill: var(--text-muted);
+  text-anchor: middle;
+}
+
+/* Initial state for grow-in scroll animation */
+.chart-anim-elem {
+  opacity: 0;
+  transform: scaleY(0.1);
+}
+
+.chart-animated .chart-anim-elem {
+  opacity: 1;
+  transform: scaleY(1);
 }
 
 /* ==========================================================================
