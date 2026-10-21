@@ -25,12 +25,13 @@
       "user_role": "ASTRAEA LAB",
       "kebab_header": "Quick Controls",
       "kebab_profile": "Researcher Profile & Level",
-      "kebab_contact": "Contact Astraea Team",
+      "kebab_contact": "Contact Science Team",
       "kebab_auth": "Account & Sign In",
       "edit_profile": "Edit Profile & Info",
       "sign_out": "Sign Out / Switch",
       "theme_toggle": "Toggle Dark/Light Theme",
-      "kebab_ai": "AI Science Assistant"
+      "kebab_ai": "AI Science Assistant",
+      "kebab_ethics": "Mission Purpose, Ethics & Guide"
     },
     "tour": {
       "step_count": "Step {current} of {total}",
@@ -49,23 +50,23 @@
       "fallback_response": "Information not available in current run. Please consult the Evidence & Method page for parameter calibration and dataset catalogs."
     },
     "footer": {
-      "about_title": "TerraTwin / Astraea",
+      "about_title": "TerraTwin",
       "about_desc": "An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.",
-      "creators_title": "Project Team",
-      "lead_name": "Astraea Team",
+      "creators_title": "Research Team",
+      "lead_name": "TerraTwin Science Team",
       "lead_role": "Planetary Systems & Geospatial Engineering",
-      "consortium_name": "Astraea Planetary Science Lab",
-      "consortium_role": "Analog Matching Models & Data Pipeline",
-      "contact_title": "Contact & Links",
-      "contact_email": "contact@astraea.space",
+      "consortium_name": "Analog Matching Models & Data Pipeline",
+      "consortium_role": "Physics-Based Two-Stage Machine Learning Pipeline",
+      "contact_title": "Direct Telemetry & Contact",
+      "contact_email": "contact@terratwin.space",
       "github_link": "Project Repository (GitHub)",
-      "docs_link": "Methodology & Catalog",
+      "docs_link": "Methodology & Scientific Catalog",
       "sources_title": "Primary Data Sources",
       "source_nasa": "NASA Planetary Data System (LRO LOLA, Diviner, MRO CRISM/HiRISE)",
       "source_esa": "ESA Copernicus Programme (Sentinel-2 Multi-Spectral)",
       "source_usgs": "USGS / NASA JPL (SRTM, NASADEM, ASTER GEDv4)",
       "citation": "Official Data Sources: NASA PDS, ESA Copernicus Sentinel-2, Open Earth Observation.",
-      "copyright": "© 2026 TerraTwin • Developed by Astraea Team."
+      "copyright": "© 2026 TerraTwin • Planetary Analog Matching Platform."
     },
     "planet": {
       "col_diameter": "Equatorial Diameter",
@@ -73,7 +74,13 @@
       "col_atm": "Atmospheric Pressure",
       "col_temp": "Surface Temp Range",
       "col_period": "Rotation Period / Sol",
-      "col_nodes": "Surface Analogs Mapped"
+      "col_nodes": "Surface Analogs Mapped",
+      "col_slope": "Surface Slope & Class",
+      "col_roughness": "Surface Roughness (m)",
+      "col_albedo": "Optical Albedo",
+      "col_temp_swing": "Thermal Swing (ΔT °C)",
+      "col_ndvi": "Abiotic NDVI Filter",
+      "col_targets": "Cataloged Benchmarks"
     },
     "home": {
       "hero_kicker": "Multi-Attribute Planetary Surface Matching",
@@ -216,12 +223,13 @@
       "user_role": "مختبر أستريا",
       "kebab_header": "أدوات النظام السريعة",
       "kebab_profile": "الملف الشخصي والمستوى",
-      "kebab_contact": "تواصل معنا (فريق أستريا)",
+      "kebab_contact": "تواصل مع فريق البحث",
       "kebab_auth": "الحساب وبوابة الدخول",
       "edit_profile": "تعديل الملف الشخصي",
       "sign_out": "تسجيل الخروج / تبديل الحساب",
       "theme_toggle": "تبديل الوضع الداكن/الفاتح",
-      "kebab_ai": "المساعد العلمي الذكي"
+      "kebab_ai": "المساعد العلمي الذكي",
+      "kebab_ethics": "أهداف المشروع، الأخلاقيات، ودليل الاستخدام"
     },
     "tour": {
       "step_count": "خطوة {current} من {total}",
@@ -240,23 +248,23 @@
       "fallback_response": "لا تتوفر هذه المعلومة في نتائج التحليل الحالية. يُرجى مراجعة صفحة المنهجية والأدلة للاطلاع على تفاصيل النماذج ومعايرة البيانات."
     },
     "footer": {
-      "about_title": "تيرا توين / أستريا",
-      "about_desc": "منصة كوكبية مفتوحة لاستخبارات المواقع الشبيهة، تطابق خلايا سطح الأرض مع أهداف استكشاف القمر والمريخ باستخدام بيانات الأقمار الاصطناعية متعددة الأطياف.",
-      "creators_title": "فريق العمل",
-      "lead_name": "فريق أستريا (Astraea Team)",
-      "lead_role": "تطوير الأنظمة الكوكبية وهندسة البيانات الجغرافية",
-      "consortium_name": "مختبر أستريا للعلوم الكوكبية (Astraea Lab)",
-      "consortium_role": "نماذج المطابقة الكوكبية واستخبارات المواقع التناظرية",
-      "contact_title": "معلومات التواصل والروابط",
-      "contact_email": "contact@astraea.space",
+      "about_title": "تيرا توين (TerraTwin)",
+      "about_desc": "منصة استخبارات كوكبية مفتوحة المصدر لمطابقة تضاريس الأرض مع مواقع الهبوط والاستكشاف على القمر والمريخ باستخدام رادار وبيانات الأقمار الصناعية متعددة الأطياف.",
+      "creators_title": "فريق البحث والتطوير",
+      "lead_name": "فريق تيرا توين العلمي",
+      "lead_role": "هندسة النظم الكوكبية والاستشعار الجيومكاني",
+      "consortium_name": "نماذج المطابقة وخط معالجة البيانات الفيزيائية",
+      "consortium_role": "خوارزميات التعلم الآلي ثنائية المراحل المعتمدة على الفيزياء",
+      "contact_title": "قنوات التواصل العلمي المباشر",
+      "contact_email": "contact@terratwin.space",
       "github_link": "مستودع المشروع على جيت هب (GitHub)",
-      "docs_link": "المنهجية وكتالوج البيانات",
+      "docs_link": "المنهجية العلمية وكتالوج البيانات",
       "sources_title": "المصادر ومجموعات البيانات الرسمية",
       "source_nasa": "أرشيف ناسا الكوكبي PDS (بيانات LRO LOLA، Diviner، MRO CRISM/HiRISE)",
       "source_esa": "برنامج كوبرنيكوس الأوروبي (قمر Sentinel-2 متعدد الأطياف)",
       "source_usgs": "هيئة المساحة الأمريكية وناسا (نماذج الارتفاع SRTM، NASADEM، ASTER)",
       "citation": "مصادر البيانات الرسمية: أرشيف ناسا، وكالة الفضاء الأوروبية، وبيانات الرصد الأرضي المفتوحة.",
-      "copyright": "© 2026 تيرا توين • تم التطوير بواسطة فريق أستريا (Astraea Team)."
+      "copyright": "© 2026 تيرا توين (TerraTwin) • منصة مطابقة النظائر الكوكبية."
     },
     "planet": {
       "col_diameter": "القطر الاستوائي",
@@ -264,7 +272,13 @@
       "col_atm": "الضغط الجوي",
       "col_temp": "نطاق درجات الحرارة",
       "col_period": "دورة الدوران / اليوم",
-      "col_nodes": "العقد التناظرية الممسوحة"
+      "col_nodes": "العقد التناظرية الممسوحة",
+      "col_slope": "انحدار السطح وتصنيف التضاريس",
+      "col_roughness": "خشونة السطح التضاريسية (متر)",
+      "col_albedo": "معامل الانعكاس البصري (Albedo)",
+      "col_temp_swing": "التباين الحراري السطحي (ΔT)",
+      "col_ndvi": "مؤشر العزل غير الحيوي (NDVI Gate)",
+      "col_targets": "المواقع المعتمدة بالكتالوج"
     },
     "home": {
       "hero_kicker": "مطابقة الأسطح الكوكبية متعددة المعايير",
