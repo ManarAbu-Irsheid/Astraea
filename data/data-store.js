@@ -1331,7 +1331,7 @@ window.__TERRATWIN_DATA__ = {
       },
       "evidence": {
         "sec1_title": "Video Demonstration & Overview",
-        "sec1_subtitle": "2.5-minute technical walkthrough of the multi-spectral raster matching pipeline and validation framework.",
+        "sec1_subtitle": "A short demo of how the platform matches Earth sites to the Moon and Mars, and how the results were checked.",
         "video_toggle_local": "Local Video MP4",
         "video_toggle_embed": "YouTube / Vimeo Embed",
         "video_captions_note": "Closed captions available in English & Arabic.",
@@ -1524,7 +1524,7 @@ window.__TERRATWIN_DATA__ = {
       },
       "evidence": {
         "sec1_title": "العرض المرئي التوضيحي",
-        "sec1_subtitle": "شرح تقني مدته دقيقتان ونصف لمسار مطابقة البيانات النقطية متعددة الأطياف وإطار المصادقة.",
+        "sec1_subtitle": "عرض قصير يوضح كيف تطابق المنصة مواقع على الأرض مع القمر والمريخ، وكيف تم التحقق من النتائج.",
         "video_toggle_local": "فيديو محلي MP4",
         "video_toggle_embed": "تضمين يوتيوب / فيميو",
         "video_captions_note": "تتوفر ترجمة نصية باللغتين الإنجليزية والعربية.",
