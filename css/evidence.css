@@ -188,6 +188,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .video-section-card,
+  .video-responsive-wrapper,
+  .video-mute-btn,
   .evidence-kpi-card,
   .validation-plot-card,
   .donut-card,
@@ -201,6 +203,8 @@
   .kpi-ring-fill,
   .donut-seg,
   .site-ring-fill,
+  .video-responsive-wrapper,
+  .video-mute-btn,
   .catalog-chip,
   .catalog-table tbody tr,
   .catalog-table tbody tr .dataset-name-cell strong,
@@ -1701,7 +1705,7 @@ html[dir="rtl"] .catalog-table tbody tr:focus-visible {
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 1.2vw, 24px);
+  gap: clamp(12px, 1vw, 20px);
   position: relative;
   overflow: hidden;
   --card-accent: #00C6FF;
@@ -1717,68 +1721,91 @@ html[dir="rtl"] .catalog-table tbody tr:focus-visible {
   background: var(--grad-main);
 }
 
-.video-controls-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.video-source-toggles {
-  display: flex;
-  gap: 0.5rem;
-  background: var(--bg-secondary);
-  padding: 0.25rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-}
-
-.video-source-btn {
-  padding: 0.4rem 0.85rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.video-source-btn.active {
-  background: var(--grad-main);
-  border-color: transparent;
-  color: #060912;
-  font-weight: 700;
-  box-shadow: var(--glow-main);
-}
-
+/* Hero 16:9 Video Wrapper with Glowing Border */
 .video-responsive-wrapper {
   position: relative;
   width: 100%;
-  max-width: 924px;
-  max-height: 520px;
   aspect-ratio: 16 / 9;
-  margin-inline: auto;
   background: #020610;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(0, 198, 255, 0.35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 198, 255, 0.2);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
-.video-player-element,
-.video-embed-iframe {
+.video-responsive-wrapper:hover,
+.video-responsive-wrapper:focus-within {
+  border-color: #00C6FF;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8),
+              0 0 0 1px #00C6FF,
+              0 0 28px rgba(0, 198, 255, 0.4),
+              0 0 65px rgba(0, 198, 255, 0.15);
+}
+
+.video-player-element {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border: none;
+  border-radius: inherit;
+  display: block;
+  background: #020610;
 }
 
-/* Fallback overlay inside video player */
+/* Floating Round Mute/Unmute Button (Bottom Inline-End) */
+.video-mute-btn {
+  position: absolute;
+  bottom: 16px;
+  inset-inline-end: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(10, 18, 36, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 198, 255, 0.5);
+  color: #00C6FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  cursor: pointer;
+  z-index: 6;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 198, 255, 0.3);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.video-mute-btn:hover,
+.video-mute-btn:focus-visible {
+  background: rgba(0, 198, 255, 0.25);
+  border-color: #00C6FF;
+  box-shadow: 0 0 0 1px #00C6FF, 0 0 20px rgba(0, 198, 255, 0.6);
+  transform: scale(1.08);
+}
+
+.video-mute-btn:active {
+  transform: scale(0.96);
+}
+
+[data-theme="light"] .video-mute-btn {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 114, 255, 0.5);
+  color: #0072FF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15), 0 0 12px rgba(0, 114, 255, 0.25);
+}
+
+[data-theme="light"] .video-mute-btn:hover,
+[data-theme="light"] .video-mute-btn:focus-visible {
+  background: rgba(0, 114, 255, 0.15);
+  border-color: #0072FF;
+  box-shadow: 0 0 0 1px #0072FF, 0 0 16px rgba(0, 114, 255, 0.4);
+}
+
+/* Fallback overlay inside video player: "Demo video coming soon" */
 .video-fallback-overlay {
   position: absolute;
   inset: 0;
@@ -1788,119 +1815,29 @@ html[dir="rtl"] .catalog-table tbody tr:focus-visible {
   justify-content: center;
   text-align: center;
   padding: clamp(14px, 2vw, 28px);
-  background: radial-gradient(circle at center, rgba(12, 19, 38, 0.96), rgba(4, 7, 16, 0.98));
-  backdrop-filter: blur(8px);
+  background: radial-gradient(circle at center, rgba(10, 18, 36, 0.95), rgba(4, 7, 16, 0.98));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 10;
-  gap: 0.75rem;
+  gap: 0.85rem;
   color: var(--text-primary);
+}
+
+[data-theme="light"] .video-fallback-overlay {
+  background: radial-gradient(circle at center, rgba(240, 246, 255, 0.96), rgba(220, 232, 248, 0.98));
 }
 
 .video-fallback-icon {
-  font-size: clamp(2rem, 1.5rem + 1vw, 2.75rem);
-  filter: drop-shadow(0 0 12px rgba(0, 198, 255, 0.5));
+  font-size: clamp(2.2rem, 1.8rem + 1vw, 3rem);
+  filter: drop-shadow(0 0 14px rgba(0, 198, 255, 0.55));
 }
 
 .video-fallback-title {
-  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
-}
-
-.video-fallback-desc {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  max-width: 480px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.btn-switch-embed {
-  margin-top: 0.35rem;
-  padding: 0.6rem 1.25rem;
-  background: var(--grad-main);
-  color: #060912;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 0 16px rgba(0, 198, 255, 0.4);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.btn-switch-embed:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 0 24px rgba(0, 198, 255, 0.7);
-}
-
-.video-sub-label-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  padding-top: 0.5rem;
-}
-
-.video-duration-badge {
-  font-family: var(--font-mono);
-  background: rgba(0, 114, 255, 0.12);
-  border: 1px solid rgba(0, 198, 255, 0.35);
-  color: #00C6FF;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-}
-
-.embed-url-input-box {
-  display: none;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-secondary);
-  padding: 0.6rem 0.85rem;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--border-color);
-}
-
-.embed-url-input-box.show {
-  display: flex;
-}
-
-.embed-url-input {
-  flex: 1;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  padding: 0.4rem 0.65rem;
-  font-size: 0.8rem;
-  font-family: var(--font-mono);
-  outline: none;
-}
-
-.embed-url-input:focus {
-  border-color: #00C6FF;
-}
-
-.btn-apply-embed {
-  padding: 0.45rem 1rem;
-  background: var(--grad-main);
-  color: #060912;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--glow-main);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.btn-apply-embed:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(0, 114, 255, 0.45);
+  letter-spacing: 0.02em;
 }
 
 /* Section 3: Roadmap Card */

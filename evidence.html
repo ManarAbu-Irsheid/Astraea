@@ -211,50 +211,22 @@
     <div class="evidence-page-layout">
       
       <!-- ======================================================================
-           SECTION 1: VIDEO DEMONSTRATION (TOP)
+           SECTION 1: VIDEO DEMONSTRATION (TOP) - HERO VIDEO
            ====================================================================== -->
       <section class="video-section-card" id="evidenceVideoSpotlight">
         <div class="section-header-block" style="border:none; margin-bottom:0.5rem; padding-bottom:0;">
           <h1 class="section-main-title" data-i18n="evidence.sec1_title">Video Demonstration & Technical Walkthrough</h1>
-          <p class="section-sub-desc" data-i18n="evidence.sec1_subtitle">
-            A short demo of how the platform matches Earth sites to the Moon and Mars, and how the results were checked.
-          </p>
         </div>
 
-        <!-- Controls Bar: Source Switcher & Input -->
-        <div class="video-controls-bar">
-          <div class="video-source-toggles">
-            <button class="video-source-btn active" id="videoToggleLocal" data-i18n="evidence.video_toggle_local">Local Video MP4</button>
-            <button class="video-source-btn" id="videoToggleEmbed" data-i18n="evidence.video_toggle_embed">YouTube / Vimeo Embed</button>
-          </div>
-
-          <div class="video-duration-badge">⏱ MAX 02:30 MIN</div>
-        </div>
-
-        <!-- Customizable Embed Input Field -->
-        <div class="embed-url-input-box" id="embedUrlInputBox">
-          <input type="text" class="embed-url-input" id="embedUrlInput" value="https://www.youtube-nocookie.com/embed/g2qJgW9V6lU" placeholder="Enter custom YouTube/Vimeo embed URL...">
-          <button class="btn-apply-embed" id="btnApplyEmbed">Apply Source</button>
-        </div>
-
-        <!-- Dedicated 16:9 Video Container -->
+        <!-- Dedicated 16:9 Hero Video Container -->
         <div class="video-responsive-wrapper" id="videoResponsiveWrapper">
-          <video id="demoVideo" class="video-player-element" controls poster="assets/poster.svg">
+          <video id="demoVideo" class="video-player-element" autoplay muted loop playsinline preload="auto" controls poster="assets/poster.svg">
             <source src="assets/demo_video.mp4" type="video/mp4">
-            <track label="English" kind="subtitles" srclang="en" src="assets/subtitles-en.vtt" default>
-            <track label="العربية" kind="subtitles" srclang="ar" src="assets/subtitles-ar.vtt">
             Your browser does not support HTML5 video.
           </video>
-        </div>
-
-        <!-- Sub-label & Pitch -->
-        <div class="video-sub-label-bar">
-          <div>
-            <strong>PITCH BRIEF:</strong> Multi-sensor raster ingestion comparing Earth candidate cells against LOLA &amp; CRISM planetary surfaces.
-          </div>
-          <div data-i18n="evidence.video_captions_note">
-            Closed captions available in English &amp; Arabic.
-          </div>
+          <button type="button" class="video-mute-btn" id="videoMuteBtn" aria-label="Unmute video" title="Unmute video">
+            <span class="mute-icon" aria-hidden="true">🔇</span>
+          </button>
         </div>
       </section>
 

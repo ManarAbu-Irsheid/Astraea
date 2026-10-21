@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 const EvidenceController = {
   data: null,
-  activeVideoSource: 'local', // 'local' or 'embed'
   catalogItems: [],
   catalogSortCol: 'name',
   catalogSortAsc: true,
@@ -36,9 +35,7 @@ const EvidenceController = {
       const tr = window.I18n.translations;
       if (tr.en) {
         tr.en.evidence = tr.en.evidence || {};
-        tr.en.evidence.video_missing_title = tr.en.evidence.video_missing_title || 'Demo video not added yet';
-        tr.en.evidence.video_missing_desc = tr.en.evidence.video_missing_desc || 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
-        tr.en.evidence.video_missing_btn = tr.en.evidence.video_missing_btn || 'Switch to YouTube / Vimeo';
+        tr.en.evidence.video_coming_soon = tr.en.evidence.video_coming_soon || 'Demo video coming soon';
         tr.en.evidence.site_details_title = tr.en.evidence.site_details_title || 'Site Details';
         tr.en.evidence.chip_all = tr.en.evidence.chip_all || 'All';
         tr.en.evidence.chip_moon = tr.en.evidence.chip_moon || 'Moon';
@@ -47,9 +44,7 @@ const EvidenceController = {
       }
       if (tr.ar) {
         tr.ar.evidence = tr.ar.evidence || {};
-        tr.ar.evidence.video_missing_title = tr.ar.evidence.video_missing_title || 'لم تتم إضافة الفيديو التوضيحي بعد';
-        tr.ar.evidence.video_missing_desc = tr.ar.evidence.video_missing_desc || 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو';
-        tr.ar.evidence.video_missing_btn = tr.ar.evidence.video_missing_btn || 'التبديل إلى يوتيوب / فيميو';
+        tr.ar.evidence.video_coming_soon = tr.ar.evidence.video_coming_soon || 'الفيديو التوضيحي قريباً';
         tr.ar.evidence.site_details_title = tr.ar.evidence.site_details_title || 'تفاصيل الموقع';
         tr.ar.evidence.chip_all = tr.ar.evidence.chip_all || 'الكل';
         tr.ar.evidence.chip_moon = tr.ar.evidence.chip_moon || 'القمر';
@@ -78,88 +73,130 @@ const EvidenceController = {
       this.renderDataCatalogTable();
       this.renderRoadmap();
 
-      const fallbackOverlay = document.getElementById('videoFallbackOverlay');
-      if (fallbackOverlay) {
-        const lang = window.I18n ? window.I18n.currentLang : 'en';
-        const isAr = lang === 'ar';
-        const titleEl = fallbackOverlay.querySelector('.video-fallback-title');
-        const descEl = fallbackOverlay.querySelector('.video-fallback-desc');
-        const btnEl = fallbackOverlay.querySelector('.btn-switch-embed');
-        if (titleEl) titleEl.textContent = isAr ? 'لم تتم إضافة الفيديو التوضيحي بعد' : 'Demo video not added yet';
-        if (descEl) descEl.textContent = isAr ? 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو' : 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
-        if (btnEl) btnEl.textContent = isAr ? 'التبديل إلى يوتيوب / فيميو' : 'Switch to YouTube / Vimeo';
+      const fallbackTitle = document.querySelector('#videoFallbackOverlay .video-fallback-title');
+      if (fallbackTitle) {
+        const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+        fallbackTitle.textContent = isAr ? 'الفيديو التوضيحي قريباً' : 'Demo video coming soon';
+      }
+
+      const muteBtn = document.getElementById('videoMuteBtn');
+      const video = document.getElementById('demoVideo');
+      if (muteBtn && video) {
+        const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+        const isMuted = video.muted;
+        const label = isMuted 
+          ? (isAr ? 'تشغيل الصوت' : 'Unmute video') 
+          : (isAr ? 'كتم الصوت' : 'Mute video');
+        muteBtn.setAttribute('aria-label', label);
+        muteBtn.setAttribute('title', label);
       }
     });
   },
 
   /* ==========================================================================
-     SECTION 1: VIDEO DEMONSTRATION & TOGGLE
+     SECTION 1: HERO VIDEO DEMONSTRATION
      ========================================================================== */
   initVideoPlayer() {
-    const toggleLocalBtn = document.getElementById('videoToggleLocal');
-    const toggleEmbedBtn = document.getElementById('videoToggleEmbed');
-    const embedInputBox = document.getElementById('embedUrlInputBox');
+    const video = document.getElementById('demoVideo');
     const playerContainer = document.getElementById('videoResponsiveWrapper');
-    const applyEmbedBtn = document.getElementById('btnApplyEmbed');
-    const embedInput = document.getElementById('embedUrlInput');
+    const muteBtn = document.getElementById('videoMuteBtn');
+    if (!video) return;
 
-    const setSource = (source) => {
-      this.activeVideoSource = source;
-      toggleLocalBtn?.classList.toggle('active', source === 'local');
-      toggleEmbedBtn?.classList.toggle('active', source === 'embed');
-      embedInputBox?.classList.toggle('show', source === 'embed');
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (source === 'local') {
-        playerContainer.innerHTML = `
-          <video id="demoVideo" class="video-player-element" controls poster="assets/poster.svg">
-            <source src="assets/demo_video.mp4" type="video/mp4">
-            <track label="English" kind="subtitles" srclang="en" src="assets/subtitles-en.vtt" default>
-            <track label="العربية" kind="subtitles" srclang="ar" src="assets/subtitles-ar.vtt">
-            Your browser does not support HTML5 video.
-          </video>
-        `;
+    // 8. Under prefers-reduced-motion: do not autoplay; show normal play button
+    if (prefersReduced) {
+      video.autoplay = false;
+      video.removeAttribute('autoplay');
+      video.pause();
+    } else {
+      video.autoplay = true;
+      video.muted = true;
+      video.play().catch(() => {
+        // Autoplay may be restricted by browser until user interaction
+      });
+    }
 
-        const videoEl = playerContainer.querySelector('#demoVideo');
-        const sourceEl = videoEl?.querySelector('source');
+    // 6. Round mute/unmute button logic
+    let userManuallyMuted = false;
 
-        const handleError = () => {
-          this.showVideoFallback(playerContainer, setSource);
-        };
+    const updateMuteBtn = () => {
+      if (!muteBtn) return;
+      const lang = window.I18n ? window.I18n.currentLang : 'en';
+      const isAr = lang === 'ar';
+      const isMuted = video.muted;
 
-        sourceEl?.addEventListener('error', handleError);
-        videoEl?.addEventListener('error', handleError);
+      const label = isMuted 
+        ? (isAr ? 'تشغيل الصوت' : 'Unmute video') 
+        : (isAr ? 'كتم الصوت' : 'Mute video');
 
-        // Immediate check if media source failed to load
-        if (videoEl && (videoEl.networkState === HTMLMediaElement.NETWORK_NO_SOURCE || videoEl.error)) {
-          handleError();
-        }
+      muteBtn.setAttribute('aria-label', label);
+      muteBtn.setAttribute('title', label);
+      muteBtn.innerHTML = `<span class="mute-icon" aria-hidden="true">${isMuted ? '🔇' : '🔊'}</span>`;
+      muteBtn.classList.toggle('is-muted', isMuted);
+    };
 
-        // Attach video play XP award
-        videoEl?.addEventListener('play', () => {
-          if (window.UserSystem && !this._videoXpAwarded) {
-            this._videoXpAwarded = true;
-            window.UserSystem.addXP(30, 'Viewed technical demonstration video', 'مشاهدة العرض التقني الميداني');
-          }
-        });
-      } else {
-        const url = embedInput?.value.trim() || 'https://www.youtube-nocookie.com/embed/g2qJgW9V6lU?autoplay=1';
-        playerContainer.innerHTML = `
-          <iframe class="video-embed-iframe" src="${url}" title="TerraTwin Demonstration Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        `;
+    // 9. Unmute automatically on user's first click or key press anywhere on the page (one time only)
+    const removeFirstInteractionListeners = () => {
+      document.removeEventListener('click', handleFirstInteraction, true);
+      document.removeEventListener('keydown', handleFirstInteraction, true);
+    };
+
+    const handleFirstInteraction = (e) => {
+      removeFirstInteractionListeners();
+
+      // If user clicked the mute button directly, let the button click handler control state
+      if (muteBtn && (muteBtn === e.target || muteBtn.contains(e.target))) {
+        return;
+      }
+
+      // If the user already muted it with the button, do not unmute
+      if (userManuallyMuted) {
+        return;
+      }
+
+      if (video.muted) {
+        video.muted = false;
+        video.play().catch(() => {});
+        updateMuteBtn();
       }
     };
 
-    toggleLocalBtn?.addEventListener('click', () => setSource('local'));
-    toggleEmbedBtn?.addEventListener('click', () => setSource('embed'));
+    document.addEventListener('click', handleFirstInteraction, true);
+    document.addEventListener('keydown', handleFirstInteraction, true);
 
-    applyEmbedBtn?.addEventListener('click', () => {
-      if (this.activeVideoSource === 'embed') setSource('embed');
-    });
+    if (muteBtn) {
+      muteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeFirstInteractionListeners();
+        video.muted = !video.muted;
+        if (video.muted) {
+          userManuallyMuted = true;
+        } else {
+          video.play().catch(() => {});
+        }
+        updateMuteBtn();
+      });
+    }
 
-    setSource('local');
+    video.addEventListener('volumechange', updateMuteBtn);
+    updateMuteBtn();
+
+    // 7. If assets/demo_video.mp4 fails to load, show clean overlay
+    const sourceEl = video.querySelector('source');
+    const handleError = () => {
+      this.showVideoFallback(playerContainer);
+    };
+
+    sourceEl?.addEventListener('error', handleError);
+    video.addEventListener('error', handleError);
+
+    if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE || video.error) {
+      handleError();
+    }
   },
 
-  showVideoFallback(container, setSource) {
+  showVideoFallback(container) {
     if (!container || container.querySelector('#videoFallbackOverlay')) return;
 
     const lang = window.I18n ? window.I18n.currentLang : 'en';
@@ -170,21 +207,10 @@ const EvidenceController = {
     overlay.id = 'videoFallbackOverlay';
     overlay.innerHTML = `
       <div class="video-fallback-icon" aria-hidden="true">🎬</div>
-      <h3 class="video-fallback-title" data-i18n="evidence.video_missing_title">
-        ${isAr ? 'لم تتم إضافة الفيديو التوضيحي بعد' : 'Demo video not added yet'}
+      <h3 class="video-fallback-title" data-i18n="evidence.video_coming_soon">
+        ${isAr ? 'الفيديو التوضيحي قريباً' : 'Demo video coming soon'}
       </h3>
-      <p class="video-fallback-desc" data-i18n="evidence.video_missing_desc">
-        ${isAr ? 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو' : 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link'}
-      </p>
-      <button class="btn-switch-embed" id="btnSwitchToEmbed" data-i18n="evidence.video_missing_btn">
-        ${isAr ? 'التبديل إلى يوتيوب / فيميو' : 'Switch to YouTube / Vimeo'}
-      </button>
     `;
-
-    const switchBtn = overlay.querySelector('#btnSwitchToEmbed');
-    switchBtn?.addEventListener('click', () => {
-      setSource('embed');
-    });
 
     container.appendChild(overlay);
   },
