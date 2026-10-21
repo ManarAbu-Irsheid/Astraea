@@ -381,10 +381,19 @@
             <div class="rank-bars-container" id="validationRankBars"></div>
           </div>
 
-          <!-- Right Column: Stack of Two Donut Cards -->
+          <!-- Right Column: Stack of Analytics Cards -->
           <div class="donuts-stacked-column">
             
-            <!-- Donut 1: Sites by Status -->
+            <!-- Card 1: Site Details (Selected Site) -->
+            <div class="donut-card site-details-card" id="siteDetailsCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title" data-i18n="evidence.site_details_title">Site Details</h4>
+                <span class="site-details-rank-badge mono" id="siteDetailsRankBadge">#1</span>
+              </div>
+              <div class="site-details-container" id="siteDetailsContainer"></div>
+            </div>
+
+            <!-- Card 2: Sites by Status -->
             <div class="donut-card" id="sitesStatusDonutCard">
               <div class="donut-card-header">
                 <h4 class="donut-card-title">Sites by Status</h4>
@@ -392,21 +401,12 @@
               <div class="donut-visual-container" id="sitesStatusDonutContainer"></div>
             </div>
 
-            <!-- Donut 2: Base Weights -->
+            <!-- Card 3: Base Weights -->
             <div class="donut-card" id="baseWeightsDonutCard">
               <div class="donut-card-header">
                 <h4 class="donut-card-title">Base Parameter Weights</h4>
               </div>
               <div class="donut-visual-container" id="baseWeightsDonutContainer"></div>
-            </div>
-
-            <!-- Card 3: Site Details (Selected Site) -->
-            <div class="donut-card site-details-card" id="siteDetailsCard">
-              <div class="donut-card-header">
-                <h4 class="donut-card-title" data-i18n="evidence.site_details_title">Site Details</h4>
-                <span class="site-details-rank-badge mono" id="siteDetailsRankBadge">#1</span>
-              </div>
-              <div class="site-details-container" id="siteDetailsContainer"></div>
             </div>
 
           </div>

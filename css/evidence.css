@@ -615,6 +615,18 @@ html[dir="rtl"] .rank-bar-row.selected {
   padding: clamp(16px, 1.3vw, 24px);
 }
 
+/* Base weights card (at bottom of right column) fills remaining height to align with ranking card */
+#baseWeightsDonutCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#baseWeightsDonutCard .donut-visual-container {
+  flex: 1;
+  justify-content: space-around;
+}
+
 .donut-card-header {
   display: flex;
   align-items: center;
@@ -899,7 +911,6 @@ html[dir="rtl"] .rank-bar-row.selected {
   flex-direction: column;
   gap: 0.85rem;
   padding: clamp(16px, 1.3vw, 24px);
-  flex: 1;
 }
 
 .site-details-rank-badge {
@@ -916,7 +927,6 @@ html[dir="rtl"] .rank-bar-row.selected {
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  flex: 1;
 }
 
 .site-details-top-block {
@@ -1084,7 +1094,6 @@ html[dir="rtl"] .rank-bar-row.selected {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  flex: 1;
 }
 
 .site-notes-label {
@@ -1880,15 +1889,13 @@ html[dir="rtl"] .timeline-connector.connector-active {
     position: static;
     top: auto;
   }
-  .site-details-card {
+  #baseWeightsDonutCard {
     flex: initial;
     height: auto;
   }
-  .site-details-container {
+  #baseWeightsDonutCard .donut-visual-container {
     flex: initial;
-  }
-  .site-details-notes-box {
-    flex: initial;
+    justify-content: flex-start;
   }
 }
 
