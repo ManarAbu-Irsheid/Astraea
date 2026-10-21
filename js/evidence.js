@@ -24,13 +24,13 @@ const EvidenceController = {
   catalogItems: [],
   catalogSortCol: 'name',
   catalogSortAsc: true,
-  expandedRank: null,
+  selectedRank: 1, // Default selected rank for Site Details card
 
   init(validationData) {
     this.data = validationData;
     this.catalogItems = [...(validationData.data_catalog || [])];
 
-    // Register translation keys for video fallback overlay
+    // Register translation keys for video fallback and site details
     if (window.I18n && window.I18n.translations) {
       const tr = window.I18n.translations;
       if (tr.en) {
@@ -38,12 +38,14 @@ const EvidenceController = {
         tr.en.evidence.video_missing_title = tr.en.evidence.video_missing_title || 'Demo video not added yet';
         tr.en.evidence.video_missing_desc = tr.en.evidence.video_missing_desc || 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
         tr.en.evidence.video_missing_btn = tr.en.evidence.video_missing_btn || 'Switch to YouTube / Vimeo';
+        tr.en.evidence.site_details_title = tr.en.evidence.site_details_title || 'Site Details';
       }
       if (tr.ar) {
         tr.ar.evidence = tr.ar.evidence || {};
         tr.ar.evidence.video_missing_title = tr.ar.evidence.video_missing_title || 'لم تتم إضافة الفيديو التوضيحي بعد';
         tr.ar.evidence.video_missing_desc = tr.ar.evidence.video_missing_desc || 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو';
         tr.ar.evidence.video_missing_btn = tr.ar.evidence.video_missing_btn || 'التبديل إلى يوتيوب / فيميو';
+        tr.ar.evidence.site_details_title = tr.ar.evidence.site_details_title || 'تفاصيل الموقع';
       }
     }
 
@@ -51,6 +53,7 @@ const EvidenceController = {
     this.renderKpiStrip();
     this.renderValidationRankPlot();
     this.renderDonuts();
+    this.renderSiteDetails();
     this.renderSensitivityMatrix();
     this.renderDataCatalogTable();
     this.renderRoadmap();
@@ -61,6 +64,7 @@ const EvidenceController = {
       this.renderKpiStrip();
       this.renderValidationRankPlot();
       this.renderDonuts();
+      this.renderSiteDetails();
       this.renderSensitivityMatrix();
       this.renderDataCatalogTable();
       this.renderRoadmap();
@@ -250,73 +254,165 @@ const EvidenceController = {
       </div>
     `;
 
-    // 13 Rows
+    // Axis Labels Bar above First Row (Aligns with full-width bars)
+    const axisHtml = `
+      <div class="ranking-axis-bar" aria-hidden="true">
+        <div class="axis-scale-ticks">
+          <span>50%</span>
+          <span>60%</span>
+          <span>70%</span>
+          <span>80%</span>
+          <span>90%</span>
+          <span>100%</span>
+        </div>
+      </div>
+    `;
+
+    // 13 Stacked Rows (Line 1: Rank, Name, Pill, Score % | Line 2: Full-width Gradient Bar)
     const rowsHtml = this.data.validation_rankings.map(item => {
       const isFailure = item.status === 'failure_case';
       const isCandidate = item.status === 'new_candidate';
       const statusClass = isFailure ? 'status-failure' : (isCandidate ? 'status-candidate' : 'status-validated');
       
       const name = isAr ? item.name_ar : item.name;
-      const flag = isAr ? item.flag_ar : item.flag;
-      const notes = isAr ? (item.notes_ar || item.notes) : item.notes;
 
       // Scale 50% -> 100%
       const barPct = Math.max(0, Math.min(100, ((item.score - 50) / 50) * 100));
-      const isExpanded = this.expandedRank === item.rank;
+      const isSelected = this.selectedRank === item.rank;
 
       const pillHtml = isCandidate
         ? `<span class="pill-new">${isAr ? 'جديد' : 'NEW'}</span>`
         : '';
 
       return `
-        <div class="rank-row-group ${isExpanded ? 'expanded' : ''}" data-rank="${item.rank}">
-          <div class="rank-bar-row ${statusClass}" tabindex="0" role="button" aria-expanded="${isExpanded}" title="${name} — Click to expand telemetry notes">
-            <span class="rank-index-num">#${item.rank}</span>
-            <div class="rank-name-box">
-              <span class="rank-site-name" title="${name}">${name}</span>
-              ${pillHtml}
+        <div class="rank-row-group" data-rank="${item.rank}" data-status="${item.status}">
+          <div class="rank-bar-row ${statusClass} ${isSelected ? 'selected' : ''}" 
+               tabindex="0" 
+               role="button" 
+               aria-selected="${isSelected}" 
+               aria-pressed="${isSelected}" 
+               title="${name}">
+            <div class="rank-row-line1">
+              <div class="rank-title-group">
+                <span class="rank-index-num">#${item.rank}</span>
+                <span class="rank-site-name">${name}</span>
+                ${pillHtml}
+              </div>
+              <div class="rank-score-group">
+                <span class="rank-score-val mono">${item.score.toFixed(1)}%</span>
+              </div>
             </div>
-            <div class="rank-track-wrap">
+
+            <div class="rank-row-line2">
               <div class="rank-bar-track">
                 <div class="rank-bar-fill ${statusClass}" style="width: ${barPct.toFixed(1)}%;"></div>
               </div>
-            </div>
-            <span class="rank-score-val mono">${item.score.toFixed(1)}%</span>
-            <span class="rank-chevron" aria-hidden="true">▾</span>
-          </div>
-
-          <div class="rank-drawer-panel" id="rankDrawer_${item.rank}" aria-hidden="${!isExpanded}">
-            <div class="drawer-inner-content">
-              <div class="drawer-flag-tag ${statusClass}">
-                <span class="drawer-flag-icon">${isFailure ? '⚠️' : isCandidate ? '✨' : '✓'}</span>
-                <span>${flag}</span>
-              </div>
-              <p class="drawer-notes-text">${notes}</p>
             </div>
           </div>
         </div>
       `;
     }).join('');
 
-    container.innerHTML = legendHtml + rowsHtml;
+    container.innerHTML = legendHtml + axisHtml + rowsHtml;
 
-    // Attach expandable toggle listeners
+    // Attach row selection listeners (highlight row and update Site Details card)
     container.querySelectorAll('.rank-bar-row').forEach(row => {
-      const toggle = () => {
+      const select = () => {
         const parent = row.closest('.rank-row-group');
         const rank = parseInt(parent.getAttribute('data-rank'), 10);
-        this.expandedRank = this.expandedRank === rank ? null : rank;
-        this.renderValidationRankPlot();
+        if (this.selectedRank !== rank) {
+          this.selectedRank = rank;
+          container.querySelectorAll('.rank-bar-row').forEach(r => {
+            const isTarget = r === row;
+            r.classList.toggle('selected', isTarget);
+            r.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+            r.setAttribute('aria-pressed', isTarget ? 'true' : 'false');
+          });
+          this.renderSiteDetails();
+        }
       };
 
-      row.addEventListener('click', toggle);
+      row.addEventListener('click', select);
       row.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          toggle();
+          select();
         }
       });
     });
+  },
+
+  /**
+   * Site Details Card (Selected Ranking Site)
+   * Shows site name, status pill, glowing ring gauge with score %, flag text, and notes.
+   */
+  renderSiteDetails() {
+    const container = document.getElementById('siteDetailsContainer');
+    const badgeEl = document.getElementById('siteDetailsRankBadge');
+    const cardEl = document.getElementById('siteDetailsCard');
+    if (!container || !this.data || !this.data.validation_rankings) return;
+
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
+    const item = this.data.validation_rankings.find(r => r.rank === this.selectedRank) 
+      || this.data.validation_rankings[0];
+    if (!item) return;
+
+    const isFailure = item.status === 'failure_case';
+    const isCandidate = item.status === 'new_candidate';
+    const statusClass = isFailure ? 'status-failure' : (isCandidate ? 'status-candidate' : 'status-validated');
+    const ringClass = isFailure ? 'ring-failure' : (isCandidate ? 'ring-candidate' : 'ring-validated');
+    const cardAccent = isFailure ? '#FF2525' : (isCandidate ? '#FF8A00' : '#00C6FF');
+
+    const name = isAr ? item.name_ar : item.name;
+    const flag = isAr ? item.flag_ar : item.flag;
+    const notes = isAr ? (item.notes_ar || item.notes) : item.notes;
+
+    const statusLabel = isFailure 
+      ? (isAr ? 'حالة فشل' : 'Failure Case')
+      : isCandidate 
+        ? (isAr ? 'مرشح جديد' : 'New Candidate')
+        : (isAr ? 'موقع معتمد' : 'Validated');
+
+    // Ring gauge calculations: r = 32, C = 201.06
+    const C = 201.06;
+    const scoreVal = Math.max(0, Math.min(100, item.score || 0));
+    const offset = (C * (1 - scoreVal / 100)).toFixed(1);
+
+    if (badgeEl) badgeEl.textContent = `#${item.rank}`;
+    if (cardEl) cardEl.style.setProperty('--card-accent', cardAccent);
+
+    container.innerHTML = `
+      <div class="site-details-top-block">
+        <div class="site-details-meta">
+          <span class="site-status-pill ${statusClass}">
+            <span class="status-dot"></span>
+            ${statusLabel}
+          </span>
+          <h3 class="site-details-name" title="${name}">${name}</h3>
+        </div>
+
+        <div class="site-details-ring-wrap" title="Score: ${item.score.toFixed(1)}%">
+          <svg class="site-details-ring-svg" viewBox="0 0 80 80" aria-label="Score: ${item.score.toFixed(1)}%">
+            <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+            <circle cx="40" cy="40" r="32" class="site-ring-fill ${ringClass}"
+              style="stroke-dasharray: 201.06; stroke-dashoffset: ${offset};"></circle>
+            <text x="40" y="44" text-anchor="middle" dominant-baseline="central" class="site-ring-score-text mono">${item.score.toFixed(1)}%</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="site-details-flag-banner ${statusClass}">
+        <span class="flag-icon">${isFailure ? '⚠️' : isCandidate ? '✨' : '✓'}</span>
+        <span class="flag-label">${flag}</span>
+      </div>
+
+      <div class="site-details-notes-box">
+        <div class="site-notes-label">${isAr ? 'تقرير المعايرة والبيانات الميدانية:' : 'Calibration & Ground-Truth Notes:'}</div>
+        <p class="site-notes-content">${notes}</p>
+      </div>
+    `;
   },
 
   /**
