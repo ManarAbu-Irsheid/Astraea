@@ -18,6 +18,57 @@ document.addEventListener('DOMContentLoaded', async () => {
   SiteFinder.init(cellsData.cells, targetsData ? targetsData.targets : []);
 });
 
+/**
+ * Target-aware criteria: choosing Moon or Mars changes
+ * the available mission profiles and the criteria names.
+ */
+const FINDER_TARGET_CONFIG = {
+  all: {
+    profiles: ['rover', 'base', 'isru', 'caves', 'biosig'],
+    criteria: {
+      slope:    { en: 'Slope & Roughness',   ar: 'الانحدار والوعورة' },
+      ice:      { en: 'Ice & Volatiles',     ar: 'الجليد والمواد المتطايرة' },
+      regolith: { en: 'Regolith Mechanics',  ar: 'ميكانيكا التربة' },
+      volcanic: { en: 'Volcanic / Cavities', ar: 'البراكين والتجاويف' }
+    },
+    hint: {
+      en: 'Showing analogs for both the Moon and Mars.',
+      ar: 'يتم عرض المواقع المشابهة للقمر والمريخ معاً.'
+    }
+  },
+  moon: {
+    profiles: ['rover', 'base', 'isru', 'caves'],
+    criteria: {
+      slope:    { en: 'Crater Slopes & Boulders', ar: 'منحدرات الفوهات والصخور' },
+      ice:      { en: 'Polar Ice (PSR)',          ar: 'الجليد القطبي (المناطق المظللة)' },
+      regolith: { en: 'Sharp Lunar Regolith',     ar: 'تربة القمر الحادة' },
+      volcanic: { en: 'Lava Tubes & Basalt',      ar: 'أنابيب الحمم والبازلت' }
+    },
+    hint: {
+      en: 'Moon baseline: vacuum, 0.16 g, abrasive dust, polar ice in shadowed craters.',
+      ar: 'مرجع القمر: فراغ، جاذبية 0.16، غبار حاد، وجليد في الفوهات المظللة.'
+    }
+  },
+  mars: {
+    profiles: ['rover', 'base', 'isru', 'biosig'],
+    criteria: {
+      slope:    { en: 'Slope & Rock Density',      ar: 'الانحدار وكثافة الصخور' },
+      ice:      { en: 'Subsurface Ice / Water',    ar: 'الجليد والماء تحت السطح' },
+      regolith: { en: 'Fine Dust & Perchlorates',  ar: 'الغبار الناعم والبيركلورات' },
+      volcanic: { en: 'Hydrated & Volcanic Minerals', ar: 'المعادن المائية والبركانية' }
+    },
+    hint: {
+      en: 'Mars baseline: thin CO₂ air, 0.38 g, hyper-arid soils, ancient water minerals.',
+      ar: 'مرجع المريخ: غلاف رقيق من CO₂، جاذبية 0.38، تربة شديدة الجفاف، ومعادن مائية قديمة.'
+    }
+  }
+};
+
+const FINDER_UI_TEXT = {
+  profileTitle: { en: 'Mission Profile', ar: 'نوع المهمة' },
+  reset:        { en: 'Reset Defaults',  ar: 'إعادة الضبط' }
+};
+
 const SiteFinder = {
   cells: [],
   targets: [],
@@ -37,7 +88,7 @@ const SiteFinder = {
 
     this.initMap();
     this.bindFilters();
-    this.renderMarkers();
+    this.applyTarget(this.activeTargetFilter);
 
     // Default select first site (e.g. Yungay or Al-Labbah)
     if (this.cells.length > 0) {
@@ -45,11 +96,13 @@ const SiteFinder = {
     }
 
     document.addEventListener('languageChanged', () => {
+      this.renderCriteria();
       this.renderMarkers();
       if (this.selectedSite) this.renderSiteDetail(this.selectedSite);
     });
 
     document.addEventListener('profileChanged', () => {
+      this.syncCriteriaUI();
       this.renderMarkers();
       if (this.selectedSite) this.renderSiteDetail(this.selectedSite);
     });
@@ -424,14 +477,126 @@ const SiteFinder = {
     }
   },
 
+  /* ---------- Target-aware criteria ---------- */
+  lang() {
+    return (window.I18n ? window.I18n.currentLang : 'en') === 'ar' ? 'ar' : 'en';
+  },
+
+  // Called when the user picks All / Moon / Mars
+  applyTarget(target) {
+    this.activeTargetFilter = target;
+    const cfg = FINDER_TARGET_CONFIG[target] || FINDER_TARGET_CONFIG.all;
+    const mpm = window.MissionProfileManager;
+
+    // If the current profile does not exist for this target, switch to the first one
+    if (mpm && !cfg.profiles.includes(mpm.activeProfile)) {
+      mpm.setProfile(cfg.profiles[0], false); // fires profileChanged -> map re-renders
+    }
+
+    this.updateTerrainChips();
+    this.renderCriteria();
+    this.renderMarkers();
+  },
+
+  // Hide terrain chips that have no sites for the selected target
+  updateTerrainChips() {
+    const t = this.activeTargetFilter;
+    const available = new Set(
+      this.cells
+        .filter(c => t === 'all' || c.target_affinity === 'both' || c.target_affinity === t)
+        .map(c => c.terrain_type)
+    );
+    document.querySelectorAll('.terrain-chip').forEach(chip => {
+      const terrain = chip.getAttribute('data-terrain');
+      const show = terrain === 'all' || available.has(terrain);
+      chip.style.display = show ? '' : 'none';
+      if (!show && chip.classList.contains('active')) {
+        chip.classList.remove('active');
+        const allChip = document.querySelector('.terrain-chip[data-terrain="all"]');
+        if (allChip) allChip.classList.add('active');
+        this.activeTerrainFilter = 'all';
+      }
+    });
+  },
+
+  // Draw profile chips + weight sliders for the selected target
+  renderCriteria() {
+    const lang = this.lang();
+    const cfg = FINDER_TARGET_CONFIG[this.activeTargetFilter] || FINDER_TARGET_CONFIG.all;
+    const mpm = window.MissionProfileManager;
+    if (!mpm) return;
+
+    const title = document.getElementById('finderProfileTitle');
+    if (title) title.textContent = FINDER_UI_TEXT.profileTitle[lang];
+    const resetBtn = document.getElementById('finderResetWeightsBtn');
+    if (resetBtn) resetBtn.textContent = FINDER_UI_TEXT.reset[lang];
+    const hint = document.getElementById('finderTargetHint');
+    if (hint) hint.textContent = cfg.hint[lang];
+
+    // Profile chips
+    const chipsBox = document.getElementById('finderProfileChips');
+    if (chipsBox) {
+      chipsBox.innerHTML = '';
+      cfg.profiles.forEach(id => {
+        const btn = document.createElement('button');
+        btn.className = 'finder-profile-chip';
+        btn.setAttribute('data-profile', id);
+        btn.textContent = (mpm.profileLabels[lang] && mpm.profileLabels[lang][id]) || id;
+        btn.addEventListener('click', () => mpm.setProfile(id, false));
+        chipsBox.appendChild(btn);
+      });
+    }
+
+    // Weight sliders
+    const slidersBox = document.getElementById('finderWeightSliders');
+    if (slidersBox) {
+      slidersBox.innerHTML = '';
+      Object.keys(cfg.criteria).forEach(key => {
+        const group = document.createElement('div');
+        group.className = 'weight-slider-group';
+        group.innerHTML = `
+          <div class="weight-slider-header">
+            <span>${cfg.criteria[key][lang]}</span>
+            <span class="weight-val" id="finderWeightVal_${key}"></span>
+          </div>
+          <input type="range" class="weight-slider" id="finderWeightSlider_${key}"
+                 min="0.05" max="0.70" step="0.05">`;
+        slidersBox.appendChild(group);
+        group.querySelector('input').addEventListener('input', (e) => {
+          mpm.setWeight(key, e.target.value); // fires profileChanged -> map re-renders
+        });
+      });
+    }
+
+    this.syncCriteriaUI();
+  },
+
+  // Keep chips & sliders in sync with the current profile/weights
+  syncCriteriaUI() {
+    const mpm = window.MissionProfileManager;
+    if (!mpm) return;
+    document.querySelectorAll('.finder-profile-chip').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-profile') === mpm.activeProfile);
+    });
+    Object.entries(mpm.weights).forEach(([key, val]) => {
+      const slider = document.getElementById(`finderWeightSlider_${key}`);
+      const readout = document.getElementById(`finderWeightVal_${key}`);
+      if (slider) slider.value = val;
+      if (readout) readout.textContent = `${Math.round(val * 100)}%`;
+    });
+  },
+
   bindFilters() {
+    const finderReset = document.getElementById('finderResetWeightsBtn');
+    if (finderReset && window.MissionProfileManager) {
+      finderReset.addEventListener('click', () => window.MissionProfileManager.resetCurrentWeights());
+    }
     // Target Body Switcher
     document.querySelectorAll('.body-toggle-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.body-toggle-btn').forEach(b => b.classList.remove('active'));
         e.currentTarget.classList.add('active');
-        this.activeTargetFilter = e.currentTarget.getAttribute('data-body');
-        this.renderMarkers();
+        this.applyTarget(e.currentTarget.getAttribute('data-body'));
       });
     });
 

@@ -230,33 +230,17 @@
           </div>
         </div>
 
-        <!-- Active Weights Summary Indicator -->
+        <!-- Mission Profile & Criteria (changes with the selected target) -->
         <div>
           <div class="filter-section-title">
-            <span data-i18n="finder.profile_summary_title">Active Mission Weights</span>
+            <span id="finderProfileTitle">Mission Profile</span>
           </div>
-          <div class="profile-weights-box">
-            <div class="weights-pill-row">
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_slope">Slope</span>
-                <span class="weight-mini-val" id="miniWeight_slope">35%</span>
-              </div>
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_ice">Ice/Vol</span>
-                <span class="weight-mini-val" id="miniWeight_ice">10%</span>
-              </div>
-            </div>
-            <div class="weights-pill-row">
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_regolith">Regolith</span>
-                <span class="weight-mini-val" id="miniWeight_regolith">40%</span>
-              </div>
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_volcanic">Volcanic</span>
-                <span class="weight-mini-val" id="miniWeight_volcanic">15%</span>
-              </div>
-            </div>
+          <div class="finder-profile-chips" id="finderProfileChips"></div>
+          <div class="profile-weights-box finder-criteria-box">
+            <div id="finderWeightSliders"></div>
+            <button class="weights-reset-btn" id="finderResetWeightsBtn">Reset Defaults</button>
           </div>
+          <p class="finder-target-hint" id="finderTargetHint"></p>
         </div>
 
         <!-- Terrain Classification Toggles -->

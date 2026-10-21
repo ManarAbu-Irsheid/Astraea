@@ -626,6 +626,50 @@
   border-color: var(--text-secondary);
 }
 
+
+/* Target-aware Mission Profile chips & criteria sliders */
+.finder-profile-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.finder-profile-chip {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.finder-profile-chip:hover {
+  border-color: var(--accent-blue);
+  color: var(--text-primary);
+}
+
+.finder-profile-chip.active {
+  background: var(--badge-bg);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.finder-criteria-box .weights-reset-btn {
+  margin-top: 0.2rem;
+}
+
+.finder-target-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 /* ==========================================================================
    MOBILE BOTTOM SHEET RESPONSIVENESS
    ========================================================================== */

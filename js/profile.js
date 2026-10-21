@@ -18,7 +18,8 @@ const MissionProfileManager = {
     rover: { slope: 0.35, ice: 0.10, regolith: 0.40, volcanic: 0.15 },
     base: { slope: 0.25, ice: 0.35, regolith: 0.25, volcanic: 0.15 },
     isru: { slope: 0.15, ice: 0.45, regolith: 0.30, volcanic: 0.10 },
-    caves: { slope: 0.20, ice: 0.05, regolith: 0.15, volcanic: 0.60 }
+    caves: { slope: 0.20, ice: 0.05, regolith: 0.15, volcanic: 0.60 },
+    biosig: { slope: 0.10, ice: 0.25, regolith: 0.25, volcanic: 0.40 }
   },
 
   profileLabels: {
@@ -26,7 +27,8 @@ const MissionProfileManager = {
       rover: 'Rover Testing',
       base: 'Human Base',
       isru: 'ISRU Resources',
-      caves: 'Lava Tube Shelters'
+      caves: 'Lava Tube Shelters',
+      biosig: 'Astrobiology'
     },
     ar: {
       rover: 'اختبار المركبات',
