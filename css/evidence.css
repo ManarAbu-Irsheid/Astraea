@@ -1166,12 +1166,27 @@ html[dir="rtl"] .rank-bar-row.selected {
   grid-template-columns: 1fr 1fr;
   gap: clamp(14px, 1.2vw, 24px);
   width: 100%;
+  align-items: stretch;
 }
 
 @media (max-width: 1024px) {
   .charts-2col-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.boxplot-card,
+.histogram-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.boxplot-card .card-header-row,
+.histogram-card .card-header-row {
+  flex-shrink: 0;
+  min-height: 58px;
 }
 
 /* --- HEATMAP TABLE STYLES --- */
@@ -1187,7 +1202,7 @@ html[dir="rtl"] .rank-bar-row.selected {
   border-collapse: separate;
   border-spacing: 4px;
   min-width: 620px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   padding: 8px;
 }
 
@@ -1195,13 +1210,14 @@ html[dir="rtl"] .rank-bar-row.selected {
   padding: 0.65rem 0.85rem;
   background: var(--bg-input);
   color: var(--text-muted);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   text-transform: none;
   letter-spacing: 0.02em;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   text-align: center;
   font-weight: 700;
   border: 1px solid var(--border-color);
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .heatmap-table th.col-site-header {
@@ -1216,106 +1232,214 @@ html[dir="rtl"] .rank-bar-row.selected {
   padding: 0.45rem 0.65rem;
   font-weight: 700;
   color: var(--text-primary);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .heatmap-cell {
-  padding: 0.55rem 0.75rem;
+  height: 40px;
+  min-height: 40px;
+  padding: 0.45rem 0.65rem;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   cursor: pointer;
   user-select: none;
   position: relative;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
   outline: none;
 }
 
-/* Tier Colors: low (≤40) dark blue-gray -> mid (~70) blue #0072FF -> high (≥90) bright #00C6FF with glow */
-.heatmap-cell[data-tier="low"] {
-  background: rgba(26, 38, 57, 0.75);
-  color: var(--text-muted);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+/* 1. Wider color scale so differences are obvious:
+   ≤40 → #1A2333 (dark), 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF with glow */
+.heatmap-cell[data-tier="tier-40"] {
+  background: #1A2333;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
-[data-theme="light"] .heatmap-cell[data-tier="low"] {
-  background: #f1f5f9;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
+.heatmap-cell[data-tier="tier-60"] {
+  background: #12355E;
+  color: #FFFFFF;
+  border: 1px solid rgba(0, 114, 255, 0.25);
 }
-
-.heatmap-cell[data-tier="mid"] {
-  background: rgba(0, 114, 255, 0.28);
-  color: #e2e8f0;
-  border: 1px solid rgba(0, 114, 255, 0.35);
+.heatmap-cell[data-tier="tier-75"] {
+  background: #0050B3;
+  color: #FFFFFF;
+  border: 1px solid rgba(0, 114, 255, 0.4);
 }
-[data-theme="light"] .heatmap-cell[data-tier="mid"] {
-  background: rgba(0, 114, 255, 0.14);
-  color: #0056b3;
-  border: 1px solid rgba(0, 114, 255, 0.28);
-}
-
-.heatmap-cell[data-tier="high"] {
-  background: rgba(0, 198, 255, 0.45);
-  color: #ffffff;
-  border: 1px solid rgba(0, 198, 255, 0.55);
-  box-shadow: 0 0 8px rgba(0, 198, 255, 0.25);
-}
-[data-theme="light"] .heatmap-cell[data-tier="high"] {
-  background: rgba(0, 198, 255, 0.25);
-  color: #004d80;
+.heatmap-cell[data-tier="tier-85"] {
+  background: #0072FF;
+  color: #FFFFFF;
   border: 1px solid rgba(0, 198, 255, 0.45);
 }
-
-.heatmap-cell[data-tier="peak"] {
-  background: rgba(0, 198, 255, 0.85);
-  color: #051428;
+.heatmap-cell[data-tier="tier-90"] {
+  background: #1AA3FF;
+  color: #FFFFFF;
+  border: 1px solid rgba(0, 198, 255, 0.6);
+  text-shadow: 0 0 6px rgba(0, 198, 255, 0.4);
+}
+.heatmap-cell[data-tier="tier-peak"] {
+  background: #00C6FF;
+  color: #021226 !important;
   font-weight: 800;
   border: 1px solid #00C6FF;
-  box-shadow: 0 0 14px rgba(0, 198, 255, 0.6);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
-}
-[data-theme="light"] .heatmap-cell[data-tier="peak"] {
-  background: linear-gradient(135deg, #0072FF, #00C6FF);
-  color: #ffffff;
-  border: 1px solid #0072FF;
-  box-shadow: 0 0 12px rgba(0, 198, 255, 0.5);
-  text-shadow: none;
+  box-shadow: 0 0 12px rgba(0, 198, 255, 0.55);
 }
 
+/* Light mode adjustments while preserving the requested scale */
+[data-theme="light"] .heatmap-cell[data-tier="tier-40"] {
+  background: #202b3d;
+  color: #FFFFFF;
+}
+[data-theme="light"] .heatmap-cell[data-tier="tier-peak"] {
+  background: #00C6FF;
+  color: #021226 !important;
+  box-shadow: 0 0 12px rgba(0, 198, 255, 0.45);
+}
+
+/* 3. The best cell per row: 2px #FF8A00 border + soft orange glow + small ★ */
+.heatmap-cell.is-best {
+  border: 2px solid #FF8A00 !important;
+  box-shadow: 0 0 10px rgba(255, 138, 0, 0.55);
+}
+.heatmap-cell.is-best[data-tier="tier-peak"] {
+  box-shadow: 0 0 10px rgba(255, 138, 0, 0.55), 0 0 12px rgba(0, 198, 255, 0.55);
+}
+
+.heatmap-cell-val {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  line-height: 1;
+}
+
+.heatmap-star {
+  font-size: 0.72rem;
+  color: #FF8A00;
+  line-height: 1;
+  text-shadow: 0 0 4px rgba(255, 138, 0, 0.85);
+}
+[data-tier="tier-peak"] .heatmap-star {
+  color: #9E4600;
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+}
+
+/* 5. Hover a cell: it scales 1.06 and the whole row and column get a faint highlight */
+.heatmap-table tr.heatmap-row-highlight > th.heatmap-row-site {
+  background: rgba(0, 198, 255, 0.12);
+  color: #00C6FF;
+}
+.heatmap-table tr.heatmap-row-highlight > .heatmap-cell {
+  filter: brightness(1.15);
+}
+.heatmap-cell.heatmap-col-highlight {
+  filter: brightness(1.18);
+  outline: 1px dashed rgba(0, 198, 255, 0.45);
+}
+.heatmap-table th.col-mission-header.heatmap-col-highlight {
+  background: rgba(0, 198, 255, 0.16);
+  color: #00C6FF;
+  border-color: rgba(0, 198, 255, 0.45);
+}
 .heatmap-cell:hover,
 .heatmap-cell:focus-visible {
   transform: scale(1.06);
-  z-index: 3;
-  border-color: #00C6FF !important;
-  box-shadow: 0 0 14px rgba(0, 198, 255, 0.6) !important;
+  z-index: 10;
+  filter: brightness(1.3) !important;
+  outline: none !important;
 }
-
-.heatmap-cell.is-best {
-  border: 1.5px solid #FF8A00 !important;
-  box-shadow: 0 0 8px rgba(255, 138, 0, 0.4);
-}
-
 .heatmap-cell.is-best:hover,
 .heatmap-cell.is-best:focus-visible {
-  box-shadow: 0 0 16px rgba(255, 138, 0, 0.75), 0 0 0 1px #FF8A00 !important;
+  box-shadow: 0 0 16px rgba(255, 138, 0, 0.85), 0 0 0 1px #FF8A00 !important;
+}
+
+/* 4. Color Legend Bar under the Heatmap (40 → 100) */
+.heatmap-legend-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  margin-top: 0.85rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.heatmap-legend-scale {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.heatmap-legend-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.78rem;
+}
+
+.heatmap-legend-swatches {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.heatmap-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+}
+
+.legend-swatch-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  display: inline-block;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.heatmap-legend-best-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  color: var(--text-primary);
+}
+
+.heatmap-legend-best-key .best-key-star {
+  color: #FF8A00;
+  font-size: 0.85rem;
+  text-shadow: 0 0 5px rgba(255, 138, 0, 0.8);
 }
 
 /* --- BOX PLOT STYLES --- */
 .boxplot-visual-wrapper {
+  flex: 1;
   width: 100%;
+  height: clamp(260px, 28vw, 360px);
+  min-height: 260px;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: auto;
+  overflow: visible;
+  position: relative;
 }
 
 .boxplot-svg {
   width: 100%;
-  max-width: 560px;
-  min-width: 300px;
-  height: auto;
+  height: 100%;
+  display: block;
   overflow: visible;
 }
 
@@ -1325,18 +1449,18 @@ html[dir="rtl"] .rank-bar-row.selected {
 }
 
 .boxplot-grid-line {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: rgba(255, 255, 255, 0.08);
   stroke-dasharray: 3 3;
   stroke-width: 1;
 }
 
 [data-theme="light"] .boxplot-grid-line {
-  stroke: rgba(10, 22, 38, 0.08);
+  stroke: rgba(10, 22, 38, 0.09);
 }
 
 .boxplot-axis-text {
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: 11px;
   fill: var(--text-muted);
 }
 
@@ -1346,43 +1470,51 @@ html[dir="rtl"] .rank-bar-row.selected {
   transition: filter 0.25s ease;
 }
 
-.boxplot-col-group:hover,
-.boxplot-col-group:focus-visible {
-  filter: brightness(1.25) drop-shadow(0 0 8px rgba(0, 198, 255, 0.5));
-}
-
-.boxplot-whisker-line {
-  stroke: #00C6FF;
-  stroke-width: 1.5;
-  stroke-dasharray: 2 2;
-  opacity: 0.8;
-}
-
-.boxplot-cap-line {
-  stroke: #00C6FF;
-  stroke-width: 1.75;
-}
-
 .boxplot-rect {
-  fill: url(#svgGradMain);
-  fill-opacity: 0.35;
-  stroke: #00C6FF;
-  stroke-width: 1.5;
-  rx: 4;
-  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease, fill-opacity 0.25s ease, filter 0.25s ease;
   transform-origin: center bottom;
 }
 
+.boxplot-col-group:hover .boxplot-rect,
+.boxplot-col-group:focus-visible .boxplot-rect {
+  fill-opacity: 0.65 !important;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.boxplot-whisker-line,
+.boxplot-cap-line {
+  transition: opacity 0.25s ease, filter 0.25s ease;
+}
+
+.boxplot-col-group:hover .boxplot-whisker-line,
+.boxplot-col-group:hover .boxplot-cap-line {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
 .boxplot-median-line {
-  stroke: #00C6FF;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 4px #00C6FF);
+  transition: filter 0.25s ease;
+}
+
+.boxplot-median-badge-bg {
+  fill: var(--bg-card);
+  opacity: 0.95;
+}
+
+.boxplot-median-badge-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  fill: #FFFFFF;
+}
+
+[data-theme="light"] .boxplot-median-badge-text {
+  fill: var(--text-primary);
 }
 
 .boxplot-attr-label {
-  font-size: 11.5px;
+  font-size: 0.85rem;
   font-weight: 700;
-  fill: var(--text-secondary);
+  fill: var(--text-primary);
   text-anchor: middle;
 }
 
@@ -1426,18 +1558,21 @@ html[dir="rtl"] .rank-bar-row.selected {
 }
 
 .histogram-visual-wrapper {
+  flex: 1;
   width: 100%;
+  height: clamp(260px, 28vw, 360px);
+  min-height: 260px;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: auto;
+  overflow: visible;
+  position: relative;
 }
 
 .histogram-svg {
   width: 100%;
-  max-width: 560px;
-  min-width: 300px;
-  height: auto;
+  height: 100%;
+  display: block;
   overflow: visible;
 }
 
@@ -1449,13 +1584,12 @@ html[dir="rtl"] .rank-bar-row.selected {
 
 .hist-bar-group:hover,
 .hist-bar-group:focus-visible {
-  filter: brightness(1.25) drop-shadow(0 0 8px rgba(0, 198, 255, 0.4));
+  filter: brightness(1.22) drop-shadow(0 0 10px rgba(0, 198, 255, 0.5));
 }
 
 .hist-seg {
   transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
   transform-origin: center bottom;
-  rx: 2;
 }
 
 .hist-seg.seg-val {
@@ -1475,7 +1609,7 @@ html[dir="rtl"] .rank-bar-row.selected {
 
 .hist-count-text {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.9rem;
   font-weight: 700;
   fill: var(--text-primary);
   text-anchor: middle;
@@ -1483,6 +1617,99 @@ html[dir="rtl"] .rank-bar-row.selected {
 
 .hist-bin-label {
   font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  fill: var(--text-secondary);
+  text-anchor: middle;
+}
+
+/* 5. Floating Tooltip for Histogram Listing Site Names Colored by Status */
+.hist-floating-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 50;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.85rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  font-size: 0.78rem;
+  min-width: 180px;
+  max-width: 260px;
+  opacity: 0;
+  transform: translate(-50%, -100%) translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.hist-floating-tooltip.visible {
+  opacity: 1;
+  transform: translate(-50%, -100%) translateY(-16px);
+}
+
+.hist-tip-header {
+  font-weight: 700;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.hist-tip-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.hist-tip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  line-height: 1.3;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.hist-tip-item.val {
+  color: #00C6FF;
+}
+[data-theme="light"] .hist-tip-item.val {
+  color: #0072FF;
+}
+
+.hist-tip-item.cand {
+  color: #FF8A00;
+}
+[data-theme="light"] .hist-tip-item.cand {
+  color: #B86E00;
+}
+
+.hist-tip-item.fail {
+  color: #FF2525;
+}
+[data-theme="light"] .hist-tip-item.fail {
+  color: #D61B1B;
+}
+
+.hist-tip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.hist-tip-dot.val {
+  background: #00C6FF;
+  box-shadow: 0 0 6px #00C6FF;
+}
+.hist-tip-dot.cand {
+  background: #FF8A00;
+  box-shadow: 0 0 6px #FF8A00;
+}
+.hist-tip-dot.fail {
+  background: #FF2525;
+  box-shadow: 0 0 6px #FF2525;
+}
   font-size: 10px;
   fill: var(--text-muted);
   text-anchor: middle;

@@ -821,11 +821,11 @@ const EvidenceController = {
 
   /**
    * 2A. Mission Suitability Heatmap Card: Best mission fit per site
-   * Rows = 12 sites from cellsData.cells. Columns = 4 mission profiles: rover, base, isru, caves.
-   * Color scale: low (≤40) dark blue-gray -> mid (~70) blue #0072FF -> high (≥90) bright #00C6FF with glow.
-   * Best column per row highlighted with thin orange border (#FF8A00).
-   * Hover cell: tooltip "site — mission: score".
-   * Sites with is_candidate === true get a small "New" pill.
+   * 1. Wider color scale: ≤40 → #1A2333, 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF with glow.
+   * 2. Numbers in cells: font-size 0.95rem, weight 700, var(--font-mono); white text on dark cells, #021226 on brightest.
+   * 3. Cells: min-height 40px, 4px gap, radius 6px. Best cell per row: 2px #FF8A00 border + soft orange glow + small ★.
+   * 4. Color legend bar under heatmap (40 → 100).
+   * 5. Hover cell: scales 1.06 and whole row and column get a faint highlight.
    */
   renderHeatmap() {
     const container = document.getElementById('heatmapContainer');
@@ -841,9 +841,9 @@ const EvidenceController = {
       { key: 'caves', en: 'Lava-tube shelter', ar: 'ملاجئ الأنابيب البركانية' }
     ];
 
-    const colHeadersHtml = profiles.map(p => {
+    const colHeadersHtml = profiles.map((p, colIdx) => {
       const label = isAr ? p.ar : p.en;
-      return `<th scope="col">${label}</th>`;
+      return `<th scope="col" class="col-mission-header" data-col="${colIdx}">${label}</th>`;
     }).join('');
 
     const rowsHtml = this.cells.map(cell => {
@@ -851,7 +851,7 @@ const EvidenceController = {
       const isCand = Boolean(cell.is_candidate);
       const pillHtml = isCand ? `<span class="pill-new">${isAr ? 'جديد' : 'NEW'}</span>` : '';
 
-      // Find the highest scoring profile in this row to highlight with best column border
+      // Find highest score in row
       let maxScore = -Infinity;
       let bestProfileKey = null;
       profiles.forEach(p => {
@@ -864,28 +864,35 @@ const EvidenceController = {
         }
       });
 
-      const cellsHtml = profiles.map(p => {
+      const cellsHtml = profiles.map((p, colIdx) => {
         const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
           ? cell.profile_scores[p.key] 
           : 0;
         const isBest = p.key === bestProfileKey;
         const pLabel = isAr ? p.ar : p.en;
 
-        let tier = 'low';
-        if (score >= 90) tier = 'peak';
-        else if (score >= 75) tier = 'high';
-        else if (score > 40) tier = 'mid';
+        // 1. Wider color scale: ≤40 → #1A2333, 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF
+        let tier = 'tier-40';
+        if (score >= 90) tier = 'tier-peak';
+        else if (score >= 85) tier = 'tier-90';
+        else if (score >= 75) tier = 'tier-85';
+        else if (score >= 60) tier = 'tier-75';
+        else if (score > 40) tier = 'tier-60';
 
-        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}`;
+        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}${isBest ? (isAr ? ' (أفضل مهمة للموقع)' : ' (Best mission fit)') : ''}`;
 
         return `
           <td class="heatmap-cell ${isBest ? 'is-best' : ''} chart-anim-elem" 
               data-tier="${tier}"
+              data-col="${colIdx}"
               tabindex="0"
               role="gridcell"
               aria-label="${tooltip}"
               title="${tooltip}">
-            ${score.toFixed(1)}
+            <div class="heatmap-cell-val">
+              <span>${score.toFixed(1)}</span>
+              ${isBest ? '<span class="heatmap-star" aria-hidden="true">★</span>' : ''}
+            </div>
           </td>
         `;
       }).join('');
@@ -901,6 +908,27 @@ const EvidenceController = {
       `;
     }).join('');
 
+    // 4. Color legend bar under the heatmap (40 → 100)
+    const legendHtml = `
+      <div class="heatmap-legend-bar" aria-label="Heatmap scale">
+        <div class="heatmap-legend-scale">
+          <span class="heatmap-legend-title">${isAr ? 'مقياس درجات التوافق:' : 'Suitability Scale:'}</span>
+          <div class="heatmap-legend-swatches">
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#1A2333"></span><span>≤40</span></div>
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#12355E"></span><span>40–60</span></div>
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#0050B3"></span><span>60–75</span></div>
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#0072FF"></span><span>75–85</span></div>
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#1AA3FF"></span><span>85–90</span></div>
+            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#00C6FF; box-shadow:0 0 8px rgba(0,198,255,0.6)"></span><span>≥90</span></div>
+          </div>
+        </div>
+        <div class="heatmap-legend-best-key">
+          <span class="best-key-star" aria-hidden="true">★</span>
+          <span>${isAr ? 'أفضل مهمة لكل موقع' : 'Best mission fit per site'}</span>
+        </div>
+      </div>
+    `;
+
     container.innerHTML = `
       <table class="heatmap-table" role="grid" aria-label="${isAr ? 'أفضل مهمة لكل موقع' : 'Best mission fit per site'}">
         <thead>
@@ -913,14 +941,59 @@ const EvidenceController = {
           ${rowsHtml}
         </tbody>
       </table>
+      ${legendHtml}
     `;
+
+    // 5. Hover a cell: it scales 1.06 and the whole row and column get a faint highlight
+    const table = container.querySelector('.heatmap-table');
+    if (table) {
+      const clearHighlights = () => {
+        table.querySelectorAll('.heatmap-row-highlight').forEach(r => r.classList.remove('heatmap-row-highlight'));
+        table.querySelectorAll('.heatmap-col-highlight').forEach(c => c.classList.remove('heatmap-col-highlight'));
+      };
+
+      table.addEventListener('mouseover', (e) => {
+        const cell = e.target.closest('.heatmap-cell');
+        if (!cell) return;
+        clearHighlights();
+        const colIdx = cell.getAttribute('data-col');
+        const row = cell.closest('tr');
+        if (row) row.classList.add('heatmap-row-highlight');
+        if (colIdx !== null) {
+          table.querySelectorAll(`.heatmap-cell[data-col="${colIdx}"], th.col-mission-header[data-col="${colIdx}"]`).forEach(el => {
+            el.classList.add('heatmap-col-highlight');
+          });
+        }
+      });
+
+      table.addEventListener('mouseleave', clearHighlights);
+
+      table.addEventListener('focusin', (e) => {
+        const cell = e.target.closest('.heatmap-cell');
+        if (!cell) return;
+        clearHighlights();
+        const colIdx = cell.getAttribute('data-col');
+        const row = cell.closest('tr');
+        if (row) row.classList.add('heatmap-row-highlight');
+        if (colIdx !== null) {
+          table.querySelectorAll(`.heatmap-cell[data-col="${colIdx}"], th.col-mission-header[data-col="${colIdx}"]`).forEach(el => {
+            el.classList.add('heatmap-col-highlight');
+          });
+        }
+      });
+
+      table.addEventListener('focusout', clearHighlights);
+    }
   },
 
   /**
    * 2B. Box Plot: How sites score on each attribute
-   * 5 vertical box plots from cell.radar_parameters: slope, regolith, thermal, radiation, mineralogy.
-   * Min, Q1, Median, Q3, Max computed across the 12 sites.
-   * Fill: blue gradient at 35% opacity, median line bright #00C6FF, whiskers thin. Y-axis 60–100.
+   * 1. Fill card: SVG height ~320px (clamp(260px, 28vw, 360px)), width 100%, boxes wide (~60% of column).
+   * 2. Y axis 60–100 with horizontal grid lines every 10 and labels.
+   * 3. Palette colors: slope #0072FF, regolith #00C6FF, thermal #FFB800, radiation #FF8A00, mineralogy #FF5E3A.
+   *    Box filled at 30% opacity, 2px border, median line 3px white with glow.
+   * 4. Median value small label above each box. Attribute names under boxes (0.85rem).
+   * 5. Hover box: brighter fill + tooltip with min, Q1, median, Q3, max.
    */
   renderBoxplot() {
     const container = document.getElementById('boxplotContainer');
@@ -929,15 +1002,15 @@ const EvidenceController = {
     const lang = window.I18n ? window.I18n.currentLang : 'en';
     const isAr = lang === 'ar';
 
-    const attrs = [
-      { key: 'slope', en: 'Slope', ar: 'الانحدار' },
-      { key: 'regolith', en: 'Regolith', ar: 'التربة' },
-      { key: 'thermal', en: 'Thermal', ar: 'الحرارة' },
-      { key: 'radiation', en: 'Radiation', ar: 'الإشعاع' },
-      { key: 'mineralogy', en: 'Mineralogy', ar: 'المعادن' }
+    const attrConfigs = [
+      { key: 'slope', en: 'Slope', ar: 'الانحدار', color: '#0072FF' },
+      { key: 'regolith', en: 'Regolith', ar: 'التربة', color: '#00C6FF' },
+      { key: 'thermal', en: 'Thermal', ar: 'الحرارة', color: '#FFB800' },
+      { key: 'radiation', en: 'Radiation', ar: 'الإشعاع', color: '#FF8A00' },
+      { key: 'mineralogy', en: 'Mineralogy', ar: 'المعادن', color: '#FF5E3A' }
     ];
 
-    const stats = attrs.map(attr => {
+    const stats = attrConfigs.map(attr => {
       const vals = this.cells
         .map(c => (c.radar_parameters && typeof c.radar_parameters[attr.key] === 'number') ? c.radar_parameters[attr.key] : null)
         .filter(v => v !== null)
@@ -974,19 +1047,19 @@ const EvidenceController = {
       };
     }).filter(Boolean);
 
-    // SVG coordinates:
-    // Y-axis 60 to 100: y = 25 at 100, y = 225 at 60 (height 200)
-    const yTop = 25;
-    const yBot = 225;
-    const h = yBot - yTop; // 200
+    // SVG coordinate space: 540 x 320
+    const yTop = 45;
+    const yBot = 265;
+    const h = yBot - yTop; // 220px
     const getY = (val) => yTop + ((100 - val) / 40) * h;
 
-    const xStart = 55;
-    const xEnd = 495;
-    const colWidth = (xEnd - xStart) / stats.length;
-    const boxWidth = 36;
+    const xStart = 52;
+    const xEnd = 525;
+    const colWidth = (xEnd - xStart) / stats.length; // ~94.6px
+    const boxWidth = 56; // ~60% of column width
     const capWidth = 14;
 
+    // 2. Y axis 60–100 with horizontal grid lines every 10 and labels
     const gridTicks = [60, 70, 80, 90, 100];
     const gridLinesHtml = gridTicks.map(t => {
       const y = getY(t);
@@ -1008,39 +1081,42 @@ const EvidenceController = {
       const boxHeight = Math.max(2, yQ1 - yQ3);
       const boxLeft = cx - boxWidth / 2;
 
-      const tooltip = `${st.name} — Min: ${st.min}, Q1: ${st.q1}, Med: ${st.median}, Q3: ${st.q3}, Max: ${st.max}`;
+      const tooltip = `${st.name} — Min: ${st.min}, Q1: ${st.q1}, Median: ${st.median}, Q3: ${st.q3}, Max: ${st.max}`;
 
       return `
         <g class="boxplot-col-group" tabindex="0" role="graphics-symbol" aria-label="${tooltip}">
           <title>${tooltip}</title>
-          <!-- Upper Whisker & Cap -->
-          <line x1="${cx.toFixed(1)}" y1="${yQ3.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMax.toFixed(1)}" class="boxplot-whisker-line chart-anim-elem"/>
-          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMax.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMax.toFixed(1)}" class="boxplot-cap-line chart-anim-elem"/>
+          <!-- Whiskers & Caps -->
+          <line x1="${cx.toFixed(1)}" y1="${yQ3.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMax.toFixed(1)}" stroke="${st.color}" stroke-width="1.5" stroke-dasharray="3 3" class="boxplot-whisker-line chart-anim-elem"/>
+          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMax.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMax.toFixed(1)}" stroke="${st.color}" stroke-width="2" stroke-linecap="round" class="boxplot-cap-line chart-anim-elem"/>
           
-          <!-- Lower Whisker & Cap -->
-          <line x1="${cx.toFixed(1)}" y1="${yQ1.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMin.toFixed(1)}" class="boxplot-whisker-line chart-anim-elem"/>
-          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMin.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMin.toFixed(1)}" class="boxplot-cap-line chart-anim-elem"/>
+          <line x1="${cx.toFixed(1)}" y1="${yQ1.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${yMin.toFixed(1)}" stroke="${st.color}" stroke-width="1.5" stroke-dasharray="3 3" class="boxplot-whisker-line chart-anim-elem"/>
+          <line x1="${(cx - capWidth).toFixed(1)}" y1="${yMin.toFixed(1)}" x2="${(cx + capWidth).toFixed(1)}" y2="${yMin.toFixed(1)}" stroke="${st.color}" stroke-width="2" stroke-linecap="round" class="boxplot-cap-line chart-anim-elem"/>
 
-          <!-- IQR Box (Q3 to Q1) -->
-          <rect x="${boxLeft.toFixed(1)}" y="${boxTop.toFixed(1)}" width="${boxWidth}" height="${boxHeight.toFixed(1)}" class="boxplot-rect chart-anim-elem"/>
+          <!-- 3. Box filled at 30% opacity, 2px border -->
+          <rect x="${boxLeft.toFixed(1)}" y="${boxTop.toFixed(1)}" width="${boxWidth}" height="${boxHeight.toFixed(1)}" rx="6" 
+                fill="${st.color}" fill-opacity="0.30" stroke="${st.color}" stroke-width="2" 
+                class="boxplot-rect chart-anim-elem"/>
 
-          <!-- Median Line -->
-          <line x1="${boxLeft.toFixed(1)}" y1="${yMed.toFixed(1)}" x2="${(boxLeft + boxWidth).toFixed(1)}" y2="${yMed.toFixed(1)}" class="boxplot-median-line chart-anim-elem"/>
+          <!-- 3. Median Line: 3px white with glow -->
+          <line x1="${boxLeft.toFixed(1)}" y1="${yMed.toFixed(1)}" x2="${(boxLeft + boxWidth).toFixed(1)}" y2="${yMed.toFixed(1)}" 
+                stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" style="filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.85));" 
+                class="boxplot-median-line chart-anim-elem"/>
 
-          <!-- Attribute Label -->
-          <text x="${cx.toFixed(1)}" y="252" class="boxplot-attr-label">${st.name}</text>
+          <!-- 4. Median value label badge above each box -->
+          <rect x="${(cx - 18).toFixed(1)}" y="${(boxTop - 22).toFixed(1)}" width="36" height="17" rx="4" 
+                class="boxplot-median-badge-bg chart-anim-elem" stroke="${st.color}" stroke-width="1.2"/>
+          <text x="${cx.toFixed(1)}" y="${(boxTop - 9).toFixed(1)}" text-anchor="middle" 
+                class="boxplot-median-badge-text mono chart-anim-elem">${st.median}</text>
+
+          <!-- 4. Attribute names under boxes (readable size 0.85rem) -->
+          <text x="${cx.toFixed(1)}" y="295" class="boxplot-attr-label">${st.name}</text>
         </g>
       `;
     }).join('');
 
     container.innerHTML = `
-      <svg class="boxplot-svg" viewBox="0 0 520 270" role="img" aria-label="${isAr ? 'توزيع درجات المواقع لكل خاصية' : 'How sites score on each attribute'}">
-        <defs>
-          <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#0072FF"/>
-            <stop offset="100%" stop-color="#00C6FF"/>
-          </linearGradient>
-        </defs>
+      <svg class="boxplot-svg" viewBox="0 0 540 320" role="img" aria-label="${isAr ? 'توزيع درجات المواقع لكل خاصية' : 'How sites score on each attribute'}">
         ${gridLinesHtml}
         <line x1="${xStart - 5}" y1="${yBot}" x2="${xEnd + 5}" y2="${yBot}" class="boxplot-axis-line"/>
         ${boxplotsHtml}
@@ -1049,9 +1125,13 @@ const EvidenceController = {
   },
 
   /**
-   * 2C. Histogram: Score distribution in 5-point bins from 55 to 100
-   * Stacked bars: validated (blue #0072FF->#00C6FF), new candidate (yellow->orange #FFE53B->#FF8A00), failure (orange->red #FF8A00->#FF2525).
-   * Count label on top of non-zero bars. Hover tooltip with site names in that bin.
+   * 2C. Histogram: Score distribution
+   * 1. Only show bins covering real data range (from lowest score's bin 55-60 to 100).
+   *    Bars fill width (~70% of bin column), radius 6px on top.
+   * 2. Chart height ~320px like box plot. Y axis with integer counts (0..6) and grid lines.
+   * 3. Stacked segments clearly separated (1px gap) in status colors; count label above each bar (0.9rem bold).
+   * 4. X axis labels like "55–60", "85–90", readable size.
+   * 5. Hover bar: tooltip listing site names in that bin, colored by status.
    */
   renderHistogram() {
     const container = document.getElementById('histogramContainer');
@@ -1060,16 +1140,17 @@ const EvidenceController = {
     const lang = window.I18n ? window.I18n.currentLang : 'en';
     const isAr = lang === 'ar';
 
+    // 1. 9 bins covering real data range from lowest (58.7 in 55-60) to 100
     const binDefinitions = [
-      { min: 55, max: 60, label: '55-60' },
-      { min: 60, max: 65, label: '60-65' },
-      { min: 65, max: 70, label: '65-70' },
-      { min: 70, max: 75, label: '70-75' },
-      { min: 75, max: 80, label: '75-80' },
-      { min: 80, max: 85, label: '80-85' },
-      { min: 85, max: 90, label: '85-90' },
-      { min: 90, max: 95, label: '90-95' },
-      { min: 95, max: 100, label: '95-100' }
+      { min: 55, max: 60, label: '55–60' },
+      { min: 60, max: 65, label: '60–65' },
+      { min: 65, max: 70, label: '65–70' },
+      { min: 70, max: 75, label: '70–75' },
+      { min: 75, max: 80, label: '75–80' },
+      { min: 80, max: 85, label: '80–85' },
+      { min: 85, max: 90, label: '85–90' },
+      { min: 90, max: 95, label: '90–95' },
+      { min: 95, max: 100, label: '95–100' }
     ];
 
     const bins = binDefinitions.map(b => ({
@@ -1103,18 +1184,21 @@ const EvidenceController = {
       }
     });
 
-    const maxCount = 7;
-    const yZero = 225;
-    const yMax = 35;
-    const plotH = yZero - yMax; // 190
-    const unitH = plotH / maxCount; // ~27.143
+    // 2. SVG coordinate space 540 x 320, Y axis with integer counts (0..6)
+    const maxCount = 7; // Headroom for count label
+    const yZero = 265;
+    const yTop = 45;
+    const plotH = yZero - yTop; // 220px
+    const unitH = plotH / maxCount; // ~31.43px per unit
 
-    const xStart = 48;
-    const xEnd = 498;
-    const binW = (xEnd - xStart) / bins.length;
-    const barW = 34;
+    const xStart = 52;
+    const xEnd = 525;
+    const binW = (xEnd - xStart) / bins.length; // ~52.55px
+    const barW = 37; // ~70% of bin column
+    const segGap = 1.5; // 1px separation between stacked segments
 
-    const yTicks = [0, 2, 4, 6];
+    // Integer grid lines and ticks (0, 1, 2, 3, 4, 5, 6)
+    const yTicks = [0, 1, 2, 3, 4, 5, 6];
     const gridLinesHtml = yTicks.map(t => {
       const y = yZero - t * unitH;
       return `
@@ -1132,43 +1216,55 @@ const EvidenceController = {
       const cFail = b.failure.length;
       const total = cVal + cCand + cFail;
 
-      const hVal = cVal * unitH;
-      const hCand = cCand * unitH;
-      const hFail = cFail * unitH;
+      // Determine segments in stack from bottom to top
+      const segments = [];
+      if (cVal > 0) segments.push({ count: cVal, type: 'val', cssClass: 'seg-val', items: b.validated });
+      if (cCand > 0) segments.push({ count: cCand, type: 'cand', cssClass: 'seg-cand', items: b.candidate });
+      if (cFail > 0) segments.push({ count: cFail, type: 'fail', cssClass: 'seg-fail', items: b.failure });
 
-      const yVal = yZero - hVal;
-      const yCand = yVal - hCand;
-      const yFail = yCand - hFail;
+      let currentBaseY = yZero;
+      let segsHtml = '';
+
+      segments.forEach((seg, sIdx) => {
+        const isTop = (sIdx === segments.length - 1);
+        const segH = seg.count * unitH;
+        // Leave 1.5px gap if stacked on top of another segment
+        const actualH = (sIdx > 0) ? Math.max(2, segH - segGap) : segH;
+        const segY = (sIdx > 0) ? (currentBaseY - actualH - segGap) : (currentBaseY - actualH);
+
+        const rx = isTop ? 6 : 0;
+        segsHtml += `
+          <rect x="${barLeft.toFixed(1)}" y="${segY.toFixed(1)}" width="${barW}" height="${actualH.toFixed(1)}" 
+                rx="${rx}" class="hist-seg ${seg.cssClass} chart-anim-elem"/>
+        `;
+        currentBaseY = segY;
+      });
+
+      const yStackTop = (segments.length > 0) ? currentBaseY : yZero;
 
       const allSites = [...b.validated, ...b.candidate, ...b.failure];
-      const tooltip = allSites.length > 0 
+      const tooltipText = allSites.length > 0 
         ? `${b.label} (${total}):\n• ${allSites.join('\n• ')}`
         : `${b.label}: 0`;
 
       return `
-        <g class="hist-bar-group" tabindex="0" role="graphics-symbol" aria-label="${b.label}: ${total}">
-          <title>${tooltip}</title>
+        <g class="hist-bar-group" data-bin-idx="${i}" tabindex="0" role="graphics-symbol" aria-label="${b.label}: ${total}">
+          <title>${tooltipText}</title>
           
-          <!-- Stack segment: Validated (Bottom) -->
-          ${cVal > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yVal.toFixed(1)}" width="${barW}" height="${hVal.toFixed(1)}" class="hist-seg seg-val chart-anim-elem"/>` : ''}
+          <!-- Stacked Bar Segments -->
+          ${segsHtml}
 
-          <!-- Stack segment: New Candidate (Middle) -->
-          ${cCand > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yCand.toFixed(1)}" width="${barW}" height="${hCand.toFixed(1)}" class="hist-seg seg-cand chart-anim-elem"/>` : ''}
+          <!-- 3. Count label above each bar (0.9rem bold) -->
+          ${total > 0 ? `<text x="${cx.toFixed(1)}" y="${(yStackTop - 8).toFixed(1)}" class="hist-count-text mono chart-anim-elem">${total}</text>` : ''}
 
-          <!-- Stack segment: Failure Case (Top) -->
-          ${cFail > 0 ? `<rect x="${barLeft.toFixed(1)}" y="${yFail.toFixed(1)}" width="${barW}" height="${hFail.toFixed(1)}" class="hist-seg seg-fail chart-anim-elem"/>` : ''}
-
-          <!-- Count label on top of non-zero bars -->
-          ${total > 0 ? `<text x="${cx.toFixed(1)}" y="${(yFail - 5).toFixed(1)}" class="hist-count-text chart-anim-elem">${total}</text>` : ''}
-
-          <!-- Bin range label -->
-          <text x="${cx.toFixed(1)}" y="244" class="hist-bin-label">${b.label}</text>
+          <!-- 4. X axis labels like 55–60, 85–90, readable size -->
+          <text x="${cx.toFixed(1)}" y="292" class="hist-bin-label mono">${b.label}</text>
         </g>
       `;
     }).join('');
 
     container.innerHTML = `
-      <svg class="histogram-svg" viewBox="0 0 520 270" role="img" aria-label="${isAr ? 'توزيع الدرجات' : 'Score distribution'}">
+      <svg class="histogram-svg" viewBox="0 0 540 320" role="img" aria-label="${isAr ? 'توزيع الدرجات' : 'Score distribution'}">
         <defs>
           <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#0072FF"/>
@@ -1187,7 +1283,62 @@ const EvidenceController = {
         <line x1="${xStart - 5}" y1="${yZero}" x2="${xEnd + 5}" y2="${yZero}" class="boxplot-axis-line"/>
         ${barsHtml}
       </svg>
+      <div class="hist-floating-tooltip" id="histFloatingTooltip" aria-hidden="true"></div>
     `;
+
+    // 5. Hover a bar: tooltip listing site names in that bin, colored by status
+    const tooltipEl = container.querySelector('#histFloatingTooltip');
+    const barGroups = container.querySelectorAll('.hist-bar-group');
+
+    barGroups.forEach(grp => {
+      const idx = parseInt(grp.getAttribute('data-bin-idx'), 10);
+      const b = bins[idx];
+      if (!b) return;
+
+      const total = b.validated.length + b.candidate.length + b.failure.length;
+
+      const showTip = () => {
+        if (!tooltipEl || total === 0) return;
+        const cx = xStart + (idx + 0.5) * binW;
+        const leftPct = (cx / 540) * 100;
+        const tipX = Math.max(22, Math.min(78, leftPct));
+        const yStackTop = yZero - total * unitH;
+        const topPct = Math.max(12, Math.min(75, (yStackTop / 320) * 100));
+
+        const valHtml = b.validated.map(s => `
+          <div class="hist-tip-item val"><span class="hist-tip-dot val"></span><span>${s}</span></div>
+        `).join('');
+        const candHtml = b.candidate.map(s => `
+          <div class="hist-tip-item cand"><span class="hist-tip-dot cand"></span><span>${s}</span></div>
+        `).join('');
+        const failHtml = b.failure.map(s => `
+          <div class="hist-tip-item fail"><span class="hist-tip-dot fail"></span><span>${s}</span></div>
+        `).join('');
+
+        const countWord = isAr ? 'مواقع' : 'sites';
+        tooltipEl.innerHTML = `
+          <div class="hist-tip-header">${b.label} &bull; ${total} ${countWord}</div>
+          <div class="hist-tip-list">
+            ${valHtml}
+            ${candHtml}
+            ${failHtml}
+          </div>
+        `;
+
+        tooltipEl.style.left = `${tipX.toFixed(1)}%`;
+        tooltipEl.style.top = `${topPct.toFixed(1)}%`;
+        tooltipEl.classList.add('visible');
+      };
+
+      const hideTip = () => {
+        if (tooltipEl) tooltipEl.classList.remove('visible');
+      };
+
+      grp.addEventListener('mouseenter', showTip);
+      grp.addEventListener('mouseleave', hideTip);
+      grp.addEventListener('focusin', showTip);
+      grp.addEventListener('focusout', hideTip);
+    });
   },
 
   /**
