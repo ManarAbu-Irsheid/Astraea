@@ -260,10 +260,44 @@
       </section>
 
       <!-- ======================================================================
-           SECTION 2: DATA DASHBOARD (MIDDLE GRID)
+           SECTION 2: DATA DASHBOARD (MIDDLE GRID) - REDESIGNED MODERN ANALYTICS
            ====================================================================== -->
       <section class="data-dashboard-grid" id="evidenceDashboardSpotlight">
         
+        <!-- Global Shared SVG Gradient & Glow Definitions for Section 2 Charts (NO Pink, Magenta, or Purple) -->
+        <svg width="0" height="0" class="svg-defs-hidden" aria-hidden="true" style="position:absolute; width:0; height:0; pointer-events:none;">
+          <defs>
+            <!-- Blue Gradient: Main Data, KPI Rings, Validated Sites -->
+            <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#0072FF"/>
+              <stop offset="100%" stop-color="#00C6FF"/>
+            </linearGradient>
+
+            <!-- Yellow -> Orange Gradient: New Candidates -->
+            <linearGradient id="svgGradCandidate" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFE53B"/>
+              <stop offset="100%" stop-color="#FF8A00"/>
+            </linearGradient>
+
+            <!-- Orange -> Red Gradient: Failure Cases & Negative Shifts -->
+            <linearGradient id="svgGradAlert" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FF8A00"/>
+              <stop offset="100%" stop-color="#FF2525"/>
+            </linearGradient>
+
+            <!-- Soft Glow Filters (35% Opacity Matching Stroke) -->
+            <filter id="svgGlowMain" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#0072FF" flood-opacity="0.35"/>
+            </filter>
+            <filter id="svgGlowCandidate" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF8A00" flood-opacity="0.35"/>
+            </filter>
+            <filter id="svgGlowAlert" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF2525" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+        </svg>
+
         <div class="section-header-block">
           <span class="section-kicker">SECTION 02 / EMPIRICAL RIGOR</span>
           <h2 class="section-main-title" data-i18n="evidence.sec2_title">Data Dashboard & Model Validation</h2>
@@ -272,72 +306,168 @@
           </p>
         </div>
 
-        <!-- KPI Metrics Strip (4 Scientific Cards) -->
-        <div class="evidence-kpi-strip">
+        <!-- 1. KPI Strip: 4 Compact Horizontal Cards (3 with Blue Ring Gauge, 1 with Yellow->Orange Number) -->
+        <div class="evidence-kpi-strip" id="evidenceKpiStrip">
+          
+          <!-- KPI 1: Recall@10% -->
           <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val cyan" id="evKpiRecall10">91.4%</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_recall10">Recall@10%</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_recall10_desc">Proportion of known analogs in top 10% ranked cells</div>
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringRecall" style="stroke-dasharray: 201.06; stroke-dashoffset: 17.3;"></circle>
+              </svg>
+            </div>
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiRecall10">91.4%</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_recall10">Recall@10%</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_recall10_desc">Proportion of known analogs in top 10% ranked cells</div>
+            </div>
           </div>
 
+          <!-- KPI 2: ROC-AUC Score -->
           <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val green" id="evKpiRocAuc">0.964</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_rocauc">ROC-AUC Score</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_rocauc_desc">Discriminative ability against synthetic random background</div>
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringRocAuc" style="stroke-dasharray: 201.06; stroke-dashoffset: 7.2;"></circle>
+              </svg>
+            </div>
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiRocAuc">0.964</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_rocauc">ROC-AUC Score</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_rocauc_desc">Discriminative ability against synthetic random background</div>
+            </div>
           </div>
 
+          <!-- KPI 3: Known Sites Validated -->
           <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val gold" id="evKpiValidated">46 / 49</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_validated">Known Sites Validated</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_validated_desc">46 of 49 peer-reviewed analog sites correctly retrieved</div>
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringValidated" style="stroke-dasharray: 201.06; stroke-dashoffset: 12.3;"></circle>
+              </svg>
+            </div>
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiValidated">46 / 49</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_validated">Known Sites Validated</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_validated_desc">46 of 49 peer-reviewed analog sites correctly retrieved</div>
+            </div>
           </div>
 
-          <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val blue" id="evKpiDiscovered">38</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_discovered">New Candidates Discovered</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_discovered_desc">Uncatalogued candidate cells meeting strict tolerance</div>
+          <!-- KPI 4: New Candidates Discovered (No ring, yellow->orange gradient big number) -->
+          <div class="evidence-kpi-card kpi-card-candidate">
+            <div class="kpi-info-side full-width">
+              <div class="evidence-kpi-val kpi-val-candidate" id="evKpiDiscovered">38</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_discovered">New Candidates Discovered</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_discovered_desc">Uncatalogued candidate cells meeting strict tolerance</div>
+            </div>
           </div>
+
         </div>
 
-        <!-- Validation Rank Plot (Interactive Bar Chart with Failure-Case Annotations) -->
-        <div class="validation-plot-card">
-          <div>
-            <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.rank_plot_title">Known Analog Validation Rankings & Failure Cases</h3>
-            <p style="font-size:0.78rem; color:var(--text-muted);" data-i18n="evidence.rank_plot_desc">
-              Ranked benchmark scores. Red-bordered items indicate intentional failure-case investigations with physical justification.
-            </p>
+        <!-- 2. Main Analytics Split Grid: Ranking Chart (Left 2.6fr) + 2 Donut Cards (Right 1fr) -->
+        <div class="analytics-split-grid">
+          
+          <!-- Left: Validation Rank Plot Card (13 Horizontal Bars, Scale 50%->100%, Expandable Rows) -->
+          <div class="validation-plot-card">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.rank_plot_title">Known Analog Validation Rankings & Failure Cases</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.rank_plot_desc">
+                  Ranked benchmark scores. Red-bordered items indicate intentional failure-case investigations with physical justification.
+                </p>
+              </div>
+            </div>
+
+            <!-- Ranking Bars Container (With Legend, Scale Axis & Expandable Rows rendered via JS) -->
+            <div class="rank-bars-container" id="validationRankBars"></div>
           </div>
 
-          <div class="rank-bars-container" id="validationRankBars"></div>
+          <!-- Right Column: Stack of Two Donut Cards -->
+          <div class="donuts-stacked-column">
+            
+            <!-- Donut 1: Sites by Status -->
+            <div class="donut-card" id="sitesStatusDonutCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title">Sites by Status</h4>
+                <span class="donut-subtitle-badge">RETRIEVAL FIDELITY</span>
+              </div>
+              <div class="donut-visual-container" id="sitesStatusDonutContainer"></div>
+            </div>
+
+            <!-- Donut 2: Base Weights -->
+            <div class="donut-card" id="baseWeightsDonutCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title">Base Parameter Weights</h4>
+                <span class="donut-subtitle-badge">Σ = 100% BASELINE</span>
+              </div>
+              <div class="donut-visual-container" id="baseWeightsDonutContainer"></div>
+            </div>
+
+          </div>
+
         </div>
 
-        <!-- Methodology & Sensitivity Matrix Card -->
+        <!-- 3. Methodology & Weight Sensitivity Matrix Card (MathML Formula + Diverging Bar Chart) -->
         <div class="methodology-card">
-          <div>
-            <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.sensitivity_title">Methodology & Weight Sensitivity Matrix</h3>
+          <div class="card-header-row">
+            <div>
+              <h3 class="dashboard-card-title" data-i18n="evidence.sensitivity_title">Methodology & Weight Sensitivity Matrix</h3>
+              <p class="dashboard-card-sub">
+                Rank robustness under ±25% baseline weight perturbations with Mahalanobis covariance distance.
+              </p>
+            </div>
+            <span class="sci-badge validated" data-i18n="evidence.formula_label">Similarity Formulation</span>
           </div>
 
-          <!-- Formula Display Banner -->
+          <!-- Formula Display Banner (Real MathML, Not Raw LaTeX Text) -->
           <div class="formula-display-banner">
-            <span class="sci-badge validated" style="align-self:flex-start;" data-i18n="evidence.formula_label">Similarity Formulation</span>
-            <div class="formula-math-text">
-              \mathcal{S}(x, y) = \sum_{k=1}^K w_k \cdot \phi_k(x, y) \cdot \exp\left(-\frac{d_M^2(x_k, y_k)}{2\sigma_k^2}\right)
+            <div class="formula-mathml-box">
+              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                <mrow>
+                  <mi mathvariant="script">S</mi>
+                  <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                  <mo>=</mo>
+                  <munderover>
+                    <mo>&#x2211;</mo>
+                    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+                    <mi>K</mi>
+                  </munderover>
+                  <msub><mi>w</mi><mi>k</mi></msub>
+                  <mo>&#x22C5;</mo>
+                  <msub><mi>&#x3D5;</mi><mi>k</mi></msub>
+                  <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                  <mo>&#x22C5;</mo>
+                  <mi>exp</mi>
+                  <mo>(</mo>
+                  <mo>&#x2212;</mo>
+                  <mfrac>
+                    <mrow>
+                      <msubsup><mi>d</mi><mi>M</mi><mn>2</mn></msubsup>
+                      <mo stretchy="false">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>y</mi><mi>k</mi></msub><mo stretchy="false">)</mo>
+                    </mrow>
+                    <mrow>
+                      <mn>2</mn><msubsup><mi>&#x3C3;</mi><mi>k</mi><mn>2</mn></msubsup>
+                    </mrow>
+                  </mfrac>
+                  <mo>)</mo>
+                </mrow>
+              </math>
             </div>
-            <div class="formula-explainer">
-              Multi-attribute hybrid cosine similarity and Mahalanobis covariance distance across slope, regolith particle size distribution, thermal inertia, dielectric constant, and VNIR/SWIR spectra.
+            <div class="formula-key-explainer">
+              <strong>Formulation Key:</strong> <span class="mono">w_k</span> = Baseline parameter weight; <span class="mono">&#x3D5;_k(x, y)</span> = Multi-spectral cosine correlation; <span class="mono">d_M</span> = Mahalanobis distance under sensor covariance matrix <span class="mono">&#x3A3;_k</span>.
             </div>
           </div>
 
-          <!-- Sensitivity Table (under ±25% weight perturbations) -->
+          <!-- Sensitivity Table with Center-Zero Diverging Bars (+25% Blue, -25% Orange->Red) -->
           <div class="sensitivity-table-wrapper">
             <table class="sensitivity-table">
               <thead>
                 <tr>
-                  <th data-i18n="evidence.col_param">Evaluated Parameter</th>
-                  <th data-i18n="evidence.col_base_weight">Baseline Weight</th>
-                  <th data-i18n="evidence.col_plus_shift">+25% Weight Perturbation</th>
-                  <th data-i18n="evidence.col_minus_shift">-25% Weight Perturbation</th>
-                  <th data-i18n="evidence.col_stability">Rank Stability Index</th>
+                  <th style="width:28%;" data-i18n="evidence.col_param">Evaluated Parameter</th>
+                  <th style="width:12%; text-align:center;" data-i18n="evidence.col_base_weight">Baseline Weight</th>
+                  <th style="width:36%; text-align:center;">Diverging Shift (±25% Perturbation)</th>
+                  <th style="width:24%;" data-i18n="evidence.col_stability">Rank Stability Index</th>
                 </tr>
               </thead>
               <tbody id="sensitivityTableBody"></tbody>
@@ -345,12 +475,12 @@
           </div>
         </div>
 
-        <!-- Comprehensive Data Catalog Table (Searchable & Sortable) -->
+        <!-- 4. Comprehensive Data Catalog Table (Searchable & Sortable, Blue Tint License Pills) -->
         <div class="catalog-card" id="dataCatalogSection">
           <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
             <div>
-              <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.catalog_title">Comprehensive Data Catalog Table</h3>
-              <p style="font-size:0.78rem; color:var(--text-muted);">Multi-agency orbital archives and open planetary science raster sets.</p>
+              <h3 class="dashboard-card-title" data-i18n="evidence.catalog_title">Comprehensive Data Catalog Table</h3>
+              <p class="dashboard-card-sub">Multi-agency orbital archives and open planetary science raster sets.</p>
             </div>
             
             <div class="catalog-search-bar">
