@@ -25,12 +25,13 @@ const EvidenceController = {
   catalogSortCol: 'name',
   catalogSortAsc: true,
   selectedRank: 1, // Default selected rank for Site Details card
+  activeBodyFilter: 'all', // 'all', 'moon', 'mars', 'earth'
 
   init(validationData) {
     this.data = validationData;
     this.catalogItems = [...(validationData.data_catalog || [])];
 
-    // Register translation keys for video fallback and site details
+    // Register translation keys for video fallback, sensitivity, and data catalog
     if (window.I18n && window.I18n.translations) {
       const tr = window.I18n.translations;
       if (tr.en) {
@@ -39,6 +40,10 @@ const EvidenceController = {
         tr.en.evidence.video_missing_desc = tr.en.evidence.video_missing_desc || 'Add the recording as assets/demo_video.mp4 or use a YouTube/Vimeo link';
         tr.en.evidence.video_missing_btn = tr.en.evidence.video_missing_btn || 'Switch to YouTube / Vimeo';
         tr.en.evidence.site_details_title = tr.en.evidence.site_details_title || 'Site Details';
+        tr.en.evidence.chip_all = tr.en.evidence.chip_all || 'All';
+        tr.en.evidence.chip_moon = tr.en.evidence.chip_moon || 'Moon';
+        tr.en.evidence.chip_mars = tr.en.evidence.chip_mars || 'Mars';
+        tr.en.evidence.chip_earth = tr.en.evidence.chip_earth || 'Earth';
       }
       if (tr.ar) {
         tr.ar.evidence = tr.ar.evidence || {};
@@ -46,6 +51,10 @@ const EvidenceController = {
         tr.ar.evidence.video_missing_desc = tr.ar.evidence.video_missing_desc || 'أضف التسجيل كملف assets/demo_video.mp4 أو استخدم رابط يوتيوب / فيميو';
         tr.ar.evidence.video_missing_btn = tr.ar.evidence.video_missing_btn || 'التبديل إلى يوتيوب / فيميو';
         tr.ar.evidence.site_details_title = tr.ar.evidence.site_details_title || 'تفاصيل الموقع';
+        tr.ar.evidence.chip_all = tr.ar.evidence.chip_all || 'الكل';
+        tr.ar.evidence.chip_moon = tr.ar.evidence.chip_moon || 'القمر';
+        tr.ar.evidence.chip_mars = tr.ar.evidence.chip_mars || 'المريخ';
+        tr.ar.evidence.chip_earth = tr.ar.evidence.chip_earth || 'الأرض';
       }
     }
 
@@ -785,6 +794,17 @@ const EvidenceController = {
     const isAr = lang === 'ar';
     const params = this.data.sensitivity_matrix.parameters || [];
 
+    // Dynamically compute minimum stability percentage from data
+    const stabilities = params.map(p => parseFloat(p.stability_index)).filter(n => !isNaN(n));
+    const minStability = stabilities.length > 0 ? Math.round(Math.min(...stabilities)) : 94;
+
+    const subEl = document.getElementById('sensitivitySubtitle');
+    if (subEl) {
+      subEl.textContent = isAr 
+        ? `يبقى الترتيب ثابتاً بنسبة ${minStability}% على الأقل حتى عند تغيير أي وزن بنسبة ±25%.`
+        : `Rankings stay at least ${minStability}% stable even when any weight changes by ±25%.`;
+    }
+
     // Max scale for diverging bar is 3.0 ranks
     const maxShift = 3.0;
 
@@ -845,23 +865,35 @@ const EvidenceController = {
   },
 
   /**
-   * 5. Data Catalog Table: Searchable, sortable, blue tint license pills
+   * 5. Data Catalog Table: Searchable, sortable, celestial body filter chips, blue tint license pills
    */
   renderDataCatalogTable() {
     const tableBody = document.getElementById('dataCatalogTableBody');
     if (!tableBody) return;
 
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
     const searchInput = document.getElementById('catalogSearchInput');
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const activeBody = (this.activeBodyFilter || 'all').toLowerCase();
 
     let items = this.catalogItems.filter(item => {
+      // Body filter
+      const itemBody = (item.body || 'earth').toLowerCase();
+      if (activeBody !== 'all' && itemBody !== activeBody) {
+        return false;
+      }
+
+      // Search query across fields
       if (!query) return true;
+      const appText = (isAr && item.application_ar) ? item.application_ar : (item.application || '');
       return (
         item.name.toLowerCase().includes(query) ||
         item.agency.toLowerCase().includes(query) ||
         item.resolution.toLowerCase().includes(query) ||
         item.license.toLowerCase().includes(query) ||
-        item.application.toLowerCase().includes(query)
+        appText.toLowerCase().includes(query) ||
+        (item.application && item.application.toLowerCase().includes(query))
       );
     });
 
@@ -869,6 +901,10 @@ const EvidenceController = {
     items.sort((a, b) => {
       let valA = a[this.catalogSortCol] || '';
       let valB = b[this.catalogSortCol] || '';
+      if (this.catalogSortCol === 'application' && isAr) {
+        valA = a.application_ar || a.application || '';
+        valB = b.application_ar || b.application || '';
+      }
       if (typeof valA === 'string') valA = valA.toLowerCase();
       if (typeof valB === 'string') valB = valB.toLowerCase();
 
@@ -877,15 +913,47 @@ const EvidenceController = {
       return 0;
     });
 
-    tableBody.innerHTML = items.map(item => `
-      <tr>
-        <td><strong>${item.name}</strong></td>
-        <td>${item.agency}</td>
-        <td><span class="mono">${item.resolution}</span></td>
-        <td><span class="sci-badge license-pill">${item.license}</span></td>
-        <td>${item.application}</td>
-      </tr>
-    `).join('');
+    const catalogCard = document.getElementById('dataCatalogSection');
+    if (catalogCard) {
+      catalogCard.setAttribute('data-active-body', activeBody);
+    }
+
+    if (items.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding: 2rem; color: var(--text-muted);">
+            ${isAr ? 'لا توجد مجموعات بيانات تطابق الفلتر أو البحث الحالي.' : 'No datasets match the current filter or search.'}
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = items.map(item => {
+      const body = (item.body || 'earth').toLowerCase();
+      const bodyClass = body === 'moon' ? 'body-dot-moon' : (body === 'mars' ? 'body-dot-mars' : 'body-dot-earth');
+      const bodyLabel = body === 'moon' ? (isAr ? 'القمر' : 'Moon') : (body === 'mars' ? (isAr ? 'المريخ' : 'Mars') : (isAr ? 'الأرض' : 'Earth'));
+
+      // License pill: "Public domain" and "CC-BY 4.0" (keep full license name in title tooltip)
+      const isCc = item.license.toUpperCase().includes('CC-BY');
+      const licenseShort = isCc ? 'CC-BY 4.0' : (isAr ? 'نطاق عام' : 'Public domain');
+      const applicationText = (isAr && item.application_ar) ? item.application_ar : item.application;
+
+      return `
+        <tr data-body="${body}" style="--row-color: var(--body-${body});" tabindex="0">
+          <td>
+            <div class="dataset-name-cell">
+              <span class="body-dot ${bodyClass}" title="${bodyLabel}" aria-label="${bodyLabel}"></span>
+              <strong>${item.name}</strong>
+            </div>
+          </td>
+          <td>${item.agency}</td>
+          <td><span class="mono">${item.resolution}</span></td>
+          <td><span class="sci-badge license-pill" title="${item.license}">${licenseShort}</span></td>
+          <td>${applicationText}</td>
+        </tr>
+      `;
+    }).join('');
   },
 
   /* ==========================================================================
@@ -941,6 +1009,17 @@ const EvidenceController = {
         }
       });
     }
+
+    // Body filter chips in Data Catalog
+    const chipBtns = document.querySelectorAll('.catalog-chip[data-body]');
+    chipBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const body = e.currentTarget.getAttribute('data-body') || 'all';
+        this.activeBodyFilter = body;
+        chipBtns.forEach(c => c.classList.toggle('active', c === e.currentTarget));
+        this.renderDataCatalogTable();
+      });
+    });
 
     // Search input in Data Catalog
     const searchInput = document.getElementById('catalogSearchInput');

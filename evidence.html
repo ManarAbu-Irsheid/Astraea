@@ -417,9 +417,9 @@
         <div class="methodology-card">
           <div class="card-header-row">
             <div>
-              <h3 class="dashboard-card-title" data-i18n="evidence.sensitivity_title">Methodology & Weight Sensitivity Matrix</h3>
-              <p class="dashboard-card-sub">
-                Rank robustness under ±25% baseline weight perturbations with Mahalanobis covariance distance.
+              <h3 class="dashboard-card-title" data-i18n="evidence.sensitivity_title">Method &amp; ranking stability</h3>
+              <p class="dashboard-card-sub sensitivity-takeaway-highlight" id="sensitivitySubtitle" data-i18n="evidence.sensitivity_subtitle">
+                Rankings stay at least 94% stable even when any weight changes by ±25%.
               </p>
             </div>
           </div>
@@ -458,8 +458,11 @@
                 </mrow>
               </math>
             </div>
-            <div class="formula-key-explainer">
-              <strong>Formulation Key:</strong> <span class="mono">w_k</span> = Baseline parameter weight; <span class="mono">&#x3D5;_k(x, y)</span> = Multi-spectral cosine correlation; <span class="mono">d_M</span> = Mahalanobis distance under sensor covariance matrix <span class="mono">&#x3A3;_k</span>.
+            <div class="formula-key-grid">
+              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">wₖ</span> = <span data-i18n="evidence.key_weight">weight</span></div>
+              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">φₖ</span> = <span data-i18n="evidence.key_similarity">similarity</span></div>
+              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">d<sub>M</sub></span> = <span data-i18n="evidence.key_mahalanobis">Mahalanobis distance</span></div>
+              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">σₖ</span> = <span data-i18n="evidence.key_spread">spread</span></div>
             </div>
           </div>
 
@@ -468,10 +471,10 @@
             <table class="sensitivity-table">
               <thead>
                 <tr>
-                  <th style="width:28%;" data-i18n="evidence.col_param">Evaluated Parameter</th>
-                  <th style="width:12%; text-align:center;" data-i18n="evidence.col_base_weight">Baseline Weight</th>
-                  <th style="width:36%; text-align:center;">Diverging Shift (±25% Perturbation)</th>
-                  <th style="width:24%;" data-i18n="evidence.col_stability">Rank Stability Index</th>
+                  <th style="width:28%;" data-i18n="evidence.col_param">Attribute</th>
+                  <th style="width:14%; text-align:center;" data-i18n="evidence.col_base_weight">Weight</th>
+                  <th style="width:34%; text-align:center;" data-i18n="evidence.col_rank_change">Rank change at ±25%</th>
+                  <th style="width:24%;" data-i18n="evidence.col_stability">Stability</th>
                 </tr>
               </thead>
               <tbody id="sensitivityTableBody"></tbody>
@@ -479,17 +482,25 @@
           </div>
         </div>
 
-        <!-- 4. Comprehensive Data Catalog Table (Searchable & Sortable, Blue Tint License Pills) -->
-        <div class="catalog-card" id="dataCatalogSection">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
+        <!-- 4. Data Catalog Table (Searchable & Sortable, Filter Chips, Blue Tint License Pills) -->
+        <div class="catalog-card" id="dataCatalogSection" data-active-body="all">
+          <div class="catalog-header-wrap">
             <div>
-              <h3 class="dashboard-card-title" data-i18n="evidence.catalog_title">Comprehensive Data Catalog Table</h3>
-              <p class="dashboard-card-sub">Multi-agency orbital archives and open planetary science raster sets.</p>
+              <h3 class="dashboard-card-title" data-i18n="evidence.catalog_title">Data sources</h3>
+              <p class="dashboard-card-sub" data-i18n="evidence.catalog_subtitle">Open datasets the results are built on.</p>
             </div>
             
-            <div class="catalog-search-bar">
-              <span class="catalog-search-icon" aria-hidden="true">🔍</span>
-              <input type="text" class="catalog-search-input" id="catalogSearchInput" placeholder="Search dataset, agency, application, resolution..." data-i18n="evidence.catalog_search_placeholder" data-i18n-placeholder="evidence.catalog_search_placeholder">
+            <div class="catalog-header-controls">
+              <div class="catalog-filter-chips" role="group" aria-label="Filter datasets by celestial body">
+                <button type="button" class="catalog-chip active" data-body="all" data-i18n="evidence.chip_all">All</button>
+                <button type="button" class="catalog-chip" data-body="moon" data-i18n="evidence.chip_moon">Moon</button>
+                <button type="button" class="catalog-chip" data-body="mars" data-i18n="evidence.chip_mars">Mars</button>
+                <button type="button" class="catalog-chip" data-body="earth" data-i18n="evidence.chip_earth">Earth</button>
+              </div>
+              <div class="catalog-search-bar">
+                <span class="catalog-search-icon" aria-hidden="true">🔍</span>
+                <input type="text" class="catalog-search-input" id="catalogSearchInput" placeholder="Search dataset, agency, application, resolution..." data-i18n="evidence.catalog_search_placeholder" data-i18n-placeholder="evidence.catalog_search_placeholder">
+              </div>
             </div>
           </div>
 
@@ -497,11 +508,11 @@
             <table class="catalog-table">
               <thead>
                 <tr>
-                  <th data-sort="name" data-i18n="evidence.col_dataset_name">Dataset Name</th>
-                  <th data-sort="agency" data-i18n="evidence.col_agency">Space Agency / Provider</th>
-                  <th data-sort="resolution" data-i18n="evidence.col_resolution">Spatial Resolution</th>
-                  <th data-sort="license" data-i18n="evidence.col_license">Licensing</th>
-                  <th data-sort="application" data-i18n="evidence.col_application">Pipeline Application</th>
+                  <th data-sort="name" data-i18n="evidence.col_dataset_name">Dataset</th>
+                  <th data-sort="agency" data-i18n="evidence.col_agency">Provider</th>
+                  <th data-sort="resolution" data-i18n="evidence.col_resolution">Resolution</th>
+                  <th data-sort="license" data-i18n="evidence.col_license">License</th>
+                  <th data-sort="application" data-i18n="evidence.col_application">Used for</th>
                 </tr>
               </thead>
               <tbody id="dataCatalogTableBody"></tbody>
