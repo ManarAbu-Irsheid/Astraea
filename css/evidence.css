@@ -48,7 +48,24 @@
   filter: none !important;
 }
 
-/* Page Fluid Container */
+/* Accessibility Utility: Visually Hidden for Screen Readers */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Page Fluid Container (Space above hero video reduced to ~24px) */
+.page-container {
+  padding-top: 24px !important;
+}
+
 .page-container,
 .evidence-page-layout {
   width: min(94%, 1600px);
@@ -57,6 +74,11 @@
   flex-direction: column;
   gap: clamp(2rem, 1.5rem + 1.5vw, 3.5rem);
   padding-bottom: 48px;
+}
+
+.evidence-page-layout {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 /* Section Header Typography */
@@ -1890,46 +1912,32 @@ html[dir="rtl"] .rank-bar-row.selected {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: clamp(14px, 1.2vw, 28px);
+  padding: 0 !important;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 1vw, 20px);
   position: relative;
   overflow: hidden;
   --card-accent: #00C6FF;
+  width: 100%;
+  max-height: 80vh;
 }
 
 .video-section-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--grad-main);
+  display: none;
 }
 
-/* Hero 16:9 Video Wrapper with Glowing Border */
+/* Dedicated 16:9 Video Wrapper filling edge-to-edge with max-height 80vh */
 .video-responsive-wrapper {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
+  max-height: 80vh;
   background: #020610;
-  border-radius: var(--radius-lg);
+  border-radius: inherit;
   overflow: hidden;
-  border: 1px solid rgba(0, 198, 255, 0.35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 198, 255, 0.2);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
-}
-
-.video-responsive-wrapper:hover,
-.video-responsive-wrapper:focus-within {
-  border-color: #00C6FF;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.8),
-              0 0 0 1px #00C6FF,
-              0 0 28px rgba(0, 198, 255, 0.4),
-              0 0 65px rgba(0, 198, 255, 0.15);
+  border: none;
+  box-shadow: none;
 }
 
 .video-player-element {
@@ -1937,6 +1945,8 @@ html[dir="rtl"] .rank-bar-row.selected {
   inset: 0;
   width: 100%;
   height: 100%;
+  max-height: 80vh;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   border: none;
   border-radius: inherit;
