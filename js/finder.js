@@ -75,7 +75,10 @@ const FINDER_UI_TEXT = {
   reset:        { en: 'Reset Defaults',  ar: 'إعادة الضبط' },
   layerSatellite: { en: 'Satellite',  ar: 'قمر صناعي' },
   layerTopo:      { en: 'Topography', ar: 'تضاريس' },
-  layerDark:      { en: 'Dark Map',   ar: 'خريطة داكنة' }
+  layerDark:      { en: 'Dark Map',   ar: 'خريطة داكنة' },
+  heatLegend:     { en: 'Glow = similarity', ar: 'التوهج = نسبة التشابه' },
+  heatLow:        { en: 'Low',  ar: 'أقل' },
+  heatHigh:       { en: 'High', ar: 'أعلى' }
 };
 
 // Banner on top of the map: tells the user what the map is showing
@@ -188,6 +191,12 @@ const SiteFinder = {
           });
         });
 
+        // Heat layer (similarity glow) sits under the markers
+        this.map.createPane('heatPane');
+        this.map.getPane('heatPane').style.zIndex = 350;
+        this.map.getPane('heatPane').style.pointerEvents = 'none';
+        this.heatLayer = L.layerGroup().addTo(this.map);
+
         this.markersLayer = L.layerGroup().addTo(this.map);
       } else {
         console.warn('Leaflet library not loaded, using SVG fallback visualizer');
@@ -258,6 +267,7 @@ const SiteFinder = {
     this.updateTargetBanner();
     if (!this.map || !this.markersLayer) return;
     this.markersLayer.clearLayers();
+    if (this.heatLayer) this.heatLayer.clearLayers();
 
     const filtered = this.getFilteredCells();
     const countBadge = document.getElementById('mapFilteredCount');
@@ -275,6 +285,9 @@ const SiteFinder = {
       }
 
       const scoreClass = score >= 88 ? 'high' : 'med';
+
+      // Heat glow: bigger + hotter colour = more similar
+      this.drawHeat(cell, score);
       const scoreFormatted = score.toFixed(1) + '%';
       const displayName = isAr ? cell.name_ar : cell.name;
       const displayCountry = isAr ? cell.country_ar : cell.country;
@@ -522,6 +535,41 @@ const SiteFinder = {
     }
   },
 
+  /* ---------- Heat map (similarity glow) ---------- */
+  // score 78% or less -> cool blue, ~86% -> yellow, 95% or more -> hot red
+  heatColor(score) {
+    const t = Math.min(1, Math.max(0, (score - 78) / (95 - 78)));
+    const stops = [
+      [0.0, [0, 163, 255]],   // blue
+      [0.5, [245, 214, 35]],  // yellow
+      [1.0, [255, 59, 31]]    // red
+    ];
+    let a = stops[0], b = stops[stops.length - 1];
+    for (let i = 0; i < stops.length - 1; i++) {
+      if (t >= stops[i][0] && t <= stops[i + 1][0]) { a = stops[i]; b = stops[i + 1]; break; }
+    }
+    const k = (t - a[0]) / ((b[0] - a[0]) || 1);
+    const rgb = a[1].map((v, i) => Math.round(v + (b[1][i] - v) * k));
+    return { color: `rgb(${rgb.join(',')})`, t };
+  },
+
+  drawHeat(cell, score) {
+    if (!this.heatLayer || typeof L === 'undefined') return;
+    const { color, t } = this.heatColor(score);
+    const baseRadius = 22 + t * 30; // pixels
+    // 3 soft rings, from wide/faint to small/strong
+    [[1.0, 0.14], [0.65, 0.22], [0.35, 0.34]].forEach(([scale, opacity]) => {
+      L.circleMarker([cell.lat, cell.lon], {
+        pane: 'heatPane',
+        radius: baseRadius * scale,
+        stroke: false,
+        fillColor: color,
+        fillOpacity: opacity,
+        interactive: false
+      }).addTo(this.heatLayer);
+    });
+  },
+
   /* ---------- Target-aware criteria ---------- */
   lang() {
     return (window.I18n ? window.I18n.currentLang : 'en') === 'ar' ? 'ar' : 'en';
@@ -589,6 +637,9 @@ const SiteFinder = {
     setText('layerLabelSatellite', FINDER_UI_TEXT.layerSatellite[lang]);
     setText('layerLabelTopo', FINDER_UI_TEXT.layerTopo[lang]);
     setText('layerLabelDark', FINDER_UI_TEXT.layerDark[lang]);
+    setText('heatLegendTitle', FINDER_UI_TEXT.heatLegend[lang]);
+    setText('heatLegendLow', FINDER_UI_TEXT.heatLow[lang]);
+    setText('heatLegendHigh', FINDER_UI_TEXT.heatHigh[lang]);
     const hint = document.getElementById('finderTargetHint');
     if (hint) hint.textContent = cfg.hint[lang];
 
@@ -684,6 +735,18 @@ const SiteFinder = {
 
     const backdrop = document.getElementById('finderSheetBackdrop');
     if (backdrop) backdrop.addEventListener('click', () => this.closeSheets());
+
+    // Guided tour: on mobile, open the sheet that the current step explains
+    document.addEventListener('tourStepChange', (e) => {
+      if (!this.isMobile()) return;
+      const target = e.detail && e.detail.target;
+      if (target === '#finderCriteriaSpotlight') this.openSheet('filters');
+      else if (target === '#finderDetailSpotlight') this.openSheet('card');
+      else this.closeSheets();
+    });
+    document.addEventListener('tourEnded', () => {
+      if (this.isMobile()) this.closeSheets();
+    });
 
     // Leaving mobile size (e.g. rotating a tablet) -> reset sheets
     window.matchMedia('(max-width: 768px)').addEventListener('change', () => this.closeSheets());

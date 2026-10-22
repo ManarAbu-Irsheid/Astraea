@@ -118,7 +118,7 @@ const App = {
       kebabTourBtn.addEventListener('click', () => {
         kebabDropdown.classList.remove('open');
         if (window.GuidedTour) {
-          window.GuidedTour.start(pageName);
+          window.GuidedTour.startTour();
         }
       });
     }

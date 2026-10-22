@@ -36,24 +36,24 @@ const GuidedTour = {
     finder: [
       {
         target: '#finderCriteriaSpotlight',
-        title_en: '1. Criteria Filters',
-        title_ar: '1. معايير وتصفيات البحث',
-        body_en: 'Switch target bodies between Moon and Mars, filter by terrain morphology, and observe active mission weightings.',
-        body_ar: 'قم بتبديل الجرم المستهدف بين القمر والمريخ، والتصفية حسب تضاريس السطح، ومراقبة أوزان المهمة النشطة.'
+        title_en: '1. Criteria',
+        title_ar: '1. المعايير',
+        body_en: 'Choose the target (Moon or Mars), then the mission profile. The map recolours by similarity.',
+        body_ar: 'اختر الهدف (قمر أو مريخ) ثم البروفايل، والخريطة تتلوّن حسب التشابه.'
       },
       {
         target: '#finderMapSpotlight',
-        title_en: '2. Discovery Map',
-        title_ar: '2. خريطة الاستكشاف',
-        body_en: 'Known historic sites are represented with circular markers, while new candidate sites are highlighted as Golden Stars (★).',
-        body_ar: 'المواقع التاريخية المعروفة تظهر كدوائر ملونة، بينما تبرز المواقع المرشحة الجديدة كنجوم ذهبية لامعة (★).'
+        title_en: '2. The Map',
+        title_ar: '2. الخريطة',
+        body_en: 'A circle is a known site and a golden star is a new candidate. Turn on "New Candidates Only" to see the discoveries only.',
+        body_ar: 'الدائرة موقع معروف، والنجمة الذهبية مرشّح جديد. فعّل «المرشحون الجدد فقط» لتشوف الاكتشافات فقط.'
       },
       {
         target: '#finderDetailSpotlight',
-        title_en: '3. Site Card & Comparison',
-        title_ar: '3. بطاقة الموقع ومقارنته',
-        body_en: 'Inspect multi-parameter radar matching, why the site matches, physical divergences, and route directly to the Compare page.',
-        body_ar: 'افحص مخطط الرادار متعدد المعايير، وأسباب التطابق والانحرافات الفيزيائية، وانتقل مباشرة لصفحة المقارنة.'
+        title_en: '3. Site Card & Compare',
+        title_ar: '3. البطاقة والمقارنة',
+        body_en: 'Tap any point to open its card. From there, the "Compare" button takes you to the Compare page.',
+        body_ar: 'اضغط على أي نقطة لتفتح بطاقتها، ومنها زر «Compare» ينقلك لصفحة المقارنة.'
       }
     ],
     compare: [
@@ -135,6 +135,7 @@ const GuidedTour = {
   },
 
   hideOverlay() {
+    document.dispatchEvent(new CustomEvent('tourEnded', { detail: { page: this.currentPage } }));
     const overlay = document.getElementById('tourOverlay');
     if (overlay) overlay.classList.remove('active');
     this.clearHighlight();
@@ -158,6 +159,11 @@ const GuidedTour = {
       console.warn('Tour target element not found:', step.target);
       return this.nextStep();
     }
+
+    // Let the page react (e.g. Site Finder opens a mobile bottom sheet)
+    document.dispatchEvent(new CustomEvent('tourStepChange', {
+      detail: { page: this.currentPage, index, target: step.target }
+    }));
 
     targetEl.classList.add('tour-highlighted');
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -194,25 +200,51 @@ const GuidedTour = {
       </div>
     `;
 
-    // Position tooltip card relative to target element
-    const rect = targetEl.getBoundingClientRect();
-    const cardWidth = 320;
-    const scrollY = window.scrollY || window.pageYOffset;
-    const scrollX = window.scrollX || window.pageXOffset;
+    // Position tooltip card (wait a moment on mobile so sheets finish sliding)
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const placeCard = () => {
+      const rect = targetEl.getBoundingClientRect();
+      const cardWidth = Math.min(320, window.innerWidth - 32);
+      const cardHeight = card.offsetHeight || 200;
+      const scrollY = window.scrollY || window.pageYOffset;
+      const scrollX = window.scrollX || window.pageXOffset;
+      const gap = 12;
+      let top, left;
 
-    let top = rect.bottom + scrollY + 12;
-    let left = rect.left + scrollX + (rect.width / 2) - (cardWidth / 2);
+      const spaceRight = window.innerWidth - rect.right;
+      const spaceLeft = rect.left;
+      const isTall = rect.height > window.innerHeight * 0.55;
 
-    // Keep card on screen bounds
-    if (left < 16) left = 16;
-    if (left + cardWidth > window.innerWidth - 16) left = window.innerWidth - cardWidth - 16;
-    if (rect.bottom + 220 > window.innerHeight) {
-      top = rect.top + scrollY - 180;
-    }
+      if (isTall && !isMobile && (spaceRight > cardWidth + 24 || spaceLeft > cardWidth + 24)) {
+        // Tall element (side panels): put the card beside it
+        left = spaceRight > cardWidth + 24 ? rect.right + gap : rect.left - cardWidth - gap;
+        top = Math.max(rect.top, 16) + scrollY;
+      } else if (rect.bottom + gap + cardHeight < window.innerHeight) {
+        // Room below
+        top = rect.bottom + scrollY + gap;
+        left = rect.left + scrollX + (rect.width / 2) - (cardWidth / 2);
+      } else if (rect.top - gap - cardHeight > 0) {
+        // Room above
+        top = rect.top + scrollY - cardHeight - gap;
+        left = rect.left + scrollX + (rect.width / 2) - (cardWidth / 2);
+      } else {
+        // No room: pin to the top of the screen
+        top = scrollY + 16;
+        left = rect.left + scrollX + (rect.width / 2) - (cardWidth / 2);
+      }
 
-    card.style.top = `${top}px`;
-    card.style.left = `${left}px`;
+      // Keep card inside the screen
+      left = Math.max(16, Math.min(left, window.innerWidth - cardWidth - 16));
+      top = Math.max(scrollY + 16, top);
+
+      card.style.width = `${cardWidth}px`;
+      card.style.top = `${top}px`;
+      card.style.left = `${left}px`;
+    };
+
     card.classList.add('show');
+    placeCard();
+    if (isMobile) setTimeout(placeCard, 350);
 
     // Bind card buttons
     document.getElementById('tourSkipBtn')?.addEventListener('click', () => this.dismissTour());

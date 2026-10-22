@@ -742,6 +742,37 @@
   color: #b0c8e6;
 }
 
+/* Heat legend (glow colour = similarity) */
+.heat-legend {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.heat-legend-title {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.heat-legend-bar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, rgb(0, 163, 255), rgb(245, 214, 35), rgb(255, 59, 31));
+}
+
+[dir="rtl"] .heat-legend-bar {
+  background: linear-gradient(270deg, rgb(0, 163, 255), rgb(245, 214, 35), rgb(255, 59, 31));
+}
+
+.heat-legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
 /* Mobile-only sheet elements: hidden on desktop */
 .sheet-header,
 .mobile-filters-btn,
@@ -906,6 +937,12 @@
     display: none;
   }
 
+  /* Guided tour: keep sheets fixed while highlighted */
+  .finder-left-panel.tour-highlighted,
+  .finder-right-panel.tour-highlighted {
+    position: fixed !important;
+  }
+
   /* --- Backdrop behind an open sheet --- */
   .sheet-backdrop.show {
     display: block;
@@ -913,5 +950,111 @@
     inset: 0;
     z-index: 1000;
     background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+
+/* ==========================================================================
+   PRINT / "EXPORT SITE BRIEF": one clean page with the site card only
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+
+  /* Hide everything except the site card */
+  .site-header,
+  .site-footer,
+  .footer-mission-boundary,
+  .chatbot-widget-container,
+  .tour-overlay,
+  .tour-card,
+  .finder-left-panel,
+  .finder-center-canvas,
+  .sheet-header,
+  .sheet-backdrop,
+  .mobile-filters-btn,
+  .detail-card-actions,
+  .panel-placeholder-state {
+    display: none !important;
+  }
+
+  .page-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .finder-dashboard {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* The card: static, full width, light colours for paper */
+  .finder-right-panel {
+    --bg-card: #ffffff;
+    --bg-secondary: #f3f6fa;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    --border-color: #d1d5db;
+    position: static !important;
+    transform: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .finder-right-panel #finderDetailContent {
+    display: flex !important;
+    height: auto !important;
+  }
+
+  /* Report title on top + data line at the bottom */
+  .finder-right-panel::before {
+    content: "TerraTwin — Site Brief";
+    display: block;
+    font-family: var(--font-display);
+    font-size: 14pt;
+    font-weight: 700;
+    color: #111827;
+    padding-bottom: 6pt;
+    margin-bottom: 10pt;
+    border-bottom: 2px solid #00a3ff;
+  }
+
+  .finder-right-panel::after {
+    content: "Data: NASA PDS • ESA Copernicus Sentinel-2 • USGS  |  TerraTwin by Astraea Team  |  CC-BY 4.0";
+    display: block;
+    margin-top: 12pt;
+    padding-top: 6pt;
+    border-top: 1px solid #d1d5db;
+    font-size: 8pt;
+    color: #6b7280;
+  }
+
+  [dir="rtl"] .finder-right-panel::before {
+    content: "TerraTwin — ملخص الموقع";
+  }
+
+  [dir="rtl"] .finder-right-panel::after {
+    content: "البيانات: NASA PDS • ESA Copernicus Sentinel-2 • USGS  |  TerraTwin - فريق Astraea  |  CC-BY 4.0";
+  }
+
+  .radar-chart-container,
+  .detail-score-banner {
+    break-inside: avoid;
   }
 }
