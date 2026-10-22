@@ -214,7 +214,7 @@
       "col_license": "License",
       "col_application": "Used for",
       "sec3_title": "Future Vision & Strategic Roadmap",
-      "sec3_subtitle": "Trajectory towards autonomous planetary mission planning and real-time ground-truth calibration.",
+      "sec3_subtitle": "Our trajectory towards autonomous planetary mission planning.",
       "spectral_title": "Spectral Radiance Calibration Band",
       "spectral_desc": "Multi-attribute optical-to-thermal baseline: Solar Visible (0.55μm, #FFE53B) to Thermal Infrared (10.6μm, #FF2525)."
     }
@@ -434,7 +434,7 @@
       "col_license": "الترخيص",
       "col_application": "الاستخدام",
       "sec3_title": "الرؤية المستقبلية وخارطة الطريق",
-      "sec3_subtitle": "مسار التطوير نحو التخطيط الذاتي للمهام الكوكبية والمعايرة اللحظية من الميدان.",
+      "sec3_subtitle": "مسار التطوير نحو التخطيط الذاتي للمهام الكوكبية.",
       "spectral_title": "نطاق معايرة الإشعاع الطيفي والحراري",
       "spectral_desc": "معيار المطابقة متعدد الأطياف: من الإشعاع الشمسي المرئي (0.55μm، #FFE53B) إلى الأشعة تحت الحمراء الحرارية (10.6μm، #FF2525)."
     }

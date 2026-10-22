@@ -1264,15 +1264,11 @@ const EvidenceController = {
       else if (pLower.includes('spectral')) shortName = isAr ? 'الطيف' : 'Spectral';
       else shortName = isAr ? (p.parameter_ar || p.parameter) : p.parameter;
 
-      // Small pill with its weight: "Weight 28%" (AR: "الأهمية 28%")
-      const weightPct = (p.base_weight * 100).toFixed(0);
-      const weightText = isAr 
-        ? `الأهمية <bdi class="bidi-isolate">${weightPct}%</bdi>` 
-        : `Weight ${weightPct}%`;
+      // Small pill with its weight: (28%)
+      const weightPct = `${(p.base_weight * 100).toFixed(0)}%`;
 
-      // Stability % in the center; parameter with lowest stability gets orange ring
+      // Glowing blue ring gauge with stability % in the center
       const stabVal = parseFloat(p.stability_index) || 95;
-      const isLowest = Math.abs(stabVal - minStabilityVal) < 0.05;
 
       // Circumference C = 2 * PI * 32 = 201.06
       const C = 201.06;
@@ -1288,23 +1284,23 @@ const EvidenceController = {
       const shiftFormatted = maxShiftVal.toFixed(1);
 
       const shiftText = isAr
-        ? `يتغير ترتيبه <bdi class="bidi-isolate">±${shiftFormatted}</bdi> مرتبة كحد أقصى`
-        : `Moves at most ±${shiftFormatted} places`;
+        ? `يتغير ترتيبه بحد أقصى <bdi class="bidi-isolate">±${shiftFormatted}</bdi> مرتبة`
+        : `Moves ±${shiftFormatted} places at most`;
 
       return `
-        <div class="sensitivity-param-card ${isLowest ? 'card-orange' : 'card-blue'}" tabindex="0">
+        <div class="sensitivity-param-card" tabindex="0">
           <div class="param-card-header">
             <h4 class="param-card-name">${shortName}</h4>
-            <span class="param-weight-pill mono">${weightText}</span>
+            <span class="param-weight-pill mono"><bdi class="bidi-isolate">${weightPct}</bdi></span>
           </div>
 
           <div class="param-ring-side">
             <div class="param-ring-wrapper">
               <svg class="kpi-ring-svg param-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
                 <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
-                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ${isLowest ? 'ring-candidate' : 'ring-main'}" style="stroke-dasharray: 201.06; stroke-dashoffset: ${offset};"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" style="stroke-dasharray: 201.06; stroke-dashoffset: ${offset};"></circle>
               </svg>
-              <div class="param-ring-center-val ${isLowest ? 'kpi-val-candidate' : 'kpi-val-main'} mono">${stabText}</div>
+              <div class="param-ring-center-val kpi-val-main mono">${stabText}</div>
             </div>
           </div>
 
@@ -1424,30 +1420,73 @@ const EvidenceController = {
       planned: { en: 'Planned', ar: 'مخطط' }
     };
 
+    const shortTitles = [
+      { en: 'Data Fusion', ar: 'دمج البيانات' },
+      { en: 'Field Robotics', ar: 'روبوتات الميدان' },
+      { en: 'Weight Learning', ar: 'تعلم الأوزان' },
+      { en: 'Collaborative Cloud', ar: 'السحابة التعاونية' }
+    ];
+
     const totalItems = this.data.roadmap.length;
 
     container.innerHTML = this.data.roadmap.map((item, idx) => {
       const status = item.status || 'planned';
       const statusText = isAr ? statusLabels[status]?.ar || status : statusLabels[status]?.en || status;
-      const title = isAr ? item.title_ar : item.title;
+      const fullTitle = isAr ? item.title_ar : item.title;
+      const shortTitle = shortTitles[idx] ? (isAr ? shortTitles[idx].ar : shortTitles[idx].en) : fullTitle;
       const desc = isAr ? item.description_ar : item.description;
       const isLast = idx === totalItems - 1;
 
       return `
-        <div class="roadmap-phase-card phase-${status}" data-status="${status}">
+        <div class="roadmap-phase-card phase-${status}" data-status="${status}" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false" aria-label="${shortTitle}: ${statusText}">
           <div class="timeline-dot-wrapper">
-            <div class="timeline-dot dot-${status}" aria-label="${statusText}"></div>
+            <div class="timeline-dot dot-${status}" aria-hidden="true"></div>
             ${!isLast ? `<div class="timeline-connector connector-${status}"></div>` : ''}
           </div>
           <div class="timeline-content">
-            <span class="timeline-status-text status-${status}">${statusText}</span>
-            <div class="timeline-date mono">${item.timeline}</div>
-            <h4 class="timeline-title">${title}</h4>
-            <p class="timeline-desc">${desc}</p>
+            <div class="timeline-meta-row">
+              <span class="timeline-status-text status-${status}">${statusText}</span>
+              <span class="timeline-date mono">${item.timeline}</span>
+            </div>
+            <h4 class="timeline-title">${shortTitle}</h4>
+
+            <!-- Tooltip/popover with full title and description -->
+            <div class="timeline-popover" role="tooltip">
+              <div class="popover-full-title">${fullTitle}</div>
+              <p class="popover-desc">${desc}</p>
+            </div>
           </div>
         </div>
       `;
     }).join('');
+
+    // Keyboard and click toggle for description popover
+    container.querySelectorAll('.roadmap-phase-card').forEach(card => {
+      const togglePopover = (forceState) => {
+        const isOpen = forceState !== undefined ? forceState : !card.classList.contains('popover-open');
+        container.querySelectorAll('.roadmap-phase-card').forEach(c => {
+          if (c !== card || !isOpen) {
+            c.classList.remove('popover-open');
+            c.setAttribute('aria-expanded', 'false');
+          }
+        });
+        if (isOpen) {
+          card.classList.add('popover-open');
+          card.setAttribute('aria-expanded', 'true');
+        }
+      };
+
+      card.addEventListener('click', () => togglePopover());
+
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          togglePopover();
+        } else if (e.key === 'Escape') {
+          togglePopover(false);
+        }
+      });
+    });
   },
 
   bindEvents() {
@@ -1512,6 +1551,16 @@ const EvidenceController = {
         }
       });
     }
+
+    // Close any open roadmap popovers when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.roadmap-phase-card')) {
+        document.querySelectorAll('.roadmap-phase-card.popover-open').forEach(c => {
+          c.classList.remove('popover-open');
+          c.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
   }
 };
 
