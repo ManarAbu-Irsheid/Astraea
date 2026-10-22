@@ -46,7 +46,7 @@
         <a href="evidence.html" class="nav-link" data-page="evidence" data-i18n="nav.evidence">Evidence & Method</a>
       </nav>
 
-      <!-- Header Controls: Mission Profile, Lang, Tour, Theme -->
+      <!-- Header Controls: Lang, Profile, 3-Dots Menu -->
       <div class="header-actions" id="headerControlsSpotlight">
         
         <!-- Mission Profile Selector Badge & Dropdown -->
@@ -129,7 +129,7 @@
             </div>
             <div class="user-meta-text">
               <span class="user-display-name" data-i18n="nav.user_name">Dr. Researcher</span>
-              <span class="user-role-tag" data-i18n="nav.user_role">ASTRAEA LAB</span>
+              
             </div>
             <span class="profile-chevron">▼</span>
           </button>
@@ -140,7 +140,7 @@
               <div class="user-dropdown-info">
                 <div class="user-dropdown-name" data-i18n="nav.user_name">Dr. Researcher</div>
                 <div class="user-dropdown-role">Planetary Analog Specialist</div>
-                <div class="user-dropdown-email">researcher@astraea.space</div>
+                <div class="user-dropdown-email">researcher@terratwin.space</div>
               </div>
             </div>
             <div class="user-dropdown-badge-strip">
@@ -150,7 +150,7 @@
             <div class="user-dropdown-divider"></div>
             <div class="user-dropdown-row">
               <span class="dropdown-row-label">Assigned Mission:</span>
-              <span class="dropdown-row-val" id="userProfileActiveMission">Rover Testing</span>
+              <span class="dropdown-row-val" id="userProfileActiveMission">Analog Field Recon</span>
             </div>
             <div class="user-dropdown-row">
               <span class="dropdown-row-label">Data Clearance:</span>
@@ -173,6 +173,10 @@
           
           <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
             <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
+            <a href="guide.html" class="kebab-item-btn" id="kebabEthicsGuideBtn">
+              <span class="kebab-item-icon">📜</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_ethics">Mission Purpose, Ethics & Guide</span>
+            </a>
             <button class="kebab-item-btn" id="kebabProfileBtn">
               <span class="kebab-item-icon">👤</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
@@ -183,7 +187,7 @@
             </button>
             <button class="kebab-item-btn" id="kebabContactBtn">
               <span class="kebab-item-icon">📬</span>
-              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Astraea Team</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Science Team</span>
             </button>
             <div class="kebab-divider"></div>
             <button class="kebab-item-btn" id="kebabChatbotBtn">
@@ -256,19 +260,19 @@
             <div class="planet-station-title" id="hudPlanetName">Earth (Terra)</div>
           </div>
 
-          <!-- Planet Selector Tabs [ Earth | Mars | Moon ] -->
-          <div class="planet-tabs-group">
-            <button class="planet-tab-btn active" data-planet="earth">
-              <span class="planet-tab-icon">🌍</span>
-              <span>Earth / الأرض</span>
+          <!-- Planet Selector Tabs [ Earth | Mars | Moon ] - Single Clean Name Dependent on Language -->
+          <div class="planet-tabs-group" role="tablist" aria-label="Celestial Body Selector">
+            <button class="planet-tab-btn active" data-planet="earth" role="tab" aria-selected="true" title="Earth / الأرض">
+              <span class="planet-tab-orb earth-orb" aria-hidden="true"></span>
+              <span class="planet-tab-name" data-i18n="planet.tab_earth">الأرض</span>
             </button>
-            <button class="planet-tab-btn" data-planet="mars">
-              <span class="planet-tab-icon">🔴</span>
-              <span>Mars / المريخ</span>
+            <button class="planet-tab-btn" data-planet="mars" role="tab" aria-selected="false" title="Mars / المريخ">
+              <span class="planet-tab-orb mars-orb" aria-hidden="true"></span>
+              <span class="planet-tab-name" data-i18n="planet.tab_mars">المريخ</span>
             </button>
-            <button class="planet-tab-btn" data-planet="moon">
-              <span class="planet-tab-icon">🌕</span>
-              <span>Moon / القمر</span>
+            <button class="planet-tab-btn" data-planet="moon" role="tab" aria-selected="false" title="Moon / القمر">
+              <span class="planet-tab-orb moon-orb" aria-hidden="true"></span>
+              <span class="planet-tab-name" data-i18n="planet.tab_moon">القمر</span>
             </button>
           </div>
         </div>
@@ -294,61 +298,66 @@
           <div class="planet-site-popup" id="planetSiteSelectedPopup"></div>
         </div>
 
-        <!-- Clean Horizontal Telemetry Strip (De-cluttered & Spacious Observatory Aesthetic) -->
+        <!-- Clean Horizontal Telemetry Strip (Direct Physical Metrics from Dataset) -->
         <div class="planet-telemetry-strip">
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_diameter">Equatorial Diameter</span>
-            <span class="telemetry-cell-val" id="hudDiameter">12,742 km</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_slope">Surface Slope & Class</span>
+            <span class="telemetry-cell-val" id="hudSlope">6.8° Mean (Flat &lt;2° to Steep &gt;12°)</span>
           </div>
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_gravity">Surface Gravity</span>
-            <span class="telemetry-cell-val" id="hudGravity">9.807 m/s² (1.0G)</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_roughness">Surface Roughness (m)</span>
+            <span class="telemetry-cell-val" id="hudRoughness">12.4 m (Geomorpho90m Multi-Scale)</span>
           </div>
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_atm">Atmospheric Pressure</span>
-            <span class="telemetry-cell-val" id="hudAtmosphere">1,013 mbar</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_albedo">Optical Albedo</span>
+            <span class="telemetry-cell-val" id="hudAlbedo">0.26 (NASA MODIS MCD43A3)</span>
           </div>
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_temp">Surface Temp Range</span>
-            <span class="telemetry-cell-val" id="hudTemp">-89°C to +58°C</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_temp_swing">Thermal Swing (ΔT °C)</span>
+            <span class="telemetry-cell-val" id="hudTempSwing">Δ44.5°C (NASA MODIS LST)</span>
           </div>
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_period">Rotation Period / Sol</span>
-            <span class="telemetry-cell-val" id="hudRotationPeriod">24h 00m</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_ndvi">Abiotic NDVI Filter</span>
+            <span class="telemetry-cell-val highlight" id="hudNdviGate">Passed (NDVI ≤ 0.20 Abiotic Gate)</span>
           </div>
           <div class="telemetry-cell">
-            <span class="telemetry-cell-label" data-i18n="planet.col_nodes">Surface Analogs Mapped</span>
-            <span class="telemetry-cell-val highlight" id="hudAnalogsCount">421,800 Cells (12 Benchmarks)</span>
+            <span class="telemetry-cell-label" data-i18n="planet.col_targets">Cataloged Benchmarks</span>
+            <span class="telemetry-cell-val highlight" id="hudCatalogedSites">53 Sites (47 Analogs + 6 Controls)</span>
           </div>
         </div>
       </div>
 
       <!-- Dynamic "Twin Pair" Hero Showcase (Split Visual & Central Animated Ring) -->
       <div class="twin-showcase-container" id="twinShowcase">
+        
+        <!-- Showcase Interactive Header -->
         <div class="showcase-header">
           <div class="showcase-header-title">
-            <span class="sci-badge validated">EMBEDDED RADAR MODEL</span>
-            <span data-i18n="home.twin_pair_title">Featured Twin Pair Analysis</span>
+            <span class="sci-badge validated" id="showcaseLiveBadge">
+              <span class="telemetry-live-dot"></span>
+              <span data-i18n="home.twin_pair_title">Planetary Twin Analysis // Interactive Telemetry Sync</span>
+            </span>
           </div>
           
-          <!-- Cycling Controls (Prev / Next & Dots) -->
+          <!-- Cycling & Interaction Controls -->
           <div class="showcase-cycle-controls">
-            <button class="cycle-btn" id="cyclePairPrev" title="Previous Matched Pair" aria-label="Previous Pair">❮</button>
+            <span class="showcase-sync-hint" data-i18n="home.twin_hint">Click any pin on the 3D globe to lock telemetry</span>
+            <button class="cycle-btn" id="cyclePairPrev" title="Previous Benchmark Twin" aria-label="Previous Pair">❮</button>
             <div class="cycle-indicators" id="cycleIndicators"></div>
-            <button class="cycle-btn" id="cyclePairNext" title="Next Matched Pair" aria-label="Next Pair">❯</button>
+            <button class="cycle-btn" id="cyclePairNext" title="Next Benchmark Twin" aria-label="Next Pair">❯</button>
           </div>
         </div>
 
-        <!-- Split Grid: Target (Left) <-> Animated Ring <-> Earth (Right) -->
+        <!-- Split Grid: Site A (Left) <-> Animated Ring <-> Matched Twin (Right) -->
         <div class="twin-split-grid">
           
-          <!-- Target Side (Left) -->
-          <div class="twin-site-card target-side">
+          <!-- Site A: Selected Site (Left) -->
+          <div class="twin-site-card target-side" id="cardSiteA">
             <div class="site-card-top">
               <div>
-                <span class="sci-badge mars" data-i18n="home.target_badge">Extraterrestrial Target</span>
+                <span class="sci-badge mars" id="siteABadge">Extraterrestrial Target</span>
                 <div class="site-card-name" id="heroTargetName">Jezero Crater Delta, Mars</div>
-                <div class="site-card-region" id="heroTargetRegion">Syrtis Major Quadrangle (18.38° N, 77.58° E)</div>
+                <div class="site-card-region" id="heroTargetRegion">18.41° N, 77.69° E • Elevation -2646m</div>
               </div>
             </div>
 
@@ -356,11 +365,31 @@
             <div class="site-visual-preview">
               <div class="site-visual-bg" id="heroTargetVisualBg"></div>
               <div class="site-visual-overlay"></div>
-              <span class="site-visual-badge" id="heroTargetSensor">Mars MRO / HiRISE + CRISM Composite</span>
+              <span class="site-visual-badge" id="heroTargetSensor">NASA MRO / HiRISE + CRISM Composite</span>
             </div>
 
             <div class="site-card-insight" id="heroTargetInsight">
               Ancient fluvio-lacustrine sedimentary delta with clay-perchlorate dryness limits.
+            </div>
+
+            <!-- Quick Physical Spec Grid for Site A -->
+            <div class="site-spec-mini-grid" id="siteAMiniSpecs">
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_slope">Slope:</span>
+                <span class="spec-mini-val" id="siteASlope">0.12° (Flat)</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_roughness">Roughness:</span>
+                <span class="spec-mini-val" id="siteARoughness">11.0 m</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_albedo">Albedo:</span>
+                <span class="spec-mini-val" id="siteAAlbedo">0.173</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_temp_swing">Temp Swing:</span>
+                <span class="spec-mini-val" id="siteATempSwing">Δ78.7°C</span>
+              </div>
             </div>
           </div>
 
@@ -370,7 +399,7 @@
               <svg class="ring-svg" viewBox="0 0 160 160">
                 <defs>
                   <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#0077cc" />
+                    <stop offset="0%" stop-color="#00a3ff" />
                     <stop offset="50%" stop-color="#00e5d4" />
                     <stop offset="100%" stop-color="#00e5a3" />
                   </linearGradient>
@@ -381,22 +410,23 @@
 
               <div class="ring-content-inner">
                 <div class="ring-score-number">
-                  <span id="heroRingScoreNum">89.2</span><span class="ring-score-unit">%</span>
+                  <span id="heroRingScoreNum">95.8</span><span class="ring-score-unit">%</span>
                 </div>
                 <div class="ring-score-label" data-i18n="home.similarity_label">Overall Similarity</div>
               </div>
             </div>
 
-            <div class="ring-uncertainty" id="heroRingUncertainty">±3.4%</div>
+            <div class="ring-uncertainty" id="heroRingUncertainty">±1.8% Benchmark Leader</div>
+            <div class="ring-status-pill" id="heroRingStatusPill">CLEARED ABIOTIC GATE</div>
           </div>
 
-          <!-- Earth Side (Right) -->
-          <div class="twin-site-card earth-side">
+          <!-- Site B: Matched Twin Site (Right) -->
+          <div class="twin-site-card earth-side" id="cardSiteB">
             <div class="site-card-top">
               <div>
-                <span class="sci-badge validated" data-i18n="home.earth_cell_badge">Terrestrial Analog Cell</span>
-                <div class="site-card-name" id="heroEarthName">Yungay Hyper-Arid Core, Atacama</div>
-                <div class="site-card-region" id="heroEarthRegion">Antofagasta, Chile (24.08° S, 69.87° W)</div>
+                <span class="sci-badge validated" id="siteBBadge">Terrestrial Analog Twin</span>
+                <div class="site-card-name" id="heroEarthName">Mafraq Basalt Plain, Jordan</div>
+                <div class="site-card-region" id="heroEarthRegion">32.00° N, 37.50° E • Elevation 697m</div>
               </div>
             </div>
 
@@ -404,15 +434,126 @@
             <div class="site-visual-preview">
               <div class="site-visual-bg" id="heroEarthVisualBg"></div>
               <div class="site-visual-overlay"></div>
-              <span class="site-visual-badge" id="heroEarthSensor">Earth EO SAR / Sentinel-2 VNIR</span>
+              <span class="site-visual-badge" id="heroEarthSensor">ESA Copernicus / Sentinel-2 VNIR + NASADEM</span>
             </div>
 
             <div class="site-card-insight" id="heroEarthInsight">
-              Precipitation &lt; 1 mm/year mimicking hyper-arid Martian desiccation limit and nitrate soils.
+              Top verified analog for Jezero Delta; flat basalt sheets replicate landing terrain bearing capacity.
+            </div>
+
+            <!-- Quick Physical Spec Grid for Site B -->
+            <div class="site-spec-mini-grid" id="siteBMiniSpecs">
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_slope">Slope:</span>
+                <span class="spec-mini-val" id="siteBSlope">1.96° (Flat)</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_roughness">Roughness:</span>
+                <span class="spec-mini-val" id="siteBRoughness">4.51 m</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_albedo">Albedo:</span>
+                <span class="spec-mini-val" id="siteBAlbedo">0.210</span>
+              </div>
+              <div class="spec-mini-item">
+                <span class="spec-mini-label" data-i18n="planet.col_temp_swing">Temp Swing:</span>
+                <span class="spec-mini-val" id="siteBTempSwing">Δ49.3°C</span>
+              </div>
             </div>
           </div>
 
         </div>
+
+        <!-- Comparative Physical Telemetry Matrix (Direct Scientific Breakdown from CSV) -->
+        <div class="twin-comparative-matrix-bar">
+          <div class="matrix-bar-header">
+            <span class="matrix-title">📊 Multi-Criteria Physical Alignment Matrix // NASA Earth & Planetary Telemetry</span>
+            <span class="matrix-note">Gate: MODIS NDVI ≤ 0.20 • Ranking: Intra-Body Percentiles</span>
+          </div>
+
+          <div class="matrix-metrics-row">
+            <!-- Metric 1: Slope -->
+            <div class="matrix-metric-item">
+              <div class="metric-item-top">
+                <span class="metric-item-name" data-i18n="planet.col_slope">Surface Slope</span>
+                <span class="metric-match-tag" id="matrixSlopeMatch">98.2% Match</span>
+              </div>
+              <div class="metric-bar-dual">
+                <div class="bar-fill site-a" id="barFillSlopeA" style="width: 88%;"></div>
+                <div class="bar-fill site-b" id="barFillSlopeB" style="width: 85%;"></div>
+              </div>
+              <div class="metric-item-vals">
+                <span id="matrixSlopeValA">0.12°</span>
+                <span id="matrixSlopeValB">1.96°</span>
+              </div>
+            </div>
+
+            <!-- Metric 2: Roughness -->
+            <div class="matrix-metric-item">
+              <div class="metric-item-top">
+                <span class="metric-item-name" data-i18n="planet.col_roughness">Surface Roughness</span>
+                <span class="metric-match-tag" id="matrixRoughnessMatch">94.5% Match</span>
+              </div>
+              <div class="metric-bar-dual">
+                <div class="bar-fill site-a" id="barFillRoughnessA" style="width: 72%;"></div>
+                <div class="bar-fill site-b" id="barFillRoughnessB" style="width: 76%;"></div>
+              </div>
+              <div class="metric-item-vals">
+                <span id="matrixRoughnessValA">11.0m</span>
+                <span id="matrixRoughnessValB">4.51m</span>
+              </div>
+            </div>
+
+            <!-- Metric 3: Albedo -->
+            <div class="matrix-metric-item">
+              <div class="metric-item-top">
+                <span class="metric-item-name" data-i18n="planet.col_albedo">Optical Albedo</span>
+                <span class="metric-match-tag" id="matrixAlbedoMatch">96.1% Match</span>
+              </div>
+              <div class="metric-bar-dual">
+                <div class="bar-fill site-a" id="barFillAlbedoA" style="width: 65%;"></div>
+                <div class="bar-fill site-b" id="barFillAlbedoB" style="width: 68%;"></div>
+              </div>
+              <div class="metric-item-vals">
+                <span id="matrixAlbedoValA">0.173</span>
+                <span id="matrixAlbedoValB">0.210</span>
+              </div>
+            </div>
+
+            <!-- Metric 4: Thermal Swing -->
+            <div class="matrix-metric-item">
+              <div class="metric-item-top">
+                <span class="metric-item-name" data-i18n="planet.col_temp_swing">Thermal Swing (ΔT)</span>
+                <span class="metric-match-tag" id="matrixSwingMatch">92.8% Match</span>
+              </div>
+              <div class="metric-bar-dual">
+                <div class="bar-fill site-a" id="barFillSwingA" style="width: 82%;"></div>
+                <div class="bar-fill site-b" id="barFillSwingB" style="width: 78%;"></div>
+              </div>
+              <div class="metric-item-vals">
+                <span id="matrixSwingValA">Δ78.7°C</span>
+                <span id="matrixSwingValB">Δ49.3°C</span>
+              </div>
+            </div>
+
+            <!-- Metric 5: NDVI Hard Gate -->
+            <div class="matrix-metric-item">
+              <div class="metric-item-top">
+                <span class="metric-item-name" data-i18n="planet.col_ndvi">Abiotic NDVI Gate</span>
+                <span class="metric-match-tag passed" id="matrixNdviMatch">PASSED GATE</span>
+              </div>
+              <div class="metric-bar-dual">
+                <div class="bar-fill gate-passed" style="width: 100%;"></div>
+              </div>
+              <div class="metric-item-vals">
+                <span>NDVI = 0.000</span>
+                <span>NDVI = 0.095 ≤ 0.20</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
 
       <!-- Top-Level KPI Counter Bar (Exactly 3 Non-Decorative Empirical Metrics) -->
@@ -482,31 +623,33 @@
   </main>
 
   <!-- ==========================================================================
-       DISTINCT MISSION BOUNDARY (Clearly separates content from footer)
+       PERSISTENT SCIENTIFIC MISSION FOOTER (High-Contrast Planetary Telemetry)
        ========================================================================== -->
-  <div class="footer-mission-boundary">
-    <div class="footer-boundary-bar">
-      <div style="display:flex; align-items:center; gap:0.5rem;">
-        <span class="footer-boundary-pulse"></span>
-        <span>/// END OF SURFACE TELEMETRY FEED // MISSION RECONNAISSANCE BASE ///</span>
+  <footer class="site-footer" id="siteFooter">
+    <!-- Telemetry Boundary Demarcation Bar -->
+    <div class="footer-mission-boundary">
+      <div class="footer-boundary-bar">
+        <div class="boundary-telemetry-tag">
+          <span class="telemetry-live-dot"></span>
+          <span>TELEMETRY ARCHIVE // NASA PDS • ESA COPERNICUS • USGS ASTROGEOLOGY</span>
+        </div>
+        <div class="boundary-coordinates">SYS.LAT 00.0000° • SYS.LON 00.0000° • ELEV 0.0M • SECURE SCIENTIFIC ARCHIVE</div>
+        <div class="boundary-status">
+          <span class="status-indicator"></span>
+          <span>MISSION ACTIVE</span>
+        </div>
       </div>
-      <div class="mono" style="opacity:0.85; font-size:0.68rem;">ARCHIVE SECURITY: OPEN ACCESS (CC-BY 4.0)</div>
     </div>
-  </div>
 
-  <!-- ==========================================================================
-       GLOBAL PROFESSIONAL SCIENTIFIC FOOTER (Creators, Team, Contacts & Sources)
-       ========================================================================== -->
-  <footer class="site-footer">
     <div class="footer-container">
       
       <!-- Futuristic Technical Ribbon -->
       <div class="footer-tech-banner">
         <div class="footer-tech-banner-left">
           <span class="footer-tech-dot"></span>
-          <span>TERRATWIN PLANETARY ANALOG INTELLIGENCE ARCHIVE // NASA PDS • ESA COPERNICUS • USGS</span>
+          <span>TERRATWIN // MULTI-ATTRIBUTE PLANETARY SURFACE MATCHING PLATFORM</span>
         </div>
-        <div class="mono" style="font-size:0.68rem; opacity:0.85;">STATUS: OPERATIONAL // TELEMETRY: ACTIVE</div>
+        <div class="mono" style="font-size:0.68rem; opacity:0.85;">STATUS: OPERATIONAL // DATA: OPEN ACCESS</div>
       </div>
       
       <!-- 4-Column Main Grid -->
@@ -514,50 +657,43 @@
         
         <!-- Col 1: Platform & Mission -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin / Astraea</div>
+          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin</div>
           <p class="footer-about-text" data-i18n="footer.about_desc">
             An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.
           </p>
-          <div class="footer-badges-group" style="margin-top:0.4rem;">
+          <div class="footer-badges-group" style="margin-top:0.6rem;">
             <span class="sci-badge validated">OPEN ACCESS</span>
-            <span class="sci-badge mars">MARS 2020 / ARTEMIS</span>
+            <span class="sci-badge mars" data-i18n="footer.badge_mission">PLANETARY ANALOG TWINNING</span>
           </div>
         </div>
 
         <!-- Col 2: Creators & Core Team -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.creators_title">Project Team</div>
+          <div class="footer-col-title" data-i18n="footer.creators_title">Research Team</div>
           <div class="footer-team-card">
             <div class="team-member-name">
               <span>🚀</span>
-              <span data-i18n="footer.lead_name">Astraea Team</span>
+              <span data-i18n="footer.lead_name">Astraea Science Team</span>
             </div>
             <div class="team-member-role" data-i18n="footer.lead_role">Planetary Systems & Geospatial Engineering</div>
-          </div>
-          <div class="footer-team-card">
-            <div class="team-member-name">
-              <span>🛰️</span>
-              <span data-i18n="footer.consortium_name">Astraea Planetary Science Lab</span>
-            </div>
-            <div class="team-member-role" data-i18n="footer.consortium_role">Analog Matching Models & Data Pipeline</div>
           </div>
         </div>
 
         <!-- Col 3: Contact & Links -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.contact_title">Contact & Links</div>
+          <div class="footer-col-title" data-i18n="footer.contact_title">Direct Telemetry & Contact</div>
           <ul class="footer-contact-list">
             <li class="footer-contact-item">
               <span>✉️</span>
-              <a href="mailto:contact@astraea.space" id="footerContactEmail" data-i18n="footer.contact_email">contact@astraea.space</a>
+              <a href="mailto:contact@terratwin.space" id="footerContactEmail" data-i18n="footer.contact_email">contact@terratwin.space</a>
             </li>
             <li class="footer-contact-item">
-              <span>🐙</span>
-              <a href="https://github.com/ManarAbu-Irsheid/Astraea" target="_blank" rel="noopener noreferrer" data-i18n="footer.github_link">Project Repository (GitHub)</a>
+              <span>📞</span>
+              <a href="tel:+962790000000" id="footerContactPhone" dir="ltr">+962 7 9000 0000</a>
             </li>
             <li class="footer-contact-item">
               <span>📑</span>
-              <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Catalog</a>
+              <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Scientific Catalog</a>
             </li>
           </ul>
         </div>
@@ -586,10 +722,10 @@
       <!-- Bottom Sub-Bar -->
       <div class="footer-bottom-bar">
         <div class="footer-copyright" data-i18n="footer.copyright">
-          © 2026 TerraTwin • Developed by Astraea Team.
+          © 2026 TerraTwin • Planetary Analog Matching Platform.
         </div>
         <div class="footer-badges-group">
-          <span class="mono">v2.4-RELEASE</span>
+          <span class="mono">v2.5-RELEASE</span>
           <span class="footer-citation-icon">⚖️ CC-BY 4.0 Scientific License</span>
         </div>
       </div>
@@ -608,6 +744,7 @@
   <script src="js/tour.js"></script>
   <script src="js/chatbot.js"></script>
   <script src="js/app.js"></script>
+  <script src="data/planetary-dataset.js"></script>
   <script src="js/planet3d.js"></script>
   <script src="js/home.js"></script>
 </body>

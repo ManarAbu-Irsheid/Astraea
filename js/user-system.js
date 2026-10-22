@@ -40,6 +40,7 @@ const UserSystem = {
     this.injectModals();
     this.renderUserUI();
     this.bindEvents();
+    this.bindEthicsModalEvents();
   },
 
   loadUser() {
@@ -473,7 +474,169 @@ const UserSystem = {
           </form>
         </div>
       </div>
-    `;
+    
+      <!-- ================================================================
+           MISSION PURPOSE, SCIENTIFIC ETHICS & USER GUIDE MODAL
+           ================================================================ -->
+      <div class="custom-modal-overlay" id="ethicsGuideModalOverlay">
+        <div class="custom-modal-dialog" style="max-width: 820px; max-height: 88vh; display: flex; flex-direction: column;">
+          <div class="custom-modal-header" style="border-bottom: 1px solid rgba(0, 163, 255, 0.3); padding-bottom: 0.8rem;">
+            <div class="custom-modal-title" style="display: flex; align-items: center; gap: 0.6rem;">
+              <span style="font-size: 1.4rem;">📜</span>
+              <div>
+                <div style="font-family: 'Orbitron', 'Alexandria', sans-serif; font-size: 1.15rem; color: #fff;">
+                  TerraTwin // Mission Purpose, Ethics & Guide
+                </div>
+                <div style="font-size: 0.78rem; color: var(--accent-blue); font-weight: 500;">
+                  أهداف المشروع والأخلاقيات العلمية ودليل الاستخدام
+                </div>
+              </div>
+            </div>
+            <button class="custom-modal-close" id="closeEthicsGuideModalBtn">&times;</button>
+          </div>
+
+          <!-- Modal Navigation Tabs -->
+          <div class="ethics-tabs-nav" style="display: flex; gap: 0.5rem; background: rgba(0, 20, 45, 0.6); padding: 0.4rem; border-radius: 8px; margin: 1rem 0 0.5rem 0; border: 1px solid rgba(255,255,255,0.08);">
+            <button class="ethics-tab-btn active" data-tab="purpose" style="flex: 1; padding: 0.55rem 0.8rem; border-radius: 6px; background: var(--accent-blue); color: #fff; border: none; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+              🎯 لماذا أنشأنا المشروع وهدفه
+            </button>
+            <button class="ethics-tab-btn" data-tab="ethics" style="flex: 1; padding: 0.55rem 0.8rem; border-radius: 6px; background: transparent; color: var(--text-secondary); border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              ⚖️ الأخلاقيات ومعايير النزاهة
+            </button>
+            <button class="ethics-tab-btn" data-tab="guide" style="flex: 1; padding: 0.55rem 0.8rem; border-radius: 6px; background: transparent; color: var(--text-secondary); border: none; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+              🧭 دليل وتعليمات الاستخدام
+            </button>
+          </div>
+
+          <!-- Modal Scrollable Content Container -->
+          <div class="custom-modal-body" style="overflow-y: auto; padding-right: 0.4rem; flex: 1;">
+            
+            <!-- TAB 1: PURPOSE -->
+            <div class="ethics-tab-content active" id="tabContent_purpose">
+              <div class="ethics-section-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(0,163,255,0.2); border-radius: 8px; padding: 1.1rem; margin-bottom: 1rem;">
+                <h4 style="color: #38bdf8; font-size: 1.05rem; margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>🚀</span> التحدي الاستكشافي: لماذا نحتاج نظائر كوكبية على الأرض؟
+                </h4>
+                <p style="font-size: 0.88rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0.8rem;">
+                  مهمات استكشاف الفضاء الكبرى — مثل برنامج <strong>أرتميس (Artemis)</strong> التابع لوكالة ناسا لإنشاء قواعد دائمة عند القطب الجنوبي للقمر، ومهمات إرسال الروفرات ورواد الفضاء إلى المريخ — تكلف مليارات الدولارات وسنوات طويلة من العمل الدقيق. إن إرسال مركبات أو بدلات فضاء إلى بيئات قاسية مجهولة دون اختبار مسبق في بيئات أرضية تشبهها فيزيائياً يُعد خطراً هندسياً وعلمياً جسيماً.
+                </p>
+                <p style="font-size: 0.88rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0;">
+                  تاريخياً، كان اختيار "النظائر الأرضية" (Earth Analogs) يتم بشكل يدوي أو وصفي تقديري يفتقر للمطابقة الرقمية المتعددة المعايير، مما يؤدي إلى مفاجآت تضاريسية قد تُعطل عجلات الروفرات أو تعيق حركة رواد الفضاء.
+                </p>
+              </div>
+
+              <div class="ethics-section-card" style="background: rgba(0,229,212,0.03); border: 1px solid rgba(0,229,212,0.25); border-radius: 8px; padding: 1.1rem;">
+                <h4 style="color: #00e5d4; font-size: 1.05rem; margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>🎯</span> الهدف الجوهري لمنصة TerraTwin:
+                </h4>
+                <ul style="font-size: 0.88rem; line-height: 1.8; color: var(--text-secondary); padding-right: 1.2rem; margin-bottom: 0;">
+                  <li><strong>المطابقة الفيزيائية الدقيقة:</strong> دمج قياسات أقمار رصد الأرض (NASA MODIS, NASADEM, SRTM, Sentinel-2) مع قياسات المسابر الكوكبية المدارية (LRO LOLA, Diviner, MGS MOLA) في نموذج رياضي موحد.</li>
+                  <li><strong>محاكاة واختبار الروبوتات والأنظمة:</strong> تمكين مهندسي وكالات الفضاء من اختبار أنظمة الملاحة الذاتية، ومقاومة عجلات المركبات للتضاريس الصخرية، واختبار البدلات الفضائية في بيئات مطابقة 100%.</li>
+                  <li><strong>تقليل التكاليف والمخاطر:</strong> تحديد المواقع الأرضية المثالية بأعلى نسب تشابه رياضي موثق لمنع فشل المعدات الفضائية باهظة الثمن قبل مغادرتها الغلاف الجوي.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- TAB 2: ETHICS & DATA INTEGRITY -->
+            <div class="ethics-tab-content" id="tabContent_ethics" style="display: none;">
+              <div class="ethics-section-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(224,86,56,0.25); border-radius: 8px; padding: 1.1rem; margin-bottom: 1rem;">
+                <h4 style="color: #ff7043; font-size: 1.05rem; margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>🛡️</span> حاجز العزل غير الحيوي (Physical Abiotic Gate via MODIS NDVI):
+                </h4>
+                <p style="font-size: 0.88rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0.6rem;">
+                  سطح القمر والمريخ خامل كلياً وخالٍ من الغطاء النباتي (NDVI = 0.000). لضمان النزاهة العلمية وتفادي أي نتائج مضللة، تطبق المنصة <strong>حاجز تصفية صارم</strong> (Strict Hard Gate) يستبعد فوراً وبشكل تلقائي أي موقع أرضي يتجاوز مؤشر غطائه الحيوي العتبة الفيزيائية:
+                </p>
+                <div style="background: rgba(0,0,0,0.4); padding: 0.6rem 0.9rem; border-radius: 6px; font-family: monospace; color: #ff7043; font-size: 0.85rem; border-left: 3px solid #ff7043; margin-bottom: 0.6rem;">
+                  NDVI_Threshold ≤ 0.20 (Barren Abiotic Surface Filter)
+                </div>
+                <p style="font-size: 0.84rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 0;">
+                  هذا الحاجز يضمن استبعاد الغابات الاستوائية والمدن الخرسانية والمناطق الزراعية كلياً وفقاً للفيزياء دون أي تحيز أو تلاعب بالبيانات.
+                </p>
+              </div>
+
+              <div class="ethics-section-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(0,163,255,0.2); border-radius: 8px; padding: 1.1rem; margin-bottom: 1rem;">
+                <h4 style="color: #38bdf8; font-size: 1.05rem; margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>📊</span> النزاهة والبيانات المفتوحة (Open Science & Zero Fabrication):
+                </h4>
+                <ul style="font-size: 0.88rem; line-height: 1.8; color: var(--text-secondary); padding-right: 1.2rem; margin-bottom: 0;">
+                  <li><strong>مصداقية المصادر:</strong> 100% من القياسات الفيزيائية (الانحدار، الخشونة، البياض، التباين الحراري) مستخرجة من مستودعات مفتوحة ومراجعة علمياً تابعة لـ NASA PDS و ESA Copernicus و USGS.</li>
+                  <li><strong>لا توجد أرقام عشوائية أو تخيلية:</strong> كل نسبة مئوية محسوبة عبر خوارزميات إحصائية موحدة تعتمد على المئين الراداري (Percentile Ranking) لمنع انحياز مقاييس الدقة المكانية.</li>
+                </ul>
+              </div>
+
+              <div class="ethics-section-card" style="background: rgba(0,229,163,0.03); border: 1px solid rgba(0,229,163,0.25); border-radius: 8px; padding: 1.1rem;">
+                <h4 style="color: #00e5a3; font-size: 1.05rem; margin-top: 0; display: flex; align-items: center; gap: 0.5rem;">
+                  <span>🌿</span> المسؤولية البيئية وحماية نظائر الأرض (Environmental Stewardship):
+                </h4>
+                <p style="font-size: 0.88rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 0;">
+                  ندعو كافة البعثات التناظرية والفرق البحثية الميدانية إلى احترام البيئات الصحراوية والبركانية والقطبية الفريدة على كوكب الأرض، والالتزام الصارم بمبادئ عدم ترك أثر (Leave No Trace) وحماية المجتمعات المحلية في مناطق الاستكشاف.
+                </p>
+              </div>
+            </div>
+
+            <!-- TAB 3: OPERATING GUIDE -->
+            <div class="ethics-tab-content" id="tabContent_guide" style="display: none;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem;">
+                
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+                  <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>1️⃣</span> الصفحة الرئيسية والكرة ثلاثية الأبعاد
+                  </div>
+                  <p style="font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0;">
+                    اسحبي الكرة بالماوس للتدوير 360°، استخدمي عجلة التكبير للتقريب، واضغطي على أي نقطة نبضية (Pin) لعرض بيانات الموقع التليمترية ونسبة مطابقته فورياً. بدّلي بين الأرض، المريخ، والقمر من الأزرار العلوية.
+                  </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+                  <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>2️⃣</span> خريطة الأماكن المشابهة (Site Finder)
+                  </div>
+                  <p style="font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0;">
+                    خريطة أقمار صناعية عالية الدقة من ناسا و ESRI. يمكنكِ تصفية المواقع حسب التضاريس (صحراوي، بركاني، قطبي)، وتتبع إشارات السونار النبضية مع نسب التشابه فوق كل موقع تضاريسي.
+                  </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+                  <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>3️⃣</span> المقارنة المعيارية (Compare Sites)
+                  </div>
+                  <p style="font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0;">
+                    اختاري أي هدف كوكبي وقارنيه مباشرة مع نظيره الأرضي عبر مخطط الرادار السداسي، مع إمكانية تعديل أوزان المعايير الفيزيائية (الانحدار، الخشونة، البياض، الحرارة) لمعاينة التغير الفوري.
+                  </p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+                  <div style="font-weight: 700; color: #fff; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                    <span>4️⃣</span> الأدلة والكتالوج وتصدير PDF (Evidence)
+                  </div>
+                  <p style="font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 0;">
+                    تحتوي على كتالوج الـ 53 موقعاً كاملاً، مع إمكانية تشغيل الشرح العلمي، وتصدير التقارير العلمية الرسمية بصيغة PDF لتقديمها مباشرة لفرق ومهندسي المهمات.
+                  </p>
+                </div>
+
+              </div>
+
+              <!-- Bonus: Level & XP Tip -->
+              <div style="background: rgba(0,163,255,0.06); border: 1px solid rgba(0,163,255,0.3); border-radius: 8px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.8rem;">
+                <span style="font-size: 1.6rem;">⭐</span>
+                <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5;">
+                  <strong>نظام رتبة الباحث الاستكشافي:</strong> يرتفع مستواكِ في البروفايل تدريجياً (+35 XP) كلما تفاعلتِ مع الخريطة، أو استكشفتِ مواقع جديدة، أو قمتِ بتشغيل مقارنات معيارية!
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="custom-modal-footer" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.8rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem; color: var(--text-muted); font-family: monospace;">
+              TERRATWIN-CORE-SPEC // VERIFIED NASA/ESA STANDARDS
+            </div>
+            <button type="button" class="btn-modal-cancel" id="finishEthicsGuideBtn" style="padding: 0.45rem 1.4rem;">فهمت ذلك / Close Guide</button>
+          </div>
+        </div>
+      </div>
+`;
 
     document.body.appendChild(modalContainer);
   },
@@ -628,9 +791,52 @@ const UserSystem = {
   closeModals() {
     document.querySelectorAll('.custom-modal-overlay').forEach(m => m.classList.remove('active'));
   }
-};
 
-// Global initialization
-document.addEventListener('DOMContentLoaded', () => {
-  UserSystem.init();
-});
+  openEthicsGuideModal() {
+    this.injectModals();
+    const overlay = document.getElementById('ethicsGuideModalOverlay');
+    if (overlay) overlay.classList.add('active');
+  },
+
+  bindEthicsModalEvents() {
+    const overlay = document.getElementById('ethicsGuideModalOverlay');
+    const closeBtn = document.getElementById('closeEthicsGuideModalBtn');
+    const finishBtn = document.getElementById('finishEthicsGuideBtn');
+
+    const closeModal = () => {
+      if (overlay) overlay.classList.remove('active');
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (finishBtn) finishBtn.addEventListener('click', closeModal);
+
+    if (overlay) {
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+      });
+    }
+
+    // Tab buttons handling
+    const tabBtns = document.querySelectorAll('.ethics-tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = btn.getAttribute('data-tab');
+        tabBtns.forEach(b => {
+          b.classList.remove('active');
+          b.style.background = 'transparent';
+          b.style.color = 'var(--text-secondary)';
+        });
+        btn.classList.add('active');
+        btn.style.background = 'var(--accent-blue)';
+        btn.style.color = '#fff';
+
+        document.querySelectorAll('.ethics-tab-content').forEach(c => {
+          c.style.display = 'none';
+        });
+        const activeContent = document.getElementById('tabContent_' + targetTab);
+        if (activeContent) activeContent.style.display = 'block';
+      });
+    });
+  },
+
+};

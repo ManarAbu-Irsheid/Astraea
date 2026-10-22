@@ -129,7 +129,7 @@
             </div>
             <div class="user-meta-text">
               <span class="user-display-name" data-i18n="nav.user_name">Dr. Researcher</span>
-              <span class="user-role-tag" data-i18n="nav.user_role">ASTRAEA LAB</span>
+              <span class="user-role-tag" data-i18n="nav.user_role">TERRATWIN RESEARCH</span>
             </div>
             <span class="profile-chevron">▼</span>
           </button>
@@ -148,10 +148,7 @@
               <span class="sci-badge mars">ORBITAL DATA</span>
             </div>
             <div class="user-dropdown-divider"></div>
-            <div class="user-dropdown-row">
-              <span class="dropdown-row-label">Assigned Mission:</span>
-              <span class="dropdown-row-val" id="userProfileActiveMission">Rover Testing</span>
-            </div>
+            
             <div class="user-dropdown-row">
               <span class="dropdown-row-label">Data Clearance:</span>
               <span class="dropdown-row-val" style="color:var(--accent-green);">NASA PDS / ESA Sentinel</span>
@@ -160,7 +157,7 @@
             <div class="user-dropdown-links">
               <a href="finder.html" class="user-dropdown-link">🗺️ Site Finder Dashboard</a>
               <a href="compare.html" class="user-dropdown-link">⚖️ Benchmark Comparison</a>
-              <a href="evidence.html#dataCatalogSection" class="user-dropdown-link">📑 Catalog & Datasets</a>
+              <a href="evidence.html" class="user-dropdown-link">📑 Catalog & Datasets</a>
             </div>
           </div>
         </div>
@@ -173,6 +170,10 @@
           
           <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
             <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
+            <button class="kebab-item-btn" id="kebabEthicsGuideBtn">
+              <span class="kebab-item-icon">📜</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_ethics">Mission Purpose, Ethics & Guide</span>
+            </button>
             <button class="kebab-item-btn" id="kebabProfileBtn">
               <span class="kebab-item-icon">👤</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
@@ -183,7 +184,7 @@
             </button>
             <button class="kebab-item-btn" id="kebabContactBtn">
               <span class="kebab-item-icon">📬</span>
-              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Astraea Team</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Science Team</span>
             </button>
             <div class="kebab-divider"></div>
             <button class="kebab-item-btn" id="kebabChatbotBtn">
@@ -215,166 +216,280 @@
     <div class="evidence-page-layout">
       
       <!-- ======================================================================
-           SECTION 1: VIDEO DEMONSTRATION (TOP)
+           SECTION 1: VIDEO DEMONSTRATION (TOP) - HERO VIDEO
            ====================================================================== -->
       <section class="video-section-card" id="evidenceVideoSpotlight">
-        <div class="section-header-block" style="border:none; margin-bottom:0.5rem; padding-bottom:0;">
-          <span class="section-kicker">SECTION 01 / DEMONSTRATION</span>
-          <h1 class="section-main-title" data-i18n="evidence.sec1_title">Video Demonstration & Technical Walkthrough</h1>
-          <p class="section-sub-desc" data-i18n="evidence.sec1_subtitle">
-            2.5-minute technical walkthrough of the multi-spectral raster matching pipeline and validation framework.
-          </p>
-        </div>
+        <h1 class="visually-hidden" data-i18n="evidence.sec1_title">Video Demonstration & Technical Walkthrough</h1>
 
-        <!-- Controls Bar: Source Switcher & Input -->
-        <div class="video-controls-bar">
-          <div class="video-source-toggles">
-            <button class="video-source-btn active" id="videoToggleLocal" data-i18n="evidence.video_toggle_local">Local Video MP4</button>
-            <button class="video-source-btn" id="videoToggleEmbed" data-i18n="evidence.video_toggle_embed">YouTube / Vimeo Embed</button>
-          </div>
-
-          <div class="video-duration-badge">⏱ MAX 02:30 MIN</div>
-        </div>
-
-        <!-- Customizable Embed Input Field -->
-        <div class="embed-url-input-box" id="embedUrlInputBox">
-          <input type="text" class="embed-url-input" id="embedUrlInput" value="https://www.youtube-nocookie.com/embed/g2qJgW9V6lU" placeholder="Enter custom YouTube/Vimeo embed URL...">
-          <button class="btn-apply-embed" id="btnApplyEmbed">Apply Source</button>
-        </div>
-
-        <!-- Dedicated 16:9 Video Container -->
+        <!-- Dedicated 16:9 Hero Video Container -->
         <div class="video-responsive-wrapper" id="videoResponsiveWrapper">
-          <video id="demoVideo" class="video-player-element" controls poster="assets/poster.svg">
+          <video id="demoVideo" class="video-player-element" autoplay muted loop playsinline preload="auto" controls poster="assets/poster.svg">
             <source src="assets/demo_video.mp4" type="video/mp4">
-            <track label="English" kind="subtitles" srclang="en" src="assets/subtitles-en.vtt" default>
-            <track label="العربية" kind="subtitles" srclang="ar" src="assets/subtitles-ar.vtt">
             Your browser does not support HTML5 video.
           </video>
-        </div>
-
-        <!-- Sub-label & Pitch -->
-        <div class="video-sub-label-bar">
-          <div>
-            <strong>PITCH BRIEF:</strong> Multi-sensor raster ingestion comparing Earth candidate cells against LOLA &amp; CRISM planetary surfaces.
-          </div>
-          <div data-i18n="evidence.video_captions_note">
-            Closed captions available in English &amp; Arabic.
-          </div>
+          <button type="button" class="video-mute-btn" id="videoMuteBtn" aria-label="Unmute video" title="Unmute video">
+            <span class="mute-icon" aria-hidden="true">🔇</span>
+          </button>
         </div>
       </section>
 
       <!-- ======================================================================
-           SECTION 2: DATA DASHBOARD (MIDDLE GRID)
+           SECTION 2: DATA DASHBOARD (MIDDLE GRID) - REDESIGNED MODERN ANALYTICS
            ====================================================================== -->
       <section class="data-dashboard-grid" id="evidenceDashboardSpotlight">
         
+        <!-- Global Shared SVG Gradient & Glow Definitions for Section 2 Charts (NO Pink, Magenta, or Purple) -->
+        <svg width="0" height="0" class="svg-defs-hidden" aria-hidden="true" style="position:absolute; width:0; height:0; pointer-events:none;">
+          <defs>
+            <!-- Blue Gradient: Main Data, KPI Rings, Validated Sites -->
+            <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#0072FF"/>
+              <stop offset="100%" stop-color="#00C6FF"/>
+            </linearGradient>
+
+            <!-- Yellow -> Orange Gradient: New Candidates -->
+            <linearGradient id="svgGradCandidate" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FFE53B"/>
+              <stop offset="100%" stop-color="#FF8A00"/>
+            </linearGradient>
+
+            <!-- Orange -> Red Gradient: Failure Cases & Negative Shifts -->
+            <linearGradient id="svgGradAlert" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FF8A00"/>
+              <stop offset="100%" stop-color="#FF2525"/>
+            </linearGradient>
+
+            <!-- Soft Glow Filters (35% Opacity Matching Stroke) -->
+            <filter id="svgGlowMain" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#0072FF" flood-opacity="0.35"/>
+            </filter>
+            <filter id="svgGlowCandidate" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF8A00" flood-opacity="0.35"/>
+            </filter>
+            <filter id="svgGlowAlert" x="-25%" y="-25%" width="150%" height="150%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#FF2525" flood-opacity="0.35"/>
+            </filter>
+          </defs>
+        </svg>
+
         <div class="section-header-block">
-          <span class="section-kicker">SECTION 02 / EMPIRICAL RIGOR</span>
           <h2 class="section-main-title" data-i18n="evidence.sec2_title">Data Dashboard & Model Validation</h2>
           <p class="section-sub-desc" data-i18n="evidence.sec2_subtitle">
             Empirical ranking, sensitivity analysis under weight perturbations, and data catalog provenance.
           </p>
         </div>
 
-        <!-- KPI Metrics Strip (4 Scientific Cards) -->
-        <div class="evidence-kpi-strip">
+        <!-- 1. KPI Strip: 4 Compact Horizontal Cards (3 with Blue Ring Gauge, 1 with Yellow->Orange Number) -->
+        <div class="evidence-kpi-strip" id="evidenceKpiStrip">
+          
+          <!-- KPI 1: Recall@10% -->
           <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val cyan" id="evKpiRecall10">91.4%</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_recall10">Recall@10%</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_recall10_desc">Proportion of known analogs in top 10% ranked cells</div>
-          </div>
-
-          <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val green" id="evKpiRocAuc">0.964</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_rocauc">ROC-AUC Score</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_rocauc_desc">Discriminative ability against synthetic random background</div>
-          </div>
-
-          <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val gold" id="evKpiValidated">46 / 49</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_validated">Known Sites Validated</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_validated_desc">46 of 49 peer-reviewed analog sites correctly retrieved</div>
-          </div>
-
-          <div class="evidence-kpi-card">
-            <div class="evidence-kpi-val blue" id="evKpiDiscovered">38</div>
-            <div class="evidence-kpi-label" data-i18n="evidence.kpi_discovered">New Candidates Discovered</div>
-            <div class="evidence-kpi-desc" data-i18n="evidence.kpi_discovered_desc">Uncatalogued candidate cells meeting strict tolerance</div>
-          </div>
-        </div>
-
-        <!-- Validation Rank Plot (Interactive Bar Chart with Failure-Case Annotations) -->
-        <div class="validation-plot-card">
-          <div>
-            <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.rank_plot_title">Known Analog Validation Rankings & Failure Cases</h3>
-            <p style="font-size:0.78rem; color:var(--text-muted);" data-i18n="evidence.rank_plot_desc">
-              Ranked benchmark scores. Red-bordered items indicate intentional failure-case investigations with physical justification.
-            </p>
-          </div>
-
-          <div class="rank-bars-container" id="validationRankBars"></div>
-        </div>
-
-        <!-- Methodology & Sensitivity Matrix Card -->
-        <div class="methodology-card">
-          <div>
-            <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.sensitivity_title">Methodology & Weight Sensitivity Matrix</h3>
-          </div>
-
-          <!-- Formula Display Banner -->
-          <div class="formula-display-banner">
-            <span class="sci-badge validated" style="align-self:flex-start;" data-i18n="evidence.formula_label">Similarity Formulation</span>
-            <div class="formula-math-text">
-              \mathcal{S}(x, y) = \sum_{k=1}^K w_k \cdot \phi_k(x, y) \cdot \exp\left(-\frac{d_M^2(x_k, y_k)}{2\sigma_k^2}\right)
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringRecall" style="stroke-dasharray: 201.06; stroke-dashoffset: 17.3;"></circle>
+              </svg>
             </div>
-            <div class="formula-explainer">
-              Multi-attribute hybrid cosine similarity and Mahalanobis covariance distance across slope, regolith particle size distribution, thermal inertia, dielectric constant, and VNIR/SWIR spectra.
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiRecall10">91.4%</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_recall10">Recall@10%</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_recall10_desc">Proportion of known analogs in top 10% ranked cells</div>
             </div>
           </div>
 
-          <!-- Sensitivity Table (under ±25% weight perturbations) -->
-          <div class="sensitivity-table-wrapper">
-            <table class="sensitivity-table">
-              <thead>
-                <tr>
-                  <th data-i18n="evidence.col_param">Evaluated Parameter</th>
-                  <th data-i18n="evidence.col_base_weight">Baseline Weight</th>
-                  <th data-i18n="evidence.col_plus_shift">+25% Weight Perturbation</th>
-                  <th data-i18n="evidence.col_minus_shift">-25% Weight Perturbation</th>
-                  <th data-i18n="evidence.col_stability">Rank Stability Index</th>
-                </tr>
-              </thead>
-              <tbody id="sensitivityTableBody"></tbody>
-            </table>
+          <!-- KPI 2: ROC-AUC Score -->
+          <div class="evidence-kpi-card">
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringRocAuc" style="stroke-dasharray: 201.06; stroke-dashoffset: 7.2;"></circle>
+              </svg>
+            </div>
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiRocAuc">0.964</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_rocauc">ROC-AUC Score</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_rocauc_desc">Discriminative ability against synthetic random background</div>
+            </div>
           </div>
+
+          <!-- KPI 3: Known Sites Validated -->
+          <div class="evidence-kpi-card">
+            <div class="kpi-ring-side">
+              <svg class="kpi-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ring-main" id="ringValidated" style="stroke-dasharray: 201.06; stroke-dashoffset: 12.3;"></circle>
+              </svg>
+            </div>
+            <div class="kpi-info-side">
+              <div class="evidence-kpi-val kpi-val-main" id="evKpiValidated">46 / 49</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_validated">Known Sites Validated</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_validated_desc">46 of 49 peer-reviewed analog sites correctly retrieved</div>
+            </div>
+          </div>
+
+          <!-- KPI 4: New Candidates Discovered (No ring, yellow->orange gradient big number) -->
+          <div class="evidence-kpi-card kpi-card-candidate">
+            <div class="kpi-info-side full-width">
+              <div class="evidence-kpi-val kpi-val-candidate" id="evKpiDiscovered">38</div>
+              <div class="evidence-kpi-label" data-i18n="evidence.kpi_discovered">New Candidates Discovered</div>
+              <div class="evidence-kpi-desc" data-i18n="evidence.kpi_discovered_desc">Uncatalogued candidate cells meeting strict tolerance</div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- Comprehensive Data Catalog Table (Searchable & Sortable) -->
-        <div class="catalog-card" id="dataCatalogSection">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:1rem;">
-            <div>
-              <h3 style="font-size:1.15rem; font-weight:700;" data-i18n="evidence.catalog_title">Comprehensive Data Catalog Table</h3>
-              <p style="font-size:0.78rem; color:var(--text-muted);">Multi-agency orbital archives and open planetary science raster sets.</p>
+        <!-- 2. Main Analytics Split Grid: Ranking Chart (Left 2.6fr) + 2 Donut Cards (Right 1fr) -->
+        <div class="analytics-split-grid">
+          
+          <!-- Left: Validation Rank Plot Card (13 Horizontal Bars, Scale 50%->100%, Expandable Rows) -->
+          <div class="validation-plot-card">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.rank_plot_title">Known Analog Validation Rankings & Failure Cases</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.rank_plot_desc">
+                  Ranked benchmark scores. Red-bordered items indicate intentional failure-case investigations with physical justification.
+                </p>
+              </div>
             </div>
+
+            <!-- Ranking Bars Container (With Legend, Scale Axis & Expandable Rows rendered via JS) -->
+            <div class="rank-bars-container" id="validationRankBars"></div>
+          </div>
+
+          <!-- Right Column: Stack of Analytics Cards -->
+          <div class="donuts-stacked-column">
             
-            <div class="catalog-search-bar">
-              <input type="text" class="catalog-search-input" id="catalogSearchInput" placeholder="Search dataset, agency, application, resolution..." data-i18n-placeholder="evidence.catalog_search_placeholder">
+            <!-- Card 1: Site Details (Selected Site) -->
+            <div class="donut-card site-details-card" id="siteDetailsCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title" data-i18n="evidence.site_details_title">Site Details</h4>
+                <span class="site-details-rank-badge mono" id="siteDetailsRankBadge">#1</span>
+              </div>
+              <div class="site-details-container" id="siteDetailsContainer"></div>
+            </div>
+
+            <!-- Card 2: Sites by Status -->
+            <div class="donut-card" id="sitesStatusDonutCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title">Sites by Status</h4>
+              </div>
+              <div class="donut-visual-container" id="sitesStatusDonutContainer"></div>
+            </div>
+
+            <!-- Card 3: Base Weights -->
+            <div class="donut-card" id="baseWeightsDonutCard">
+              <div class="donut-card-header">
+                <h4 class="donut-card-title">Base Parameter Weights</h4>
+              </div>
+              <div class="donut-visual-container" id="baseWeightsDonutContainer"></div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Analytics 2-Column Grid: Box Plot & Histogram -->
+        <div class="charts-2col-grid">
+          
+          <!-- Box Plot Card -->
+          <div class="boxplot-card" id="evidenceBoxplotCard">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.boxplot_title">How sites score on each attribute</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.boxplot_subtitle">Statistical distribution of analog fidelity across five radar attributes.</p>
+              </div>
+            </div>
+            <div class="boxplot-visual-wrapper" id="boxplotContainer"></div>
+          </div>
+
+          <!-- Histogram Card -->
+          <div class="histogram-card" id="evidenceHistogramCard">
+            <div class="card-header-row">
+              <div>
+                <h3 class="dashboard-card-title" data-i18n="evidence.histogram_title">Score distribution</h3>
+                <p class="dashboard-card-sub" data-i18n="evidence.histogram_subtitle">Distribution of benchmarked validation and failure scores in 5-point bins.</p>
+              </div>
+              <div class="histogram-legend">
+                <span class="hist-legend-item"><span class="hist-dot dot-val"></span><span data-i18n="evidence.legend_validated">Validated</span></span>
+                <span class="hist-legend-item"><span class="hist-dot dot-cand"></span><span data-i18n="evidence.legend_candidate">New candidate</span></span>
+                <span class="hist-legend-item"><span class="hist-dot dot-fail"></span><span data-i18n="evidence.legend_failure">Failure case</span></span>
+              </div>
+            </div>
+            <div class="histogram-visual-wrapper" id="histogramContainer"></div>
+          </div>
+
+        </div>
+
+        <!-- 3. Methodology & Weight Sensitivity Matrix Card (4 Parameter Stability Cards + Collapsible MathML Formula) -->
+        <div class="methodology-card">
+          <div class="card-header-row">
+            <div>
+              <h3 class="dashboard-card-title" data-i18n="evidence.sensitivity_title">Method &amp; ranking stability</h3>
             </div>
           </div>
 
-          <div class="catalog-table-wrapper">
-            <table class="catalog-table">
-              <thead>
-                <tr>
-                  <th data-sort="name" data-i18n="evidence.col_dataset_name">Dataset Name</th>
-                  <th data-sort="agency" data-i18n="evidence.col_agency">Space Agency / Provider</th>
-                  <th data-sort="resolution" data-i18n="evidence.col_resolution">Spatial Resolution</th>
-                  <th data-sort="license" data-i18n="evidence.col_license">Licensing</th>
-                  <th data-sort="application" data-i18n="evidence.col_application">Pipeline Application</th>
-                </tr>
-              </thead>
-              <tbody id="dataCatalogTableBody"></tbody>
-            </table>
+          <!-- Main Takeaway Box (One-line takeaway with soft blue glow) -->
+          <div class="sensitivity-takeaway-box" id="sensitivityTakeawayBox">
+            <div class="sensitivity-takeaway-main">
+              <span class="takeaway-check-icon" aria-hidden="true">✓</span>
+              <span class="takeaway-text" id="sensitivitySubtitle" data-i18n="evidence.sensitivity_subtitle">
+                Rankings stay at least 94% stable even when any weight changes by ±25%.
+              </span>
+            </div>
+          </div>
+
+          <!-- 4 Parameter Stability Cards (Replaces the old table, id sensitivityTableBody preserved as a div) -->
+          <div class="sensitivity-cards-grid" id="sensitivityTableBody"></div>
+
+          <!-- Collapsible Formula & Key Section (Collapsed by default) -->
+          <div class="formula-collapsible-wrapper">
+            <button type="button" class="btn-formula-toggle" id="btnFormulaToggle" aria-expanded="false" aria-controls="formulaDisplayBanner">
+              <span class="formula-toggle-icon" aria-hidden="true">📐</span>
+              <span class="formula-toggle-text" data-i18n="evidence.btn_show_formula">Show formula</span>
+              <span class="formula-toggle-chevron" aria-hidden="true">▾</span>
+            </button>
+
+            <!-- Formula Display Banner (Real MathML) -->
+            <div class="formula-display-banner collapsed" id="formulaDisplayBanner">
+              <div class="formula-mathml-box">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                  <mrow>
+                    <mi mathvariant="script">S</mi>
+                    <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                    <mo>=</mo>
+                    <munderover>
+                      <mo>&#x2211;</mo>
+                      <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+                      <mi>K</mi>
+                    </munderover>
+                    <msub><mi>w</mi><mi>k</mi></msub>
+                    <mo>&#x22C5;</mo>
+                    <msub><mi>&#x3D5;</mi><mi>k</mi></msub>
+                    <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                    <mo>&#x22C5;</mo>
+                    <mi>exp</mi>
+                    <mo>(</mo>
+                    <mo>&#x2212;</mo>
+                    <mfrac>
+                      <mrow>
+                        <msubsup><mi>d</mi><mi>M</mi><mn>2</mn></msubsup>
+                        <mo stretchy="false">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>y</mi><mi>k</mi></msub><mo stretchy="false">)</mo>
+                      </mrow>
+                      <mrow>
+                        <mn>2</mn><msubsup><mi>&#x3C3;</mi><mi>k</mi><mn>2</mn></msubsup>
+                      </mrow>
+                    </mfrac>
+                    <mo>)</mo>
+                  </mrow>
+                </math>
+              </div>
+              <div class="formula-key-grid">
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">wₖ</span> = <span data-i18n="evidence.key_weight">weight</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">φₖ</span> = <span data-i18n="evidence.key_similarity">similarity</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">d<sub>M</sub></span> = <span data-i18n="evidence.key_mahalanobis">Mahalanobis distance</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">σₖ</span> = <span data-i18n="evidence.key_spread">spread</span></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -385,10 +500,9 @@
            ====================================================================== -->
       <section class="roadmap-section-card" id="evidenceRoadmapSpotlight">
         <div class="section-header-block" style="border:none; margin-bottom:0.25rem;">
-          <span class="section-kicker">SECTION 03 / STRATEGIC HORIZON</span>
           <h2 class="section-main-title" data-i18n="evidence.sec3_title">Future Vision & Strategic Roadmap</h2>
           <p class="section-sub-desc" data-i18n="evidence.sec3_subtitle">
-            Trajectory towards autonomous planetary mission planning and real-time ground-truth calibration.
+            Our trajectory towards autonomous planetary mission planning.
           </p>
         </div>
 
@@ -399,82 +513,68 @@
   </main>
 
   <!-- ==========================================================================
-       DISTINCT MISSION BOUNDARY (Clearly separates content from footer)
-       ========================================================================== -->
-  <div class="footer-mission-boundary">
-    <div class="footer-boundary-bar">
-      <div style="display:flex; align-items:center; gap:0.5rem;">
-        <span class="footer-boundary-pulse"></span>
-        <span>/// END OF SURFACE TELEMETRY FEED // MISSION RECONNAISSANCE BASE ///</span>
-      </div>
-      <div class="mono" style="opacity:0.85; font-size:0.68rem;">ARCHIVE SECURITY: OPEN ACCESS (CC-BY 4.0)</div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
        GLOBAL PROFESSIONAL SCIENTIFIC FOOTER (Creators, Team, Contacts & Sources)
        ========================================================================== -->
-  <footer class="site-footer">
+    <!-- ==========================================================================
+       PERSISTENT SCIENTIFIC MISSION FOOTER (High-Contrast Planetary Telemetry)
+       ========================================================================== -->
+  <footer class="site-footer" id="siteFooter">
+    <!-- Telemetry Boundary Demarcation Bar -->
+    <div class="footer-mission-boundary">
+      <div class="footer-boundary-bar">
+        <div class="boundary-telemetry-tag">
+          <span class="telemetry-live-dot"></span>
+          <span>TELEMETRY ARCHIVE // NASA PDS • ESA COPERNICUS • USGS ASTROGEOLOGY</span>
+        </div>
+        <div class="boundary-coordinates">SYS.LAT 00.0000° • SYS.LON 00.0000° • ELEV 0.0M • SECURE SCIENTIFIC ARCHIVE</div>
+        <div class="boundary-status">
+          <span class="status-indicator"></span>
+          <span>MISSION ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
     <div class="footer-container">
       
-      <!-- High-Tech Telemetry Banner -->
-      <div class="footer-tech-banner">
-        <div class="footer-tech-banner-left">
-          <span class="footer-tech-dot"></span>
-          <span>TERRATWIN PLANETARY ANALOG INTELLIGENCE ARCHIVE // NASA PDS • ESA COPERNICUS • USGS</span>
-        </div>
-        <div class="mono" style="font-size:0.68rem; opacity:0.85;">STATUS: OPERATIONAL // TELEMETRY: ACTIVE</div>
-      </div>
-
       <!-- 4-Column Main Grid -->
       <div class="footer-main-grid">
         
         <!-- Col 1: Platform & Mission -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin / Astraea</div>
+          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin</div>
           <p class="footer-about-text" data-i18n="footer.about_desc">
             An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.
           </p>
-          <div class="footer-badges-group" style="margin-top:0.4rem;">
-            <span class="sci-badge validated">OPEN ACCESS</span>
-            <span class="sci-badge mars">MARS 2020 / ARTEMIS</span>
-          </div>
         </div>
 
         <!-- Col 2: Creators & Core Team -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.creators_title">Project Team</div>
+          <div class="footer-col-title" data-i18n="footer.creators_title">Research Team</div>
           <div class="footer-team-card">
             <div class="team-member-name">
               <span>🚀</span>
-              <span data-i18n="footer.lead_name">Astraea Team</span>
+              <span data-i18n="footer.lead_name">Astraea Science Team</span>
             </div>
             <div class="team-member-role" data-i18n="footer.lead_role">Planetary Systems & Geospatial Engineering</div>
           </div>
-          <div class="footer-team-card">
-            <div class="team-member-name">
-              <span>🛰️</span>
-              <span data-i18n="footer.consortium_name">Astraea Planetary Science Lab</span>
-            </div>
-            <div class="team-member-role" data-i18n="footer.consortium_role">Analog Matching Models & Data Pipeline</div>
-          </div>
+          
         </div>
 
         <!-- Col 3: Contact & Links -->
         <div class="footer-col">
-          <div class="footer-col-title" data-i18n="footer.contact_title">Contact & Links</div>
+          <div class="footer-col-title" data-i18n="footer.contact_title">Direct Telemetry & Contact</div>
           <ul class="footer-contact-list">
             <li class="footer-contact-item">
               <span>✉️</span>
-              <a href="mailto:contact@astraea.space" id="footerContactEmail" data-i18n="footer.contact_email">contact@astraea.space</a>
+              <a href="mailto:contact@terratwin.space" id="footerContactEmail" data-i18n="footer.contact_email">contact@terratwin.space</a>
             </li>
             <li class="footer-contact-item">
-              <span>🐙</span>
-              <a href="https://github.com/ManarAbu-Irsheid/Astraea" target="_blank" rel="noopener noreferrer" data-i18n="footer.github_link">Project Repository (GitHub)</a>
+              <span>📞</span>
+              <a href="tel:+962790000000" id="footerContactPhone" dir="ltr">+962 7 9000 0000</a>
             </li>
             <li class="footer-contact-item">
               <span>📑</span>
-              <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Catalog</a>
+              <a href="evidence.html" data-i18n="footer.docs_link">Methodology & Catalog</a>
             </li>
           </ul>
         </div>
@@ -503,10 +603,9 @@
       <!-- Bottom Sub-Bar -->
       <div class="footer-bottom-bar">
         <div class="footer-copyright" data-i18n="footer.copyright">
-          © 2026 TerraTwin • Developed by Astraea Team.
+          © 2026 TerraTwin • Planetary Analog Matching Platform.
         </div>
         <div class="footer-badges-group">
-          <span class="mono">v2.4-RELEASE</span>
           <span class="footer-citation-icon">⚖️ CC-BY 4.0 Scientific License</span>
         </div>
       </div>

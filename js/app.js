@@ -106,6 +106,13 @@ const App = {
     });
 
     // Sub-buttons inside 3-dots kebab menu
+    const kebabEthicsGuideBtn = document.getElementById('kebabEthicsGuideBtn');
+    if (kebabEthicsGuideBtn) {
+      kebabEthicsGuideBtn.addEventListener('click', (e) => {
+        kebabDropdown.classList.remove('open');
+        window.location.href = 'guide.html';
+      });
+    }
     const kebabProfileBtn = document.getElementById('kebabProfileBtn');
     if (kebabProfileBtn) {
       kebabProfileBtn.addEventListener('click', () => {
