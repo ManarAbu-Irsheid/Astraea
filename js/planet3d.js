@@ -646,28 +646,43 @@ const Planetary3D = {
     });
 
     // Touch Controls
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchMoved = false;
+
     dom.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
         this.isDragging = true;
         this.autoRotate = false;
-        this.previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchMoved = false;
+        this.previousMousePosition = { x: touchStartX, y: touchStartY };
       }
-    });
+    }, { passive: true });
 
     dom.addEventListener('touchmove', (e) => {
       if (!this.isDragging || e.touches.length !== 1) return;
-      const deltaX = e.touches[0].clientX - this.previousMousePosition.x;
-      const deltaY = e.touches[0].clientY - this.previousMousePosition.y;
+      const curX = e.touches[0].clientX;
+      const curY = e.touches[0].clientY;
+      if (Math.hypot(curX - touchStartX, curY - touchStartY) > 8) {
+        touchMoved = true;
+      }
+      const deltaX = curX - this.previousMousePosition.x;
+      const deltaY = curY - this.previousMousePosition.y;
 
       this.planetGroup.rotation.y += deltaX * 0.005;
       this.planetGroup.rotation.x += deltaY * 0.005;
 
-      this.previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    });
+      this.previousMousePosition = { x: curX, y: curY };
+    }, { passive: true });
 
     dom.addEventListener('touchend', () => {
       this.isDragging = false;
       this.resetIdleTimer();
+      if (!touchMoved) {
+        this.onPointerClick({ clientX: touchStartX, clientY: touchStartY });
+      }
     });
 
     // Zoom on Wheel
@@ -679,7 +694,9 @@ const Planetary3D = {
 
     // Click Detection for Site Pins
     dom.addEventListener('click', (e) => {
-      this.onPointerClick(e);
+      if (!touchMoved) {
+        this.onPointerClick(e);
+      }
     });
   },
 
