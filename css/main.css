@@ -2062,3 +2062,110 @@ a:hover {
   box-shadow: 0 0 10px var(--accent-green);
   animation: pulseDot 1.8s infinite;
 }
+
+
+/* ==========================================================================
+   ENHANCED HIGH-CONTRAST FOOTER & ETHICS GUIDE MODAL
+   ========================================================================== */
+
+/* Unmistakable Technical Footer Demarcation */
+.site-footer {
+  margin-top: 5rem !important;
+  position: relative;
+  background: #01040a !important;
+  border-top: 3px solid #00a3ff !important;
+  box-shadow: 0 -12px 48px rgba(0, 163, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="light"] .site-footer {
+  background: #f1f5f9 !important;
+  border-top: 3px solid #0077cc !important;
+  box-shadow: 0 -10px 32px rgba(0, 0, 0, 0.08) !important;
+}
+
+.footer-mission-boundary {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.footer-boundary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.6rem 1.5rem;
+  background: rgba(4, 11, 24, 0.95);
+  border: 1px solid rgba(0, 163, 255, 0.4);
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--accent-cyan);
+  box-shadow: 0 0 24px rgba(0, 163, 255, 0.2);
+}
+
+.boundary-telemetry-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.boundary-status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--accent-green);
+  font-weight: 700;
+}
+
+.boundary-status .status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  box-shadow: 0 0 10px var(--accent-green);
+  animation: pulseDot 2s infinite;
+}
+
+/* Ethics & Guide Modal */
+#ethicsGuideModalOverlay .custom-modal-dialog {
+  border: 1px solid rgba(0, 163, 255, 0.45);
+  box-shadow: 0 0 60px rgba(0, 163, 255, 0.25), 0 24px 48px rgba(0,0,0,0.8);
+}
+
+.ethics-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: #fff !important;
+}
+
+.ethics-section-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.ethics-section-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 163, 255, 0.45) !important;
+}
+
+[dir="rtl"] .ethics-tab-content ul {
+  padding-right: 1.4rem;
+  padding-left: 0;
+}
+
+@media (max-width: 768px) {
+  .ethics-tabs-nav {
+    flex-direction: column;
+  }
+  .ethics-tab-content > div[style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+  .footer-boundary-bar {
+    flex-direction: column;
+    text-align: center;
+    border-radius: var(--radius-md);
+  }
+}
