@@ -63,7 +63,6 @@ const EvidenceController = {
     this.renderValidationRankPlot();
     this.renderDonuts();
     this.renderSiteDetails();
-    this.renderHeatmap();
     this.renderBoxplot();
     this.renderHistogram();
     this.setupChartAnimations();
@@ -78,7 +77,6 @@ const EvidenceController = {
       this.renderValidationRankPlot();
       this.renderDonuts();
       this.renderSiteDetails();
-      this.renderHeatmap();
       this.renderBoxplot();
       this.renderHistogram();
       this.renderSensitivityMatrix();
@@ -820,146 +818,6 @@ const EvidenceController = {
   },
 
   /**
-   * 2A. Mission Suitability Dot Matrix: Best mission fit per site
-   * 1. No filled squares, no orange borders; circles in middle of transparent cells with row separators.
-   * 2. Circle size by score: 40 -> 8px, 100 -> 26px (linear: 8 + (score - 40) * 0.3).
-   *    Color: <60 -> #2A3A50, 60–80 -> #0072FF, >=80 -> #00C6FF with soft glow.
-   * 3. Score shown as small text next to circle (0.8rem, var(--text-secondary)), not inside.
-   * 4. Best mission per site: circle uses yellow->orange gradient with orange glow + small ★.
-   *    Only ONE best per row (if tied, the first).
-   * 5. Hover a row: faint row highlight. Hover circle: grows 1.15 with tooltip "site — mission: score".
-   * 6. Size legend: three circles (40, 70, 100) and '★ best fit'.
-   */
-  renderHeatmap() {
-    const container = document.getElementById('heatmapContainer');
-    if (!container || !this.cells || this.cells.length === 0) return;
-
-    const lang = window.I18n ? window.I18n.currentLang : 'en';
-    const isAr = lang === 'ar';
-
-    const profiles = [
-      { key: 'rover', en: 'Rover testing', ar: 'اختبار المركبات' },
-      { key: 'base', en: 'Human base', ar: 'قاعدة بشرية' },
-      { key: 'isru', en: 'Resources (ISRU)', ar: 'استخراج الموارد' },
-      { key: 'caves', en: 'Lava-tube shelter', ar: 'ملاجئ الأنابيب البركانية' }
-    ];
-
-    const colHeadersHtml = profiles.map(p => {
-      const label = isAr ? p.ar : p.en;
-      return `<th scope="col" class="col-mission-header">${label}</th>`;
-    }).join('');
-
-    const rowsHtml = this.cells.map(cell => {
-      const name = isAr ? (cell.name_ar || cell.name) : cell.name;
-      const isCand = Boolean(cell.is_candidate);
-      const pillHtml = isCand ? `<span class="pill-new">${isAr ? 'جديد' : 'NEW'}</span>` : '';
-
-      // 4. Find best mission per site. Only ONE best per row (if tied, the first via strict >)
-      let maxScore = -Infinity;
-      let bestProfileKey = null;
-      profiles.forEach(p => {
-        const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
-          ? cell.profile_scores[p.key] 
-          : 0;
-        if (score > maxScore) {
-          maxScore = score;
-          bestProfileKey = p.key;
-        }
-      });
-
-      const cellsHtml = profiles.map(p => {
-        const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
-          ? cell.profile_scores[p.key] 
-          : 0;
-        const isBest = (p.key === bestProfileKey);
-        const pLabel = isAr ? p.ar : p.en;
-
-        // 2. Circle size by score: 40 -> 8px, 100 -> 26px (linear)
-        const dotSize = Math.round(Math.max(8, Math.min(26, 8 + (score - 40) * 0.3)));
-
-        // 2 & 4. Color: score < 60 -> #2A3A50, 60–80 -> #0072FF, >= 80 -> #00C6FF.
-        // Best mission uses yellow->orange gradient with orange glow.
-        let dotClass = 'dot-low';
-        if (isBest) {
-          dotClass = 'dot-best';
-        } else if (score >= 80) {
-          dotClass = 'dot-high';
-        } else if (score >= 60) {
-          dotClass = 'dot-mid';
-        }
-
-        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}${isBest ? (isAr ? ' (★ أفضل توافق)' : ' (★ best fit)') : ''}`;
-
-        return `
-          <td class="matrix-cell">
-            <div class="matrix-cell-wrap" title="${tooltip}">
-              <span class="matrix-dot ${dotClass}" 
-                    style="width: ${dotSize}px; height: ${dotSize}px;"
-                    tabindex="0"
-                    role="graphics-symbol"
-                    aria-label="${tooltip}"></span>
-              <span class="matrix-score mono">${score.toFixed(1)}</span>
-              ${isBest ? '<span class="matrix-star" aria-hidden="true">★</span>' : ''}
-            </div>
-          </td>
-        `;
-      }).join('');
-
-      return `
-        <tr>
-          <th scope="row" class="heatmap-row-site">
-            <span>${name}</span>
-            ${pillHtml}
-          </th>
-          ${cellsHtml}
-        </tr>
-      `;
-    }).join('');
-
-    // 6. Size legend: three circles (40, 70, 100) and '★ best fit'
-    const legendHtml = `
-      <div class="matrix-legend-bar" aria-label="Matrix scale legend">
-        <div class="matrix-legend-scale">
-          <span class="matrix-legend-title">${isAr ? 'حجم النقطة حسب الدرجة:' : 'Dot size by score:'}</span>
-          <div class="matrix-legend-items">
-            <div class="matrix-legend-item">
-              <span class="matrix-legend-dot dot-low" style="width: 8px; height: 8px;"></span>
-              <span class="matrix-legend-label">40</span>
-            </div>
-            <div class="matrix-legend-item">
-              <span class="matrix-legend-dot dot-mid" style="width: 17px; height: 17px;"></span>
-              <span class="matrix-legend-label">70</span>
-            </div>
-            <div class="matrix-legend-item">
-              <span class="matrix-legend-dot dot-high" style="width: 26px; height: 26px;"></span>
-              <span class="matrix-legend-label">100</span>
-            </div>
-          </div>
-        </div>
-        <div class="matrix-legend-best-key">
-          <span class="matrix-legend-dot dot-best" style="width: 20px; height: 20px;"></span>
-          <span class="matrix-best-text">${isAr ? '★ أفضل توافق' : '★ best fit'}</span>
-        </div>
-      </div>
-    `;
-
-    container.innerHTML = `
-      <table class="heatmap-table" role="grid" aria-label="${isAr ? 'أفضل مهمة لكل موقع' : 'Best mission fit per site'}">
-        <thead>
-          <tr>
-            <th scope="col" class="col-site-header">${isAr ? 'الموقع' : 'Site'}</th>
-            ${colHeadersHtml}
-          </tr>
-        </thead>
-        <tbody>
-          ${rowsHtml}
-        </tbody>
-      </table>
-      ${legendHtml}
-    `;
-  },
-
-  /**
    * 2B. Box Plot: How sites score on each attribute
    * 1. Fill card: SVG height ~320px (clamp(260px, 28vw, 360px)), width 100%, boxes wide (~60% of column).
    * 2. Y axis 60–100 with horizontal grid lines every 10 and labels.
@@ -1315,12 +1173,11 @@ const EvidenceController = {
   },
 
   /**
-   * Scroll grow-in animation observer for the 3 Section 2 charts.
+   * Scroll grow-in animation observer for the 2 Section 2 charts (Box plot & Histogram).
    * Triggered once on viewport scroll-in, disabled under prefers-reduced-motion.
    */
   setupChartAnimations() {
     const cards = [
-      document.getElementById('evidenceHeatmapCard'),
       document.getElementById('evidenceBoxplotCard'),
       document.getElementById('evidenceHistogramCard')
     ].filter(Boolean);
