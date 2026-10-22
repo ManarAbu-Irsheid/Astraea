@@ -47,6 +47,8 @@ const FINDER_TEXT = {
     similarCount: (n, total) => `${n} of ${total} sites ≥ 90% similar`,
     closestTitle: (ref) => ref ? `Closest on Earth to ${ref}` : 'Top matches on Earth',
     bestLine: (name, score) => `Best: ${name} ${score}%`,
+    noneLine: (name, score, tier) => `No Earth site reaches 90% · Closest: ${name} ${score}% (${tier} match)`,
+    tiers: { strong: 'strong', moderate: 'moderate', weak: 'weak' },
     filters: 'Filters', siteCard: 'Site Card',
     satellite: 'Satellite', topo: 'Topography',
     heatLegend: 'Glow = similarity', low: 'Low', high: 'High',
@@ -101,6 +103,8 @@ const FINDER_TEXT = {
     similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 90% أو أكثر`,
     closestTitle: (ref) => ref ? `أقرب الأماكن على الأرض إلى ${ref}` : 'أعلى الأماكن تشابهاً على الأرض',
     bestLine: (name, score) => `الأعلى: ${name} ${score}%`,
+    noneLine: (name, score, tier) => `لا يوجد موقع على الأرض يصل 90% · الأقرب: ${name} ${score}% (تشابه ${tier})`,
+    tiers: { strong: 'قوي', moderate: 'متوسط', weak: 'ضعيف' },
     filters: 'الفلاتر', siteCard: 'بطاقة الموقع',
     satellite: 'قمر صناعي', topo: 'تضاريس',
     heatLegend: 'التوهج = نسبة التشابه', low: 'أقل', high: 'أعلى',
@@ -332,8 +336,15 @@ const SiteFinder = {
 
     const similar = scored.filter(x => x.score >= 90).length;
     const best = scored.reduce((a, x) => (!a || x.score > a.score ? x : a), null);
-    const parts = [t.similarCount(similar, scored.length)];
-    if (best) parts.push(t.bestLine(best.site.name, best.score.toFixed(1)));
+    let parts;
+    if (similar > 0 || !best) {
+      parts = [t.similarCount(similar, scored.length)];
+      if (best) parts.push(t.bestLine(best.site.name, best.score.toFixed(1)));
+    } else {
+      // No strong match: say so honestly and show the closest one with its strength
+      const tier = best.score >= 80 ? t.tiers.moderate : t.tiers.weak;
+      parts = [t.noneLine(best.site.name, best.score.toFixed(1), tier)];
+    }
     const countEl = document.getElementById('mapTargetCount');
     if (countEl) countEl.textContent = parts.join(' · ');
   },
