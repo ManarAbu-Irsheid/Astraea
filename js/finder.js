@@ -36,7 +36,11 @@ const FINDER_TEXT = {
     editHint: 'Change the mission or weights from the profile menu at the top ↑',
     moonNoThermal: 'On the Moon, temperature is not compared (vacuum).',
     landingHint: 'Landing Site: steep sites (> 12°) are hidden — unsafe for landing.',
-    banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'both' ? 'the Moon & Mars' : body === 'moon' ? 'the Moon' : 'Mars'}`,
+    banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'both' ? 'BOTH the Moon & Mars' : body === 'moon' ? 'the Moon' : 'Mars'}`,
+    bothDesc: 'A site scores high only if it resembles the Moon AND Mars: its score is the lower of its best Moon match and its best Mars match.',
+    bothVs: (m, ms, n, ns) => `Mars: ${m} ${ms}% · Moon: ${n} ${ns}%`,
+    bothLine: (m, ms, n, ns, low) => `Similar to both: Mars ${m} ${ms}% and Moon ${n} ${ns}% → score = the lower one (${low}%)`,
+    bothClosest: 'Top sites similar to both',
     closerTo: (b, bt, bs, o, ot, os) => `Closer to ${b === 'moon' ? 'the Moon' : 'Mars'} (${bt} ${bs}%) than to ${o === 'moon' ? 'the Moon' : 'Mars'} (${ot} ${os}%)`,
     sites: (n) => n === 1 ? '1 site' : `${n} sites`,
     similarCount: (n, total) => `${n} of ${total} sites ≥ 90% similar`,
@@ -85,7 +89,11 @@ const FINDER_TEXT = {
     editHint: 'غيّر نوع المهمة أو الأوزان من قائمة المهمة في الأعلى ↑',
     moonNoThermal: 'على القمر لا تُقارن الحرارة (لا يوجد غلاف جوي).',
     landingHint: 'موقع الهبوط: المواقع شديدة الانحدار (أكثر من 12°) مخفية لأنها غير آمنة للهبوط.',
-    banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'both' ? 'القمر والمريخ' : body === 'moon' ? 'القمر' : 'المريخ'}`,
+    banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'both' ? 'القمر والمريخ معاً' : body === 'moon' ? 'القمر' : 'المريخ'}`,
+    bothDesc: 'يحصل الموقع على نسبة عالية فقط إذا كان يشبه القمر والمريخ معاً: نسبته هي الأقل بين أفضل تطابق له مع القمر وأفضل تطابق له مع المريخ.',
+    bothVs: (m, ms, n, ns) => `المريخ: ${m} ${ms}% · القمر: ${n} ${ns}%`,
+    bothLine: (m, ms, n, ns, low) => `يشبه الاثنين: المريخ ${m} ${ms}% والقمر ${n} ${ns}% ← النسبة = الأقل منهما (${low}%)`,
+    bothClosest: 'أعلى المواقع شبهاً بالاثنين',
     closerTo: (b, bt, bs, o, ot, os) => `أقرب إلى ${b === 'moon' ? 'القمر' : 'المريخ'} (${bt} ${bs}%) منه إلى ${o === 'moon' ? 'القمر' : 'المريخ'} (${ot} ${os}%)`,
     sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
     similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 90% أو أكثر`,
@@ -191,6 +199,16 @@ const SiteFinder = {
   // Score one Earth site against the reference (or its best match among the 6 targets)
   scoreSite(site, weights) {
     const mpm = this.mpm();
+    // "Both": the site must resemble the Moon AND Mars -> take the weaker of its two best matches
+    if (this.body === 'both') {
+      const bestIn = (b) => (this.targets[b] || []).reduce((acc, t) => {
+        const r = mpm.calculateTASI(site.f, t.f, b, weights);
+        return !acc || r.score > acc.score ? { ...r, target: t } : acc;
+      }, null);
+      const m = bestIn('mars'), n = bestIn('moon');
+      const weaker = m.score <= n.score ? m : n;
+      return { ...weaker, both: { mars: m, moon: n } };
+    }
     const list = this.getTargetList();
     const pool = this.referenceId === 'best' ? list : list.filter(t => t.id === this.referenceId);
     let best = null;
@@ -322,7 +340,7 @@ const SiteFinder = {
   renderClosestList(scored, ref) {
     const t = this.t();
     const titleEl = document.getElementById('closestEarthTitle');
-    if (titleEl) titleEl.textContent = t.closestTitle(ref);
+    if (titleEl) titleEl.textContent = this.body === 'both' ? t.bothClosest : t.closestTitle(ref);
     const list = document.getElementById('closestEarthList');
     if (!list) return;
     const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 5);
@@ -491,6 +509,16 @@ const SiteFinder = {
     const t = this.t();
     const select = document.getElementById('referenceSiteSelect');
     if (!select) return;
+    // "Both" has no single reference site
+    const isBoth = this.body === 'both';
+    select.style.display = isBoth ? 'none' : '';
+    const refLabel = document.getElementById('referenceSiteLabel');
+    if (refLabel) refLabel.style.display = isBoth ? 'none' : '';
+    if (isBoth) {
+      const d = document.getElementById('referenceSiteDesc');
+      if (d) d.textContent = t.bothDesc;
+      return;
+    }
     const list = this.getTargetList();
     const opts = (arr) => arr.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
     // Famous landing sites first, then every other site of that body
@@ -585,15 +613,20 @@ const SiteFinder = {
     // Score + uncertainty + confidence
     setText('detailScoreVal', `${result.score.toFixed(1)}%`);
     const tBody = this.bodyOf(target);
-    setText('detailUncertaintyVal', `${t.vs(target.name, tBody)} · ${t.uncertainty(unc)}`);
+    const vsText = result.both
+      ? t.bothVs(result.both.mars.target.name, result.both.mars.score.toFixed(1), result.both.moon.target.name, result.both.moon.score.toFixed(1))
+      : t.vs(target.name, tBody);
+    setText('detailUncertaintyVal', `${vsText} · ${t.uncertainty(unc)}`);
     const confKey = unc <= 2 ? 'high' : unc <= 4 ? 'medium' : 'low';
     setText('detailConfidenceVal', t.conf[confKey]);
 
     // Most similar: top 3 of the 6 reference sites (with current weights)
-    const ranked = this.getTargetList()
-      .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, this.bodyOf(x)).score }))
-      .sort((a, b) => b.s - a.s)
-      .slice(0, 3);
+    const ranked = result.both
+      ? [{ x: result.both.mars.target, s: result.both.mars.score }, { x: result.both.moon.target, s: result.both.moon.score }]
+      : this.getTargetList()
+        .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, this.bodyOf(x)).score }))
+        .sort((a, b) => b.s - a.s)
+        .slice(0, 3);
     const mostEl = document.getElementById('mostSimilarList');
     if (mostEl) {
       mostEl.innerHTML = ranked.map(({ x, s }) => `
@@ -605,7 +638,12 @@ const SiteFinder = {
         </li>`).join('');
       // Click -> use it as the reference site
       mostEl.querySelectorAll('.most-similar-item').forEach(btn => {
-        btn.onclick = () => this.setReference(btn.getAttribute('data-target'));
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-target');
+          // In "Both", clicking a site jumps to that body with it as the reference
+          if (this.body === 'both') this.applyBody(id.split('-')[0], id);
+          else this.setReference(id);
+        };
       });
     }
 
@@ -637,14 +675,10 @@ const SiteFinder = {
     if (tBody === 'moon') diffs.push({ text: t.moonThermal(this.fmt.thermal(site), this.fmt.thermal(target)) });
     diffs.push({ text: t.bodyLimit[tBody] });
 
-    // "Both": say which world this Earth site resembles more
-    if (this.body === 'both') {
-      const bestOf = (b) => this.targets[b]
-        .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, b).score }))
-        .sort((a, c) => c.s - a.s)[0];
-      const m = bestOf('mars'), n = bestOf('moon');
-      const [w, l, wb, lb] = m.s >= n.s ? [m, n, 'mars', 'moon'] : [n, m, 'moon', 'mars'];
-      matches.unshift({ sim: 999, text: `<strong>${t.closerTo(wb, w.x.name, w.s.toFixed(1), lb, l.x.name, l.s.toFixed(1))}</strong>` });
+    // "Both": explain the score (the lower of the best Mars and best Moon match)
+    if (result.both) {
+      const m = result.both.mars, n = result.both.moon;
+      matches.unshift({ sim: 999, text: `<strong>${t.bothLine(m.target.name, m.score.toFixed(1), n.target.name, n.score.toFixed(1), result.score.toFixed(1))}</strong>` });
     }
 
     const whyMatchesList = document.getElementById('detailWhyMatchesList');
