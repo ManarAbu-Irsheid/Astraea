@@ -1317,3 +1317,219 @@
   }
 }
 
+
+
+/* ==========================================================================
+   DYNAMIC 3D-SHOWCASE TELEMETRY SYNC & COMPARATIVE MATRIX
+   ========================================================================== */
+
+/* Single Name Planet Tab Title */
+.planet-tab-name {
+  font-family: 'Orbitron', 'Space Grotesk', 'Alexandria', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Site Spec Mini Grid */
+.site-spec-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.spec-mini-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.28rem 0.55rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.spec-mini-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.spec-mini-val {
+  font-family: var(--font-mono);
+  color: #e2e8f0;
+  font-weight: 700;
+}
+
+/* Comparative Physical Matrix Bar */
+.twin-comparative-matrix-bar {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(4, 11, 24, 0.85);
+  border: 1px solid rgba(0, 163, 255, 0.25);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 8px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.matrix-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.matrix-title {
+  font-family: 'Orbitron', 'Space Grotesk', 'Alexandria', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #38bdf8;
+}
+
+.matrix-note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.matrix-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+
+.matrix-metric-item {
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.65rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.matrix-metric-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 163, 255, 0.4);
+}
+
+.metric-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.45rem;
+}
+
+.metric-item-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.metric-match-tag {
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  color: #00e5a3;
+  font-weight: 700;
+  background: rgba(0, 229, 163, 0.12);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 229, 163, 0.3);
+}
+
+.metric-bar-dual {
+  display: flex;
+  gap: 2px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.bar-fill.site-a {
+  background: #00a3ff;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bar-fill.site-b {
+  background: #00e5d4;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bar-fill.gate-passed {
+  background: linear-gradient(90deg, #00e5a3, #00e5d4);
+}
+
+.metric-item-vals {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.showcase-sync-hint {
+  font-size: 0.74rem;
+  color: #38bdf8;
+  background: rgba(0, 163, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 163, 255, 0.3);
+  margin-inline-end: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ring-status-pill {
+  margin-top: 0.6rem;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.6rem;
+  background: rgba(0, 229, 163, 0.15);
+  color: #00e5a3;
+  border: 1px solid rgba(0, 229, 163, 0.4);
+  border-radius: 12px;
+}
+
+/* Neon Pulse Animation when user clicks a 3D pin */
+.telemetry-pulse-lock {
+  animation: lockBorderPulse 1.4s ease-out;
+}
+
+@keyframes lockBorderPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 229, 212, 0.8), 0 0 35px rgba(0, 163, 255, 0.7);
+    border-color: #00e5d4;
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 229, 212, 0), 0 0 45px rgba(0, 163, 255, 0.4);
+    border-color: #00a3ff;
+  }
+  100% {
+    box-shadow: var(--shadow-md);
+    border-color: var(--border-color);
+  }
+}
+
+@media (max-width: 992px) {
+  .matrix-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .matrix-metrics-row {
+    grid-template-columns: 1fr;
+  }
+  .showcase-sync-hint {
+    display: none;
+  }
+}
