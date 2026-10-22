@@ -53,7 +53,7 @@
       "about_title": "TerraTwin",
       "about_desc": "An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.",
       "creators_title": "Research Team",
-      "lead_name": "TerraTwin Science Team",
+      "lead_name": "Astraea Science Team",
       "lead_role": "Planetary Systems & Geospatial Engineering",
       "consortium_name": "Analog Matching Models & Data Pipeline",
       "consortium_role": "Physics-Based Two-Stage Machine Learning Pipeline",
@@ -66,7 +66,9 @@
       "source_esa": "ESA Copernicus Programme (Sentinel-2 Multi-Spectral)",
       "source_usgs": "USGS / NASA JPL (SRTM, NASADEM, ASTER GEDv4)",
       "citation": "Official Data Sources: NASA PDS, ESA Copernicus Sentinel-2, Open Earth Observation.",
-      "copyright": "© 2026 TerraTwin • Planetary Analog Matching Platform."
+      "copyright": "© 2026 TerraTwin • Planetary Analog Matching Platform.",
+      "contact_phone": "+962 7 9000 0000",
+      "badge_mission": "PLANETARY ANALOG TWINNING"
     },
     "planet": {
       "col_diameter": "Equatorial Diameter",
@@ -80,13 +82,16 @@
       "col_albedo": "Optical Albedo",
       "col_temp_swing": "Thermal Swing (ΔT °C)",
       "col_ndvi": "Abiotic NDVI Filter",
-      "col_targets": "Cataloged Benchmarks"
+      "col_targets": "Cataloged Benchmarks",
+      "tab_earth": "Earth",
+      "tab_mars": "Mars",
+      "tab_moon": "Moon"
     },
     "home": {
       "hero_kicker": "Multi-Attribute Planetary Surface Matching",
       "hero_title": "Matching Earth Analogs to the Moon & Mars",
-      "hero_desc": "Empirical remote sensing fusion comparing 421,800 terrestrial candidate cells to extraterrestrial mission targets with physical fidelity.",
-      "twin_pair_title": "Featured Twin Pair Analysis",
+      "hero_desc": "Quantitative multi-criteria remote sensing engine matching Earth terrain candidates to lunar and Martian exploration targets using physical surface metrics (Slope, Roughness, Albedo, Thermal Swing, and Abiotic NDVI Gate).",
+      "twin_pair_title": "Planetary Twin Analysis // Interactive Telemetry Sync",
       "cycle_pair_next": "Next Matched Pair",
       "cycle_pair_prev": "Previous Matched Pair",
       "similarity_label": "Overall Similarity",
@@ -104,7 +109,8 @@
       "kpi_recall_label": "Known Analog Recall Rate",
       "kpi_recall_desc": "Verified against 49 historical Apollo & rover field test sites",
       "kpi_candidates_label": "New Validated Candidates",
-      "kpi_candidates_desc": "Novel high-fidelity analog sites discovered by algorithm"
+      "kpi_candidates_desc": "Novel high-fidelity analog sites discovered by algorithm",
+      "twin_hint": "Rotate the 3D celestial bodies above and click any pin to inspect real multi-criteria physical similarity below."
     },
     "finder": {
       "panel_criteria_title": "Criteria & Filters",
@@ -251,7 +257,7 @@
       "about_title": "تيرا توين (TerraTwin)",
       "about_desc": "منصة استخبارات كوكبية مفتوحة المصدر لمطابقة تضاريس الأرض مع مواقع الهبوط والاستكشاف على القمر والمريخ باستخدام رادار وبيانات الأقمار الصناعية متعددة الأطياف.",
       "creators_title": "فريق البحث والتطوير",
-      "lead_name": "فريق تيرا توين العلمي",
+      "lead_name": "فريق Astraea العلمي",
       "lead_role": "هندسة النظم الكوكبية والاستشعار الجيومكاني",
       "consortium_name": "نماذج المطابقة وخط معالجة البيانات الفيزيائية",
       "consortium_role": "خوارزميات التعلم الآلي ثنائية المراحل المعتمدة على الفيزياء",
@@ -264,7 +270,9 @@
       "source_esa": "برنامج كوبرنيكوس الأوروبي (قمر Sentinel-2 متعدد الأطياف)",
       "source_usgs": "هيئة المساحة الأمريكية وناسا (نماذج الارتفاع SRTM، NASADEM، ASTER)",
       "citation": "مصادر البيانات الرسمية: أرشيف ناسا، وكالة الفضاء الأوروبية، وبيانات الرصد الأرضي المفتوحة.",
-      "copyright": "© 2026 تيرا توين (TerraTwin) • منصة مطابقة النظائر الكوكبية."
+      "copyright": "© 2026 تيرا توين (TerraTwin) • منصة مطابقة النظائر الكوكبية.",
+      "contact_phone": "+962 7 9000 0000",
+      "badge_mission": "مطابقة النظائر الكوكبية"
     },
     "planet": {
       "col_diameter": "القطر الاستوائي",
@@ -278,13 +286,16 @@
       "col_albedo": "معامل الانعكاس البصري (Albedo)",
       "col_temp_swing": "التباين الحراري السطحي (ΔT)",
       "col_ndvi": "مؤشر العزل غير الحيوي (NDVI Gate)",
-      "col_targets": "المواقع المعتمدة بالكتالوج"
+      "col_targets": "المواقع المعتمدة بالكتالوج",
+      "tab_earth": "الأرض",
+      "tab_mars": "المريخ",
+      "tab_moon": "القمر"
     },
     "home": {
       "hero_kicker": "مطابقة الأسطح الكوكبية متعددة المعايير",
-      "hero_title": "مطابقة المواقع الشبيهة الأرضية مع القمر والمريخ",
-      "hero_desc": "دمج تجريبي لبيانات الاستشعار عن بُعد لمقارنة 421,800 خلية مرشحة على كوكب الأرض مع أهداف البعثات الفضائية بدقة فيزيائية عالية.",
-      "twin_pair_title": "تحليل الزوج الشبيه المختار",
+      "hero_title": "مطابقة النظائر الأرضية لسطح القمر والمريخ",
+      "hero_desc": "محرك استشعار عن بعد فيزيائي متعدد المعايير لمطابقة تضاريس الأرض بمواقع هبوط واستكشاف القمر والمريخ وفق قياسات الانحدار والخشونة والانعكاس البصري والتباين الحراري وعزل الغطاء الحيوي.",
+      "twin_pair_title": "تحليل النظير الكوكبي التوأم // ربط تليميتري مباشر",
       "cycle_pair_next": "الزوج المطابق التالي",
       "cycle_pair_prev": "الزوج المطابق السابق",
       "similarity_label": "نسبة التشابه الكلية",
@@ -302,7 +313,8 @@
       "kpi_recall_label": "معدل استرجاع المواقع المعروفة",
       "kpi_recall_desc": "مُثبت مقارنة بـ 49 موقعاً تاريخياً لرحلات أبولو والمركبات",
       "kpi_candidates_label": "مرشحون جدد معتمدون",
-      "kpi_candidates_desc": "مواقع شبيهة فائقة الدقة تم اكتشافها بالخوارزمية"
+      "kpi_candidates_desc": "مواقع شبيهة فائقة الدقة تم اكتشافها بالخوارزمية",
+      "twin_hint": "قم بتدوير الأجرام الكوكبية ثلاثية الأبعاد أعلاه وانقر على أي نقطة لمعاينة نسبة المطابقة الفيزيائية ومصفوفة المعايير فورياً."
     },
     "finder": {
       "panel_criteria_title": "المعايير والتصفيات",

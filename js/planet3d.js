@@ -53,14 +53,14 @@ const Planetary3D = {
       catalog_sites: '53 Sites (47 Analogs + 6 Controls)',
       catalog_sites_ar: '53 موقعاً (47 شبيهاً + 6 ضبط)',
       sites: [
-        { id: 'site-devon-haughton', name: 'Devon Island / Haughton Crater', name_ar: 'جزيرة ديفون / فوهة هوتون', lat: 75.42, lon: -89.85, target: 'Polar Cryo-Permafrost | Match: Shackleton 76.0% / Jezero 53.8%', target_ar: 'تربة جليدية قطبية | مطابق لشاكلتون 76.0% / جيزيرو 53.8%' },
-        { id: 'site-atacama-yungay', name: 'Atacama Desert (Yungay)', name_ar: 'صحراء أتاكاما (يونغاي)', lat: -24.09, lon: -69.98, target: 'Hyper-Arid Basin | Match: Jezero 79.1% / Meridiani 75.8%', target_ar: 'حوض شديد الجفاف | مطابق لجيزيرو 79.1% / ميريدياني 75.8%' },
-        { id: 'site-mdrs-utah', name: 'Mars Desert Research Station (MDRS)', name_ar: 'محطة أبحاث صحراء المريخ (MDRS)', lat: 38.40, lon: -110.79, target: 'Hyper-Arid Basin | Match: Meridiani 89.3% / Jezero 72.6%', target_ar: 'حوض صلصالي جاف | مطابق لميريدياني 89.3% / جيزيرو 72.6%' },
-        { id: 'site-hiseas-hawaii', name: 'HI-SEAS Mauna Loa', name_ar: 'محطة هاي سيز، ماونا لوا', lat: 19.47, lon: -155.59, target: 'Volcanic Basalt | Match: Mare Tranquillitatis 82.5% / Jezero 74.5%', target_ar: 'حقول لابة بركانية | مطابق لبحر السكون 82.5% / جيزيرو 74.5%' },
-        { id: 'site-mafraq-jordan', name: 'Mafraq Basalt Plain', name_ar: 'سهل المفرق البازلتي، الأردن', lat: 32.00, lon: 37.50, target: 'Candidate Basalt Plain | Match: Jezero 95.8% / Mare Tranquillitatis 81.3%', target_ar: 'مرشح بازلتي منبسط | مطابق لجيزيرو 95.8% / بحر السكون 81.3%' },
-        { id: 'site-wadirum-jordan', name: 'Wadi Rum', name_ar: 'وادي رم، الأردن', lat: 29.56, lon: 35.41, target: 'Candidate Desert | Match: Mons Mouton 82.5% / Copernicus 82.4%', target_ar: 'مرشح صحراوي تضاريسي | مطابق لمونس موتون 82.5% / كوبرنيكوس 82.4%' },
-        { id: 'site-riotinto-spain', name: 'Rio Tinto', name_ar: 'ريو تينتو، إسبانيا', lat: 37.70, lon: -6.60, target: 'Acidic Iron River | Match: Valles Marineris 85.0%', target_ar: 'نهر كبريتي حمضي | مطابق لأخاديد مارينيريس 85.0%' },
-        { id: 'site-dhofar-oman', name: 'Dhofar AMADEE Site', name_ar: 'موقع ظفار (أمادي)، عمان', lat: 17.00, lon: 54.00, target: 'Hyper-Arid Basin | Match: Rima Ariadaeus 89.5% / Jezero 70.5%', target_ar: 'حوض صحراوي جاف | مطابق لأخدود أرياديوس 89.5% / جيزيرو 70.5%' }
+        { id: 'earth-devon-island', name: 'Devon Island / Haughton Crater', name_ar: 'جزيرة ديفون / فوهة هوتون', lat: 75.42, lon: -89.85, target: 'Polar Cryo-Permafrost | Match: Shackleton 76.0% / Jezero 53.8%', target_ar: 'تربة جليدية قطبية | مطابق لشاكلتون 76.0% / جيزيرو 53.8%' },
+        { id: 'earth-atacama-yungay', name: 'Atacama Desert (Yungay)', name_ar: 'صحراء أتاكاما (يونغاي)', lat: -24.09, lon: -69.98, target: 'Hyper-Arid Basin | Match: Jezero 79.1% / Meridiani 75.8%', target_ar: 'حوض شديد الجفاف | مطابق لجيزيرو 79.1% / ميريدياني 75.8%' },
+        { id: 'earth-mdrs-utah', name: 'Mars Desert Research Station (MDRS)', name_ar: 'محطة أبحاث صحراء المريخ (MDRS)', lat: 38.40, lon: -110.79, target: 'Hyper-Arid Basin | Match: Meridiani 89.3% / Jezero 72.6%', target_ar: 'حوض صلصالي جاف | مطابق لميريدياني 89.3% / جيزيرو 72.6%' },
+        { id: 'earth-hiseas-hawaii', name: 'HI-SEAS Mauna Loa', name_ar: 'محطة هاي سيز، ماونا لوا', lat: 19.47, lon: -155.59, target: 'Volcanic Basalt | Match: Mare Tranquillitatis 82.5% / Jezero 74.5%', target_ar: 'حقول لابة بركانية | مطابق لبحر السكون 82.5% / جيزيرو 74.5%' },
+        { id: 'earth-mafraq', name: 'Mafraq Basalt Plain', name_ar: 'سهل المفرق البازلتي، الأردن', lat: 32.00, lon: 37.50, target: 'Candidate Basalt Plain | Match: Jezero 95.8% / Mare Tranquillitatis 81.3%', target_ar: 'مرشح بازلتي منبسط | مطابق لجيزيرو 95.8% / بحر السكون 81.3%' },
+        { id: 'earth-wadirum-jordan', name: 'Wadi Rum', name_ar: 'وادي رم، الأردن', lat: 29.56, lon: 35.41, target: 'Candidate Desert | Match: Mons Mouton 82.5% / Copernicus 82.4%', target_ar: 'مرشح صحراوي تضاريسي | مطابق لمونس موتون 82.5% / كوبرنيكوس 82.4%' },
+        { id: 'earth-riotinto', name: 'Rio Tinto', name_ar: 'ريو تينتو، إسبانيا', lat: 37.70, lon: -6.60, target: 'Acidic Iron River | Match: Valles Marineris 85.0%', target_ar: 'نهر كبريتي حمضي | مطابق لأخاديد مارينيريس 85.0%' },
+        { id: 'earth-dhofar-oman', name: 'Dhofar AMADEE Site', name_ar: 'موقع ظفار (أمادي)، عمان', lat: 17.00, lon: 54.00, target: 'Hyper-Arid Basin | Match: Rima Ariadaeus 89.5% / Jezero 70.5%', target_ar: 'حوض صحراوي جاف | مطابق لأخدود أرياديوس 89.5% / جيزيرو 70.5%' }
       ]
     },
     mars: {
@@ -83,12 +83,12 @@ const Planetary3D = {
       catalog_sites: '31 Target Sites (Jezero, Gale...)',
       catalog_sites_ar: '31 هدفاً مريخياً (جيزيرو، غيل...)',
       sites: [
-        { id: 'target-mars-jezero', name: 'Jezero Crater Delta', name_ar: 'دلتا فوهة جيزيرو', lat: 18.41, lon: 77.69, target: 'Perseverance Landing Delta | Best Analog: Mafraq 95.8%, Atacama 79.1%', target_ar: 'دلتا هبوط بيرسيفيرنس | أفضل شبيه: المفرق 95.8%، أتاكاما 79.1%' },
-        { id: 'target-mars-gale', name: 'Gale Crater (Mount Sharp)', name_ar: 'فوهة غيل (جبل شارب)', lat: -5.37, lon: 137.81, target: 'Curiosity Landing Basin | Best Analog: Atacama 77.6%, Rio Tinto 68.8%', target_ar: 'حوض هبوط كوريوسيتي | أفضل شبيه: أتاكاما 77.6%، ريو تينتو 68.8%' },
-        { id: 'target-mars-elysium', name: 'Elysium Planitia', name_ar: 'سهل إليسيوم بلانيتيا', lat: 2.98, lon: 154.74, target: 'InSight Basalt Landing Plain | Best Analog: Dhofar 72.4%, Gobi 69.1%', target_ar: 'سهل هبوط إنسايت البازلتي | أفضل شبيه: ظفار 72.4%، جوبي 69.1%' },
-        { id: 'target-mars-olympus', name: 'Olympus Mons', name_ar: 'بركان أوليمبوس مونس', lat: 18.65, lon: -133.80, target: 'Largest Volcanic Shield | Best Analog: Devon Island 83.1%, Iceland 71.3%', target_ar: 'أضخم بركان درعي بالمجموعة الشمسية | أفضل شبيه: ديفون 83.1%، آيسلندا 71.3%' },
-        { id: 'target-mars-valles', name: 'Valles Marineris', name_ar: 'أخاديد فالس مارينيريس', lat: -14.01, lon: -58.59, target: 'Grand Canyon of Mars | Best Analog: Rio Tinto 85.0%, Wadi Rum 83.4%', target_ar: 'الأخدود الأعظم للمريخ | أفضل شبيه: ريو تينتو 85.0%، وادي رم 83.4%' },
-        { id: 'target-mars-meridiani', name: 'Meridiani Planum', name_ar: 'سهل ميريدياني بلانوم', lat: -0.04, lon: -3.14, target: 'Opportunity Hematite Plain | Best Analog: MDRS Utah 89.3%, Atacama 75.8%', target_ar: 'سهل الهيماتيت (أبورتيونيتي) | أفضل شبيه: يوتا 89.3%، أتاكاما 75.8%' }
+        { id: 'mars-jezero', name: 'Jezero Crater Delta', name_ar: 'دلتا فوهة جيزيرو', lat: 18.41, lon: 77.69, target: 'Perseverance Landing Delta | Best Analog: Mafraq 95.8%, Atacama 79.1%', target_ar: 'دلتا هبوط بيرسيفيرنس | أفضل شبيه: المفرق 95.8%، أتاكاما 79.1%' },
+        { id: 'mars-gale', name: 'Gale Crater (Mount Sharp)', name_ar: 'فوهة غيل (جبل شارب)', lat: -5.37, lon: 137.81, target: 'Curiosity Landing Basin | Best Analog: Atacama 77.6%, Rio Tinto 68.8%', target_ar: 'حوض هبوط كوريوسيتي | أفضل شبيه: أتاكاما 77.6%، ريو تينتو 68.8%' },
+        { id: 'mars-elysium', name: 'Elysium Planitia', name_ar: 'سهل إليسيوم بلانيتيا', lat: 2.98, lon: 154.74, target: 'InSight Basalt Landing Plain | Best Analog: Dhofar 72.4%, Gobi 69.1%', target_ar: 'سهل هبوط إنسايت البازلتي | أفضل شبيه: ظفار 72.4%، جوبي 69.1%' },
+        { id: 'mars-olympus', name: 'Olympus Mons', name_ar: 'بركان أوليمبوس مونس', lat: 18.65, lon: -133.80, target: 'Largest Volcanic Shield | Best Analog: Devon Island 83.1%, Iceland 71.3%', target_ar: 'أضخم بركان درعي بالمجموعة الشمسية | أفضل شبيه: ديفون 83.1%، آيسلندا 71.3%' },
+        { id: 'mars-valles', name: 'Valles Marineris', name_ar: 'أخاديد فالس مارينيريس', lat: -14.01, lon: -58.59, target: 'Grand Canyon of Mars | Best Analog: Rio Tinto 85.0%, Wadi Rum 83.4%', target_ar: 'الأخدود الأعظم للمريخ | أفضل شبيه: ريو تينتو 85.0%، وادي رم 83.4%' },
+        { id: 'mars-meridiani', name: 'Meridiani Planum', name_ar: 'سهل ميريدياني بلانوم', lat: -0.04, lon: -3.14, target: 'Opportunity Hematite Plain | Best Analog: MDRS Utah 89.3%, Atacama 75.8%', target_ar: 'سهل الهيماتيت (أبورتيونيتي) | أفضل شبيه: يوتا 89.3%، أتاكاما 75.8%' }
       ]
     },
     moon: {
@@ -111,12 +111,12 @@ const Planetary3D = {
       catalog_sites: '30 Lunar Targets (Artemis, Maria...)',
       catalog_sites_ar: '30 هدفاً قمرياً (أرتميس، بحار القمر...)',
       sites: [
-        { id: 'target-moon-shackleton', name: 'Shackleton Crater Rim', name_ar: 'حافة فوهة شاكلتون (القطب الجنوبي)', lat: -89.67, lon: 129.78, target: 'Artemis Polar Base Candidate | Best Analog: Norway 84.6%, Devon 76.0%', target_ar: 'مرشح قاعدة أرتميس القطبية | أفضل شبيه: النرويج 84.6%، ديفون 76.0%' },
-        { id: 'target-moon-mouton', name: 'Mons Mouton', name_ar: 'مونس موتون (الكتلة القطبية)', lat: -84.60, lon: 31.00, target: 'Artemis III Landing Target | Best Analog: Al Wahat 85.7%, Maan 85.5%', target_ar: 'هدف هبوط أرتميس 3 | أفضل شبيه: الواحات 85.7%، معان 85.5%' },
-        { id: 'target-moon-tranquillitatis', name: 'Mare Tranquillitatis', name_ar: 'بحر السكون (أبولو 11)', lat: 8.35, lon: 30.83, target: 'Apollo 11 Basaltic Mare | Best Analog: Chubut 91.0%, HI-SEAS 82.5%, Mafraq 81.3%', target_ar: 'سهل هبوط أبولو 11 البازلتي | أفضل شبيه: تشوبوت 91.0%، هاي سيز 82.5%، المفرق 81.3%' },
-        { id: 'target-moon-copernicus', name: 'Copernicus Crater', name_ar: 'فوهة كوبرنيكوس المركزية', lat: 9.62, lon: -20.08, target: 'Central Peak Complex | Best Analog: Wadi Rum 82.4%, Hardap 80.0%', target_ar: 'مجمع القمة المركزية | أفضل شبيه: وادي رم 82.4%، هاراداب 80.0%' },
-        { id: 'target-moon-aristarchus', name: 'Aristarchus Plateau', name_ar: 'هضبة أريستارخوس البركانية', lat: 23.73, lon: -47.49, target: 'High-Albedo Volcanic Complex | Best Analog: Iceland 69.6%, Devon 67.2%', target_ar: 'مجمع بركاني عالي البياض | أفضل شبيه: آيسلندا 69.6%، ديفون 67.2%' },
-        { id: 'target-moon-ariadaeus', name: 'Rima Ariadaeus', name_ar: 'أخدود ريما أرياديوس', lat: 6.48, lon: 13.44, target: 'Linear Lunar Rille | Best Analog: Australia 94.0%, Dhofar 89.5%', target_ar: 'أخدود قمري انكساري خطي | أفضل شبيه: أستراليا 94.0%، ظفار 89.5%' }
+        { id: 'moon-shackleton', name: 'Shackleton Crater Rim', name_ar: 'حافة فوهة شاكلتون (القطب الجنوبي)', lat: -89.67, lon: 129.78, target: 'Artemis Polar Base Candidate | Best Analog: Norway 84.6%, Devon 76.0%', target_ar: 'مرشح قاعدة أرتميس القطبية | أفضل شبيه: النرويج 84.6%، ديفون 76.0%' },
+        { id: 'moon-mouton', name: 'Mons Mouton', name_ar: 'مونس موتون (الكتلة القطبية)', lat: -84.60, lon: 31.00, target: 'Artemis III Landing Target | Best Analog: Al Wahat 85.7%, Maan 85.5%', target_ar: 'هدف هبوط أرتميس 3 | أفضل شبيه: الواحات 85.7%، معان 85.5%' },
+        { id: 'moon-tranquillitatis', name: 'Mare Tranquillitatis', name_ar: 'بحر السكون (أبولو 11)', lat: 8.35, lon: 30.83, target: 'Apollo 11 Basaltic Mare | Best Analog: Chubut 91.0%, HI-SEAS 82.5%, Mafraq 81.3%', target_ar: 'سهل هبوط أبولو 11 البازلتي | أفضل شبيه: تشوبوت 91.0%، هاي سيز 82.5%، المفرق 81.3%' },
+        { id: 'moon-copernicus', name: 'Copernicus Crater', name_ar: 'فوهة كوبرنيكوس المركزية', lat: 9.62, lon: -20.08, target: 'Central Peak Complex | Best Analog: Wadi Rum 82.4%, Hardap 80.0%', target_ar: 'مجمع القمة المركزية | أفضل شبيه: وادي رم 82.4%، هاراداب 80.0%' },
+        { id: 'moon-aristarchus', name: 'Aristarchus Plateau', name_ar: 'هضبة أريستارخوس البركانية', lat: 23.73, lon: -47.49, target: 'High-Albedo Volcanic Complex | Best Analog: Iceland 69.6%, Devon 67.2%', target_ar: 'مجمع بركاني عالي البياض | أفضل شبيه: آيسلندا 69.6%، ديفون 67.2%' },
+        { id: 'moon-ariadaeus', name: 'Rima Ariadaeus', name_ar: 'أخدود ريما أرياديوس', lat: 6.48, lon: 13.44, target: 'Linear Lunar Rille | Best Analog: Australia 94.0%, Dhofar 89.5%', target_ar: 'أخدود قمري انكساري خطي | أفضل شبيه: أستراليا 94.0%، ظفار 89.5%' }
       ]
     }
   },
@@ -141,7 +141,10 @@ const Planetary3D = {
     this.bindDOMControls();
 
     window.addEventListener('resize', () => this.onWindowResize());
-    document.addEventListener('languageChanged', () => this.renderTelemetryHUD());
+    document.addEventListener('languageChanged', () => {
+      this.renderTelemetryHUD();
+      this.updateActiveTabs();
+    });
   },
 
   setupScene() {
@@ -723,6 +726,12 @@ const Planetary3D = {
       window.UserSystem.discoverSite(site.id || site.name, title);
     }
 
+    // Trigger Dynamic Twin Showcase Below Globe
+    if (window.HomeShowcase && typeof window.HomeShowcase.displayCustomSitePair === 'function') {
+      window.HomeShowcase.displayCustomSitePair(site.id || site.name);
+    }
+    document.dispatchEvent(new CustomEvent('planetSiteSelected', { detail: site }));
+
     const popup = document.getElementById('planetSiteSelectedPopup');
     if (popup) {
       popup.innerHTML = `
@@ -736,7 +745,7 @@ const Planetary3D = {
           <div class="popup-site-desc">${target}</div>
           <div class="popup-actions">
             <a href="finder.html" class="btn-popup-action primary">${isAr ? 'عرض في مستكشف المواقع' : 'View in Site Finder'}</a>
-            <a href="compare.html?siteA=${site.id}" class="btn-popup-action">${isAr ? 'مقارنة الموقع' : 'Compare Site'}</a>
+            <a href="compare.html?siteA=${site.id}" class="btn-popup-action">${isAr ? 'مقارنة معيارية' : 'Compare Site'}</a>
           </div>
         </div>
       `;
@@ -859,8 +868,20 @@ const Planetary3D = {
   },
 
   updateActiveTabs() {
+    const lang = window.I18n ? window.I18n.currentLang : 'en';
+    const isAr = lang === 'ar';
+
     document.querySelectorAll('.planet-tab-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-planet') === this.currentPlanet);
+      const p = btn.getAttribute('data-planet');
+      btn.classList.toggle('active', p === this.currentPlanet);
+      btn.setAttribute('aria-selected', p === this.currentPlanet ? 'true' : 'false');
+      
+      const titleEl = btn.querySelector('.planet-tab-name');
+      if (titleEl) {
+        if (p === 'earth') titleEl.textContent = isAr ? 'الأرض' : 'Earth';
+        else if (p === 'mars') titleEl.textContent = isAr ? 'المريخ' : 'Mars';
+        else if (p === 'moon') titleEl.textContent = isAr ? 'القمر' : 'Moon';
+      }
     });
   },
 
