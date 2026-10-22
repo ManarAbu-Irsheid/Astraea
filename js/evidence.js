@@ -820,12 +820,15 @@ const EvidenceController = {
   },
 
   /**
-   * 2A. Mission Suitability Heatmap Card: Best mission fit per site
-   * 1. Wider color scale: ≤40 → #1A2333, 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF with glow.
-   * 2. Numbers in cells: font-size 0.95rem, weight 700, var(--font-mono); white text on dark cells, #021226 on brightest.
-   * 3. Cells: min-height 40px, 4px gap, radius 6px. Best cell per row: 2px #FF8A00 border + soft orange glow + small ★.
-   * 4. Color legend bar under heatmap (40 → 100).
-   * 5. Hover cell: scales 1.06 and whole row and column get a faint highlight.
+   * 2A. Mission Suitability Dot Matrix: Best mission fit per site
+   * 1. No filled squares, no orange borders; circles in middle of transparent cells with row separators.
+   * 2. Circle size by score: 40 -> 8px, 100 -> 26px (linear: 8 + (score - 40) * 0.3).
+   *    Color: <60 -> #2A3A50, 60–80 -> #0072FF, >=80 -> #00C6FF with soft glow.
+   * 3. Score shown as small text next to circle (0.8rem, var(--text-secondary)), not inside.
+   * 4. Best mission per site: circle uses yellow->orange gradient with orange glow + small ★.
+   *    Only ONE best per row (if tied, the first).
+   * 5. Hover a row: faint row highlight. Hover circle: grows 1.15 with tooltip "site — mission: score".
+   * 6. Size legend: three circles (40, 70, 100) and '★ best fit'.
    */
   renderHeatmap() {
     const container = document.getElementById('heatmapContainer');
@@ -841,9 +844,9 @@ const EvidenceController = {
       { key: 'caves', en: 'Lava-tube shelter', ar: 'ملاجئ الأنابيب البركانية' }
     ];
 
-    const colHeadersHtml = profiles.map((p, colIdx) => {
+    const colHeadersHtml = profiles.map(p => {
       const label = isAr ? p.ar : p.en;
-      return `<th scope="col" class="col-mission-header" data-col="${colIdx}">${label}</th>`;
+      return `<th scope="col" class="col-mission-header">${label}</th>`;
     }).join('');
 
     const rowsHtml = this.cells.map(cell => {
@@ -851,7 +854,7 @@ const EvidenceController = {
       const isCand = Boolean(cell.is_candidate);
       const pillHtml = isCand ? `<span class="pill-new">${isAr ? 'جديد' : 'NEW'}</span>` : '';
 
-      // Find highest score in row
+      // 4. Find best mission per site. Only ONE best per row (if tied, the first via strict >)
       let maxScore = -Infinity;
       let bestProfileKey = null;
       profiles.forEach(p => {
@@ -864,34 +867,39 @@ const EvidenceController = {
         }
       });
 
-      const cellsHtml = profiles.map((p, colIdx) => {
+      const cellsHtml = profiles.map(p => {
         const score = (cell.profile_scores && typeof cell.profile_scores[p.key] === 'number') 
           ? cell.profile_scores[p.key] 
           : 0;
-        const isBest = p.key === bestProfileKey;
+        const isBest = (p.key === bestProfileKey);
         const pLabel = isAr ? p.ar : p.en;
 
-        // 1. Wider color scale: ≤40 → #1A2333, 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF
-        let tier = 'tier-40';
-        if (score >= 90) tier = 'tier-peak';
-        else if (score >= 85) tier = 'tier-90';
-        else if (score >= 75) tier = 'tier-85';
-        else if (score >= 60) tier = 'tier-75';
-        else if (score > 40) tier = 'tier-60';
+        // 2. Circle size by score: 40 -> 8px, 100 -> 26px (linear)
+        const dotSize = Math.round(Math.max(8, Math.min(26, 8 + (score - 40) * 0.3)));
 
-        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}${isBest ? (isAr ? ' (أفضل مهمة للموقع)' : ' (Best mission fit)') : ''}`;
+        // 2 & 4. Color: score < 60 -> #2A3A50, 60–80 -> #0072FF, >= 80 -> #00C6FF.
+        // Best mission uses yellow->orange gradient with orange glow.
+        let dotClass = 'dot-low';
+        if (isBest) {
+          dotClass = 'dot-best';
+        } else if (score >= 80) {
+          dotClass = 'dot-high';
+        } else if (score >= 60) {
+          dotClass = 'dot-mid';
+        }
+
+        const tooltip = `${name} — ${pLabel}: ${score.toFixed(1)}${isBest ? (isAr ? ' (★ أفضل توافق)' : ' (★ best fit)') : ''}`;
 
         return `
-          <td class="heatmap-cell ${isBest ? 'is-best' : ''} chart-anim-elem" 
-              data-tier="${tier}"
-              data-col="${colIdx}"
-              tabindex="0"
-              role="gridcell"
-              aria-label="${tooltip}"
-              title="${tooltip}">
-            <div class="heatmap-cell-val">
-              <span>${score.toFixed(1)}</span>
-              ${isBest ? '<span class="heatmap-star" aria-hidden="true">★</span>' : ''}
+          <td class="matrix-cell">
+            <div class="matrix-cell-wrap" title="${tooltip}">
+              <span class="matrix-dot ${dotClass}" 
+                    style="width: ${dotSize}px; height: ${dotSize}px;"
+                    tabindex="0"
+                    role="graphics-symbol"
+                    aria-label="${tooltip}"></span>
+              <span class="matrix-score mono">${score.toFixed(1)}</span>
+              ${isBest ? '<span class="matrix-star" aria-hidden="true">★</span>' : ''}
             </div>
           </td>
         `;
@@ -908,23 +916,29 @@ const EvidenceController = {
       `;
     }).join('');
 
-    // 4. Color legend bar under the heatmap (40 → 100)
+    // 6. Size legend: three circles (40, 70, 100) and '★ best fit'
     const legendHtml = `
-      <div class="heatmap-legend-bar" aria-label="Heatmap scale">
-        <div class="heatmap-legend-scale">
-          <span class="heatmap-legend-title">${isAr ? 'مقياس درجات التوافق:' : 'Suitability Scale:'}</span>
-          <div class="heatmap-legend-swatches">
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#1A2333"></span><span>≤40</span></div>
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#12355E"></span><span>40–60</span></div>
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#0050B3"></span><span>60–75</span></div>
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#0072FF"></span><span>75–85</span></div>
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#1AA3FF"></span><span>85–90</span></div>
-            <div class="heatmap-legend-item"><span class="legend-swatch-box" style="background:#00C6FF; box-shadow:0 0 8px rgba(0,198,255,0.6)"></span><span>≥90</span></div>
+      <div class="matrix-legend-bar" aria-label="Matrix scale legend">
+        <div class="matrix-legend-scale">
+          <span class="matrix-legend-title">${isAr ? 'حجم النقطة حسب الدرجة:' : 'Dot size by score:'}</span>
+          <div class="matrix-legend-items">
+            <div class="matrix-legend-item">
+              <span class="matrix-legend-dot dot-low" style="width: 8px; height: 8px;"></span>
+              <span class="matrix-legend-label">40</span>
+            </div>
+            <div class="matrix-legend-item">
+              <span class="matrix-legend-dot dot-mid" style="width: 17px; height: 17px;"></span>
+              <span class="matrix-legend-label">70</span>
+            </div>
+            <div class="matrix-legend-item">
+              <span class="matrix-legend-dot dot-high" style="width: 26px; height: 26px;"></span>
+              <span class="matrix-legend-label">100</span>
+            </div>
           </div>
         </div>
-        <div class="heatmap-legend-best-key">
-          <span class="best-key-star" aria-hidden="true">★</span>
-          <span>${isAr ? 'أفضل مهمة لكل موقع' : 'Best mission fit per site'}</span>
+        <div class="matrix-legend-best-key">
+          <span class="matrix-legend-dot dot-best" style="width: 20px; height: 20px;"></span>
+          <span class="matrix-best-text">${isAr ? '★ أفضل توافق' : '★ best fit'}</span>
         </div>
       </div>
     `;
@@ -943,47 +957,6 @@ const EvidenceController = {
       </table>
       ${legendHtml}
     `;
-
-    // 5. Hover a cell: it scales 1.06 and the whole row and column get a faint highlight
-    const table = container.querySelector('.heatmap-table');
-    if (table) {
-      const clearHighlights = () => {
-        table.querySelectorAll('.heatmap-row-highlight').forEach(r => r.classList.remove('heatmap-row-highlight'));
-        table.querySelectorAll('.heatmap-col-highlight').forEach(c => c.classList.remove('heatmap-col-highlight'));
-      };
-
-      table.addEventListener('mouseover', (e) => {
-        const cell = e.target.closest('.heatmap-cell');
-        if (!cell) return;
-        clearHighlights();
-        const colIdx = cell.getAttribute('data-col');
-        const row = cell.closest('tr');
-        if (row) row.classList.add('heatmap-row-highlight');
-        if (colIdx !== null) {
-          table.querySelectorAll(`.heatmap-cell[data-col="${colIdx}"], th.col-mission-header[data-col="${colIdx}"]`).forEach(el => {
-            el.classList.add('heatmap-col-highlight');
-          });
-        }
-      });
-
-      table.addEventListener('mouseleave', clearHighlights);
-
-      table.addEventListener('focusin', (e) => {
-        const cell = e.target.closest('.heatmap-cell');
-        if (!cell) return;
-        clearHighlights();
-        const colIdx = cell.getAttribute('data-col');
-        const row = cell.closest('tr');
-        if (row) row.classList.add('heatmap-row-highlight');
-        if (colIdx !== null) {
-          table.querySelectorAll(`.heatmap-cell[data-col="${colIdx}"], th.col-mission-header[data-col="${colIdx}"]`).forEach(el => {
-            el.classList.add('heatmap-col-highlight');
-          });
-        }
-      });
-
-      table.addEventListener('focusout', clearHighlights);
-    }
   },
 
   /**

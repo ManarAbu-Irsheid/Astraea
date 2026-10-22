@@ -1189,7 +1189,7 @@ html[dir="rtl"] .rank-bar-row.selected {
   min-height: 58px;
 }
 
-/* --- HEATMAP TABLE STYLES --- */
+/* --- MISSION FIT DOT MATRIX STYLES --- */
 .heatmap-table-wrapper {
   overflow-x: auto;
   border-radius: var(--radius-sm);
@@ -1199,25 +1199,22 @@ html[dir="rtl"] .rank-bar-row.selected {
 
 .heatmap-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 4px;
+  border-collapse: collapse;
+  border-spacing: 0;
   min-width: 620px;
   font-size: 0.85rem;
-  padding: 8px;
 }
 
 .heatmap-table th {
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 0.85rem;
   background: var(--bg-input);
   color: var(--text-muted);
   font-size: 0.76rem;
   text-transform: none;
   letter-spacing: 0.02em;
-  border-radius: 6px;
   text-align: center;
   font-weight: 700;
-  border: 1px solid var(--border-color);
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .heatmap-table th.col-site-header {
@@ -1225,144 +1222,124 @@ html[dir="rtl"] .rank-bar-row.selected {
   min-width: 200px;
 }
 
+.heatmap-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.18s ease;
+}
+
+.heatmap-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+/* 5. Hover a row: faint row highlight */
+.heatmap-table tbody tr:hover {
+  background: rgba(0, 198, 255, 0.04);
+}
+
+[data-theme="light"] .heatmap-table tbody tr:hover {
+  background: rgba(0, 114, 255, 0.04);
+}
+
 .heatmap-row-site {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  padding: 0.45rem 0.65rem;
+  padding: 0.75rem 0.85rem;
   font-weight: 700;
   color: var(--text-primary);
   font-size: 0.84rem;
-  transition: background 0.2s ease, color 0.2s ease;
+  text-align: start;
 }
 
-.heatmap-cell {
-  height: 40px;
-  min-height: 40px;
-  padding: 0.45rem 0.65rem;
+/* 1. Transparent cells, no filled squares, no orange cell borders */
+.matrix-cell {
+  padding: 0.65rem 0.5rem;
   text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  font-weight: 700;
-  border-radius: 6px;
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
-  outline: none;
+  background: transparent !important;
+  border: none !important;
 }
 
-/* 1. Wider color scale so differences are obvious:
-   ≤40 → #1A2333 (dark), 40–60 → #12355E, 60–75 → #0050B3, 75–85 → #0072FF, 85–90 → #1AA3FF, ≥90 → #00C6FF with glow */
-.heatmap-cell[data-tier="tier-40"] {
-  background: #1A2333;
-  color: #FFFFFF;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-.heatmap-cell[data-tier="tier-60"] {
-  background: #12355E;
-  color: #FFFFFF;
-  border: 1px solid rgba(0, 114, 255, 0.25);
-}
-.heatmap-cell[data-tier="tier-75"] {
-  background: #0050B3;
-  color: #FFFFFF;
-  border: 1px solid rgba(0, 114, 255, 0.4);
-}
-.heatmap-cell[data-tier="tier-85"] {
-  background: #0072FF;
-  color: #FFFFFF;
-  border: 1px solid rgba(0, 198, 255, 0.45);
-}
-.heatmap-cell[data-tier="tier-90"] {
-  background: #1AA3FF;
-  color: #FFFFFF;
-  border: 1px solid rgba(0, 198, 255, 0.6);
-  text-shadow: 0 0 6px rgba(0, 198, 255, 0.4);
-}
-.heatmap-cell[data-tier="tier-peak"] {
-  background: #00C6FF;
-  color: #021226 !important;
-  font-weight: 800;
-  border: 1px solid #00C6FF;
-  box-shadow: 0 0 12px rgba(0, 198, 255, 0.55);
-}
-
-/* Light mode adjustments while preserving the requested scale */
-[data-theme="light"] .heatmap-cell[data-tier="tier-40"] {
-  background: #202b3d;
-  color: #FFFFFF;
-}
-[data-theme="light"] .heatmap-cell[data-tier="tier-peak"] {
-  background: #00C6FF;
-  color: #021226 !important;
-  box-shadow: 0 0 12px rgba(0, 198, 255, 0.45);
-}
-
-/* 3. The best cell per row: 2px #FF8A00 border + soft orange glow + small ★ */
-.heatmap-cell.is-best {
-  border: 2px solid #FF8A00 !important;
-  box-shadow: 0 0 10px rgba(255, 138, 0, 0.55);
-}
-.heatmap-cell.is-best[data-tier="tier-peak"] {
-  box-shadow: 0 0 10px rgba(255, 138, 0, 0.55), 0 0 12px rgba(0, 198, 255, 0.55);
-}
-
-.heatmap-cell-val {
-  display: inline-flex;
+.matrix-cell-wrap {
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  line-height: 1;
+  gap: 7px;
+  min-height: 32px;
 }
 
-.heatmap-star {
+/* 2 & 5. Circle dot in middle of cell; grows 1.15 on hover */
+.matrix-dot {
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.matrix-dot:hover,
+.matrix-dot:focus-visible {
+  transform: scale(1.15);
+  z-index: 5;
+}
+
+/* Dot Color Tiers */
+.matrix-dot.dot-low {
+  background: #2A3A50;
+}
+[data-theme="light"] .matrix-dot.dot-low {
+  background: #4A5B73;
+}
+
+.matrix-dot.dot-mid {
+  background: #0072FF;
+}
+
+.matrix-dot.dot-high {
+  background: #00C6FF;
+  box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+}
+.matrix-dot.dot-high:hover,
+.matrix-dot.dot-high:focus-visible {
+  box-shadow: 0 0 14px rgba(0, 198, 255, 0.75);
+}
+
+/* 4. Best mission per site: yellow->orange gradient with orange glow + small star */
+.matrix-dot.dot-best {
+  background: linear-gradient(135deg, #FFE53B, #FF8A00) !important;
+  box-shadow: 0 0 10px rgba(255, 138, 0, 0.65) !important;
+}
+.matrix-dot.dot-best:hover,
+.matrix-dot.dot-best:focus-visible {
+  box-shadow: 0 0 15px rgba(255, 138, 0, 0.9) !important;
+}
+
+/* 3. Small text next to circle (0.8rem, var(--text-secondary)), not inside */
+.matrix-score {
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1;
+  user-select: none;
+}
+
+.matrix-star {
   font-size: 0.72rem;
   color: #FF8A00;
   line-height: 1;
+  margin-inline-start: 1px;
   text-shadow: 0 0 4px rgba(255, 138, 0, 0.85);
-}
-[data-tier="tier-peak"] .heatmap-star {
-  color: #9E4600;
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+  user-select: none;
 }
 
-/* 5. Hover a cell: it scales 1.06 and the whole row and column get a faint highlight */
-.heatmap-table tr.heatmap-row-highlight > th.heatmap-row-site {
-  background: rgba(0, 198, 255, 0.12);
-  color: #00C6FF;
-}
-.heatmap-table tr.heatmap-row-highlight > .heatmap-cell {
-  filter: brightness(1.15);
-}
-.heatmap-cell.heatmap-col-highlight {
-  filter: brightness(1.18);
-  outline: 1px dashed rgba(0, 198, 255, 0.45);
-}
-.heatmap-table th.col-mission-header.heatmap-col-highlight {
-  background: rgba(0, 198, 255, 0.16);
-  color: #00C6FF;
-  border-color: rgba(0, 198, 255, 0.45);
-}
-.heatmap-cell:hover,
-.heatmap-cell:focus-visible {
-  transform: scale(1.06);
-  z-index: 10;
-  filter: brightness(1.3) !important;
-  outline: none !important;
-}
-.heatmap-cell.is-best:hover,
-.heatmap-cell.is-best:focus-visible {
-  box-shadow: 0 0 16px rgba(255, 138, 0, 0.85), 0 0 0 1px #FF8A00 !important;
-}
-
-/* 4. Color Legend Bar under the Heatmap (40 → 100) */
-.heatmap-legend-bar {
+/* 6. Size legend: three circles (40, 70, 100) and '★ best fit' */
+.matrix-legend-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.85rem;
+  gap: 1rem;
   padding: 0.75rem 1rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -1372,52 +1349,58 @@ html[dir="rtl"] .rank-bar-row.selected {
   color: var(--text-secondary);
 }
 
-.heatmap-legend-scale {
+.matrix-legend-scale {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.85rem;
   flex-wrap: wrap;
 }
 
-.heatmap-legend-title {
+.matrix-legend-title {
   font-weight: 700;
   color: var(--text-primary);
   font-size: 0.78rem;
 }
 
-.heatmap-legend-swatches {
+.matrix-legend-items {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.heatmap-legend-item {
+.matrix-legend-item {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.45rem;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
 }
 
-.legend-swatch-box {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
+.matrix-legend-dot {
+  border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.heatmap-legend-best-key {
+.matrix-legend-best-key {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.76rem;
-  color: var(--text-primary);
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
-.heatmap-legend-best-key .best-key-star {
+.matrix-legend-best-key .matrix-legend-dot.dot-best {
+  background: linear-gradient(135deg, #FFE53B, #FF8A00);
+  box-shadow: 0 0 10px rgba(255, 138, 0, 0.65);
+}
+
+.matrix-best-text {
+  color: #FF8A00;
+  font-weight: 700;
+}
   color: #FF8A00;
   font-size: 0.85rem;
   text-shadow: 0 0 5px rgba(255, 138, 0, 0.8);
