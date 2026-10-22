@@ -960,6 +960,36 @@
   white-space: nowrap;
 }
 
+.closest-earth-list {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.closest-earth-rank {
+  display: inline-block;
+  min-width: 1.6em;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.closest-earth-more {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.35rem;
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.closest-earth-more:hover {
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
 .closest-earth-score {
   font-family: var(--font-mono);
   font-weight: 700;

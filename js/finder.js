@@ -41,6 +41,7 @@ const FINDER_TEXT = {
     bothVs: (m, ms, n, ns) => `Mars: ${m} ${ms}% · Moon: ${n} ${ns}%`,
     bothLine: (m, ms, n, ns, low) => `Similar to both: Mars ${m} ${ms}% and Moon ${n} ${ns}% → score = the lower one (${low}%)`,
     bothClosest: 'Top sites similar to both',
+    showMore: (n) => `Show all ${n} sites ▾`, showLess: 'Show top 10 ▴',
     closerTo: (b, bt, bs, o, ot, os) => `Closer to ${b === 'moon' ? 'the Moon' : 'Mars'} (${bt} ${bs}%) than to ${o === 'moon' ? 'the Moon' : 'Mars'} (${ot} ${os}%)`,
     sites: (n) => n === 1 ? '1 site' : `${n} sites`,
     similarCount: (n, total) => `${n} of ${total} sites ≥ 90% similar`,
@@ -94,6 +95,7 @@ const FINDER_TEXT = {
     bothVs: (m, ms, n, ns) => `المريخ: ${m} ${ms}% · القمر: ${n} ${ns}%`,
     bothLine: (m, ms, n, ns, low) => `يشبه الاثنين: المريخ ${m} ${ms}% والقمر ${n} ${ns}% ← النسبة = الأقل منهما (${low}%)`,
     bothClosest: 'أعلى المواقع شبهاً بالاثنين',
+    showMore: (n) => `عرض كل المواقع (${n}) ▾`, showLess: 'عرض أعلى 10 ▴',
     closerTo: (b, bt, bs, o, ot, os) => `أقرب إلى ${b === 'moon' ? 'القمر' : 'المريخ'} (${bt} ${bs}%) منه إلى ${o === 'moon' ? 'القمر' : 'المريخ'} (${ot} ${os}%)`,
     sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
     similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 90% أو أكثر`,
@@ -343,11 +345,19 @@ const SiteFinder = {
     if (titleEl) titleEl.textContent = this.body === 'both' ? t.bothClosest : t.closestTitle(ref);
     const list = document.getElementById('closestEarthList');
     if (!list) return;
-    const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 5);
-    list.innerHTML = top.map(({ site, score }) => `
+    // Top 10 by default; "Show all" expands to the full ranking
+    const ranked = [...scored].sort((a, b) => b.score - a.score);
+    const top = this.showAllClosest ? ranked : ranked.slice(0, 10);
+    const moreBtn = document.getElementById('closestEarthMore');
+    if (moreBtn) {
+      moreBtn.style.display = ranked.length > 10 ? '' : 'none';
+      moreBtn.textContent = this.showAllClosest ? t.showLess : t.showMore(ranked.length);
+      moreBtn.onclick = () => { this.showAllClosest = !this.showAllClosest; this.renderClosestList(scored, ref); };
+    }
+    list.innerHTML = top.map(({ site, score }, i) => `
       <li>
         <button class="closest-earth-item ${this.selectedSite && this.selectedSite.id === site.id ? 'active' : ''}" data-site="${site.id}">
-          <span class="closest-earth-name">${site.is_official ? '●' : '★'} ${site.name}</span>
+          <span class="closest-earth-name"><span class="closest-earth-rank">${i + 1}.</span> ${site.is_official ? '●' : '★'} ${site.name}</span>
           <span class="closest-earth-score">${score.toFixed(1)}%</span>
         </button>
       </li>`).join('');
