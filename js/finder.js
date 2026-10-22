@@ -35,6 +35,9 @@ const FINDER_TEXT = {
     landingHint: 'Landing Site: steep sites (> 12°) are hidden — unsafe for landing.',
     banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'moon' ? 'the Moon' : 'Mars'}`,
     sites: (n) => n === 1 ? '1 site' : `${n} sites`,
+    similarCount: (n, total) => `${n} of ${total} sites ≥ 80% similar`,
+    closestTitle: (ref) => ref ? `Closest on Earth to ${ref}` : 'Top matches on Earth',
+    bestLine: (name, score) => `Best: ${name} ${score}%`,
     filters: 'Filters', siteCard: 'Site Card',
     satellite: 'Satellite', topo: 'Topography',
     heatLegend: 'Glow = similarity', low: 'Low', high: 'High',
@@ -77,6 +80,9 @@ const FINDER_TEXT = {
     landingHint: 'موقع الهبوط: المواقع شديدة الانحدار (أكثر من 12°) مخفية لأنها غير آمنة للهبوط.',
     banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'moon' ? 'القمر' : 'المريخ'}`,
     sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
+    similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 80% أو أكثر`,
+    closestTitle: (ref) => ref ? `أقرب الأماكن على الأرض إلى ${ref}` : 'أعلى الأماكن تشابهاً على الأرض',
+    bestLine: (name, score) => `الأعلى: ${name} ${score}%`,
     filters: 'الفلاتر', siteCard: 'بطاقة الموقع',
     satellite: 'قمر صناعي', topo: 'تضاريس',
     heatLegend: 'التوهج = نسبة التشابه', low: 'أقل', high: 'أعلى',
@@ -264,7 +270,8 @@ const SiteFinder = {
     });
   },
 
-  updateTargetBanner(count) {
+  // Banner on top of the map: what is shown + how many are really similar (≥ 80%) + the best one
+  updateTargetBanner(scored) {
     const t = this.t();
     const ref = this.referenceId === 'best' ? null : (this.getTargetList().find(x => x.id === this.referenceId) || {}).name;
     const banner = document.getElementById('mapTargetBanner');
@@ -273,13 +280,46 @@ const SiteFinder = {
     if (icon) icon.textContent = this.body === 'moon' ? '🌕' : '🔴';
     const title = document.getElementById('mapTargetTitle');
     if (title) title.textContent = t.banner(this.body, ref);
+
+    this.renderClosestList(scored, ref);
+
+    const similar = scored.filter(x => x.score >= 80).length;
+    const best = scored.reduce((a, x) => (!a || x.score > a.score ? x : a), null);
+    const parts = [t.similarCount(similar, scored.length)];
+    if (best) parts.push(t.bestLine(best.site.name, best.score.toFixed(1)));
     const countEl = document.getElementById('mapTargetCount');
-    if (countEl) countEl.textContent = t.sites(count);
+    if (countEl) countEl.textContent = parts.join(' · ');
+  },
+
+  // Left panel: the 5 Earth sites closest to the reference (click = open its card)
+  renderClosestList(scored, ref) {
+    const t = this.t();
+    const titleEl = document.getElementById('closestEarthTitle');
+    if (titleEl) titleEl.textContent = t.closestTitle(ref);
+    const list = document.getElementById('closestEarthList');
+    if (!list) return;
+    const top = [...scored].sort((a, b) => b.score - a.score).slice(0, 5);
+    list.innerHTML = top.map(({ site, score }) => `
+      <li>
+        <button class="closest-earth-item ${this.selectedSite && this.selectedSite.id === site.id ? 'active' : ''}" data-site="${site.id}">
+          <span class="closest-earth-name">${site.is_official ? '●' : '★'} ${site.name}</span>
+          <span class="closest-earth-score">${score.toFixed(1)}%</span>
+        </button>
+      </li>`).join('');
+    list.querySelectorAll('.closest-earth-item').forEach(btn => {
+      btn.onclick = () => {
+        const site = this.sites.find(x => x.id === btn.getAttribute('data-site'));
+        if (site) {
+          this.selectSite(site);
+          list.querySelectorAll('.closest-earth-item').forEach(b => b.classList.toggle('active', b === btn));
+        }
+      };
+    });
   },
 
   renderMarkers() {
     const filtered = this.getFilteredSites();
-    this.updateTargetBanner(filtered.length);
+    this.updateTargetBanner(filtered.map(site => ({ site, score: this.scoreSite(site).score })));
     if (!this.map || !this.markersLayer) return;
     this.markersLayer.clearLayers();
     if (this.heatLayer) this.heatLayer.clearLayers();

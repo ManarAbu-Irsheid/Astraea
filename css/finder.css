@@ -684,7 +684,7 @@
   box-shadow: var(--shadow-md);
   pointer-events: auto;
   flex-shrink: 0;
-  white-space: nowrap;
+  max-width: 100%;
 }
 
 /* Let the map top bar wrap to a 2nd line instead of overflowing */
@@ -903,6 +903,66 @@
   font-size: 0.78rem;
   color: var(--text-primary);
   word-break: break-word;
+}
+
+/* Closest Earth sites to the reference (left panel) */
+.closest-earth-box {
+  margin-top: 0.7rem;
+  padding: 0.65rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+}
+
+.closest-earth-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.closest-earth-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.closest-earth-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.76rem;
+  text-align: start;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.closest-earth-item:hover,
+.closest-earth-item.active {
+  border-color: var(--accent-blue);
+}
+
+.closest-earth-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.closest-earth-score {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
 }
 
 /* Mobile-only sheet elements: hidden on desktop */
