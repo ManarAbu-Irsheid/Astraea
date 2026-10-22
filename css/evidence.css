@@ -1386,6 +1386,8 @@ html[dir="rtl"] .rank-bar-row.selected {
   font-weight: 600;
   fill: var(--text-secondary);
   text-anchor: middle;
+  direction: ltr;
+  unicode-bidi: isolate;
 }
 
 /* 5. Floating Tooltip for Histogram Listing Site Names Colored by Status */
