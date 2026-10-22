@@ -710,7 +710,7 @@ const Planetary3D = {
           <div class="popup-site-coords">LAT: ${site.lat.toFixed(2)}° • LON: ${site.lon.toFixed(2)}°</div>
           <div class="popup-site-desc">${target}</div>
           <div class="popup-actions">
-            <a href="finder.html" class="btn-popup-action primary">${isAr ? 'عرض في مستكشف المواقع' : 'View in Site Finder'}</a>
+            <a href="${String(site.id).startsWith('target-') ? `finder.html?body=${String(site.id).split('-')[1]}&ref=${encodeURIComponent(site.name.split(' (')[0].split(' Crater')[0])}` : 'finder.html'}" class="btn-popup-action primary">${isAr ? 'عرض في مستكشف المواقع' : 'View in Site Finder'}</a>
             <a href="compare.html?siteA=${site.id}" class="btn-popup-action">${isAr ? 'مقارنة الموقع' : 'Compare Site'}</a>
           </div>
         </div>

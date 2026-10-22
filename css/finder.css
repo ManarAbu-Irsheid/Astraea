@@ -268,7 +268,9 @@
    CREATIVE HIGH-TECH SONAR RADAR MARKERS & FLOATING SCORE PILLS
    ========================================================================== */
 .custom-leaflet-marker {
-  position: relative;
+  /* must stay absolute (Leaflet positions every marker itself) —
+     "relative" made each marker drift further from its real location */
+  position: absolute;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -963,6 +965,22 @@
   font-weight: 700;
   color: var(--accent-cyan);
   flex-shrink: 0;
+}
+
+/* Selected site: red "dropped pin" above the marker */
+.selected-site-pin {
+  background: transparent;
+  border: none;
+}
+
+.selected-pin-svg {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.6));
+  animation: pinDrop 0.35s ease-out;
+}
+
+@keyframes pinDrop {
+  from { transform: translateY(-18px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* Mobile-only sheet elements: hidden on desktop */

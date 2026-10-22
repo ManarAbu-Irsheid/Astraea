@@ -53,11 +53,12 @@ for r in R:
     else:
         body = r['type'].lower()
         key = (r['type'], r['location_name'])
-        if key in desc:
-            base['description'] = desc[key]
-            base['order'] = desc[r['type'] + '_order'].index(r['location_name'])
-            targets[body].append(base)
-for b in targets: targets[b].sort(key=lambda t: t['order'])
+        # All Moon / Mars sites are used. The 6 per body from the algorithm sheets are "featured".
+        base['featured'] = key in desc
+        base['description'] = desc[key] if key in desc else f"{r['analog_environment_type']} ({r['terrain_type']})"
+        base['order'] = desc[r['type'] + '_order'].index(r['location_name']) if key in desc else 100
+        targets[body].append(base)
+for b in targets: targets[b].sort(key=lambda t: (t['order'], t['name']))
 
 data = {'earth': earth, 'rejected': rejected, 'targets': targets,
         'meta': {'source': 'final data.xlsx', 'ndvi_gate': 0.20,
@@ -66,9 +67,9 @@ with open(out, 'w', encoding='utf-8') as fh:
     fh.write('/* TerraTwin real dataset — generated from "final data.xlsx" (All_Sites sheet).\n'
              ' * earth   : Earth analog sites that passed the NDVI gate (<= 0.20), negative controls removed\n'
              ' * rejected: sites removed by the NDVI gate (kept for reference)\n'
-             ' * targets : the 6 curated Mars and 6 Moon reference sites\n'
+             ' * targets : all Mars (31) and Moon (30) sites; featured=true for the 6+6 used in the algorithm sheets\n'
              ' * f       : normalised features used by TASI (slope/roughness percentile, albedo_norm, temp_swing_norm)\n */\n')
     fh.write('window.TERRATWIN_REAL = ' + json.dumps(data, ensure_ascii=False, indent=1) + ';\n')
-print(len(earth), 'earth', len(rejected), 'rejected', {k: [t['name'] for t in v] for k, v in targets.items()})
+print(len(earth), 'earth', len(rejected), 'rejected', {k: (len(v), sum(t['featured'] for t in v)) for k, v in targets.items()})
 print(sum(e['is_official'] for e in earth), 'official')
 from collections import Counter; print(Counter(e['terrain'] for e in earth)); print([x['name'] for x in rejected])

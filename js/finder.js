@@ -1,9 +1,9 @@
 /**
  * TerraTwin - Page 2: Site Finder Controller
  *
- * Data: data/terratwin-real.js  (generated from "final data.xlsx")
+ * Data: data/terratwin-real.js  (generated from "final data.xlsx" by tools/build-finder-data.py)
  *   - 44 Earth analog sites that passed the NDVI gate (negative controls removed)
- *   - 6 Mars + 6 Moon reference sites
+ *   - all 31 Mars + 30 Moon sites (6+6 "featured" = the ones in the algorithm sheets)
  * Score: TASI (the team's method) — see MissionProfileManager.calculateTASI in js/profile.js
  *
  * Layout: criteria (left) · Leaflet map with heat glow (center) · site card (right)
@@ -25,17 +25,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 const FINDER_TEXT = {
   en: {
     targetTitle: 'Find Earth sites similar to',
-    moon: '🌕 Moon', mars: '🔴 Mars',
+    moon: '🌕 Moon', mars: '🔴 Mars', both: 'Both',
     refLabel: 'Reference site',
-    refBest: (body) => `Best match among all 6 ${body === 'moon' ? 'Moon' : 'Mars'} sites`,
-    refBestDesc: 'Each Earth site is scored against its closest reference site.',
+    refBest: (body, n) => body === 'both' ? `Best match among all ${n} Moon & Mars sites` : `Best match among all ${n} ${body === 'moon' ? 'Moon' : 'Mars'} sites`,
+    groupMars: 'Mars', groupMoon: 'Moon',
+    groupFeatured: (b) => `${b} · famous landing sites`,
+    groupOther: (b) => `${b} · all other sites`,
+    refBestDesc: 'Each Earth site is compared with every site on the list and takes its closest match.',
     activeWeights: 'Active Mission Weights',
     editHint: 'Change the mission or weights from the profile menu at the top ↑',
     moonNoThermal: 'On the Moon, temperature is not compared (vacuum).',
     landingHint: 'Landing Site: steep sites (> 12°) are hidden — unsafe for landing.',
-    banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'moon' ? 'the Moon' : 'Mars'}`,
+    banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'both' ? 'the Moon & Mars' : body === 'moon' ? 'the Moon' : 'Mars'}`,
+    closerTo: (b, bt, bs, o, ot, os) => `Closer to ${b === 'moon' ? 'the Moon' : 'Mars'} (${bt} ${bs}%) than to ${o === 'moon' ? 'the Moon' : 'Mars'} (${ot} ${os}%)`,
     sites: (n) => n === 1 ? '1 site' : `${n} sites`,
-    similarCount: (n, total) => `${n} of ${total} sites ≥ 80% similar`,
+    similarCount: (n, total) => `${n} of ${total} sites ≥ 90% similar`,
     closestTitle: (ref) => ref ? `Closest on Earth to ${ref}` : 'Top matches on Earth',
     bestLine: (name, score) => `Best: ${name} ${score}%`,
     filters: 'Filters', siteCard: 'Site Card',
@@ -70,17 +74,21 @@ const FINDER_TEXT = {
   },
   ar: {
     targetTitle: 'ابحث عن أماكن على الأرض تشبه',
-    moon: '🌕 القمر', mars: '🔴 المريخ',
+    moon: '🌕 القمر', mars: '🔴 المريخ', both: 'الاثنين',
     refLabel: 'المكان المرجعي',
-    refBest: (body) => `الأقرب من بين ${body === 'moon' ? 'مواقع القمر' : 'مواقع المريخ'} الستة`,
-    refBestDesc: 'كل موقع على الأرض يُقارن بأقرب مكان مرجعي له.',
+    refBest: (body, n) => body === 'both' ? `الأقرب من بين ${n} موقعاً على القمر والمريخ` : `الأقرب من بين ${n} موقعاً على ${body === 'moon' ? 'القمر' : 'المريخ'}`,
+    groupMars: 'المريخ', groupMoon: 'القمر',
+    groupFeatured: (b) => `${b} · أماكن هبوط مشهورة`,
+    groupOther: (b) => `${b} · باقي المواقع`,
+    refBestDesc: 'كل موقع على الأرض يُقارن بكل المواقع في القائمة ويأخذ الأقرب له.',
     activeWeights: 'أوزان المهمة الحالية',
     editHint: 'غيّر نوع المهمة أو الأوزان من قائمة المهمة في الأعلى ↑',
     moonNoThermal: 'على القمر لا تُقارن الحرارة (لا يوجد غلاف جوي).',
     landingHint: 'موقع الهبوط: المواقع شديدة الانحدار (أكثر من 12°) مخفية لأنها غير آمنة للهبوط.',
-    banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'moon' ? 'القمر' : 'المريخ'}`,
+    banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'both' ? 'القمر والمريخ' : body === 'moon' ? 'القمر' : 'المريخ'}`,
+    closerTo: (b, bt, bs, o, ot, os) => `أقرب إلى ${b === 'moon' ? 'القمر' : 'المريخ'} (${bt} ${bs}%) منه إلى ${o === 'moon' ? 'القمر' : 'المريخ'} (${ot} ${os}%)`,
     sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
-    similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 80% أو أكثر`,
+    similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 90% أو أكثر`,
     closestTitle: (ref) => ref ? `أقرب الأماكن على الأرض إلى ${ref}` : 'أعلى الأماكن تشابهاً على الأرض',
     bestLine: (name, score) => `الأعلى: ${name} ${score}%`,
     filters: 'الفلاتر', siteCard: 'بطاقة الموقع',
@@ -136,7 +144,19 @@ const SiteFinder = {
     this.initMap();
     this.bindFilters();
     this.bindMobileSheets();
-    this.applyBody(this.body);
+
+    // Link from the Home page: finder.html?ref=Jezero  (or ?ref=Shackleton, ?body=moon ...)
+    const params = new URLSearchParams(window.location.search);
+    const refParam = (params.get('ref') || '').toLowerCase();
+    const fromLink = refParam && ['mars', 'moon']
+      .map(b => ({ b, t: (this.targets[b] || []).find(x => refParam.includes(x.name.toLowerCase()) || x.name.toLowerCase().includes(refParam)) }))
+      .find(x => x.t);
+    if (fromLink) {
+      this.applyBody(fromLink.b, fromLink.t.id);
+    } else {
+      const bodyParam = params.get('body');
+      this.applyBody(['mars', 'moon', 'both'].includes(bodyParam) ? bodyParam : this.body);
+    }
 
     // Select the best-matching site by default (card stays closed on mobile)
     const ranked = this.getFilteredSites().map(s => ({ s, r: this.scoreSite(s) })).sort((a, b) => b.r.score - a.r.score);
@@ -159,7 +179,14 @@ const SiteFinder = {
   },
 
   /* ---------- Scoring ---------- */
-  getTargetList() { return this.targets[this.body] || []; },
+  getTargetList() {
+    if (this.body === 'both') return [...(this.targets.mars || []), ...(this.targets.moon || [])];
+    return this.targets[this.body] || [];
+  },
+
+  // 'mars-1' -> 'mars', 'moon-27' -> 'moon'
+  bodyOf(target) { return String(target.id).split('-')[0]; },
+  bodyIcon(body) { return body === 'moon' ? '🌕' : '🔴'; },
 
   // Score one Earth site against the reference (or its best match among the 6 targets)
   scoreSite(site, weights) {
@@ -168,7 +195,7 @@ const SiteFinder = {
     const pool = this.referenceId === 'best' ? list : list.filter(t => t.id === this.referenceId);
     let best = null;
     pool.forEach(t => {
-      const r = mpm.calculateTASI(site.f, t.f, this.body, weights);
+      const r = mpm.calculateTASI(site.f, t.f, this.bodyOf(t), weights);
       if (!best || r.score > best.score) best = { ...r, target: t };
     });
     return best;
@@ -270,20 +297,20 @@ const SiteFinder = {
     });
   },
 
-  // Banner on top of the map: what is shown + how many are really similar (≥ 80%) + the best one
+  // Banner on top of the map: what is shown + how many are really similar (≥ 90%) + the best one
   updateTargetBanner(scored) {
     const t = this.t();
     const ref = this.referenceId === 'best' ? null : (this.getTargetList().find(x => x.id === this.referenceId) || {}).name;
     const banner = document.getElementById('mapTargetBanner');
     if (banner) banner.setAttribute('data-body', this.body);
     const icon = document.getElementById('mapTargetIcon');
-    if (icon) icon.textContent = this.body === 'moon' ? '🌕' : '🔴';
+    if (icon) icon.textContent = this.body === 'both' ? '🌍' : this.bodyIcon(this.body);
     const title = document.getElementById('mapTargetTitle');
     if (title) title.textContent = t.banner(this.body, ref);
 
     this.renderClosestList(scored, ref);
 
-    const similar = scored.filter(x => x.score >= 80).length;
+    const similar = scored.filter(x => x.score >= 90).length;
     const best = scored.reduce((a, x) => (!a || x.score > a.score ? x : a), null);
     const parts = [t.similarCount(similar, scored.length)];
     if (best) parts.push(t.bestLine(best.site.name, best.score.toFixed(1)));
@@ -357,13 +384,30 @@ const SiteFinder = {
             <span style="color:${isCandidate ? '#ffd700' : '#00e5a3'}; font-weight:800;">${isCandidate ? t.candidate : t.known}</span>
             <span style="font-family:var(--font-mono); font-weight:700; color:var(--accent-cyan);">${scoreFormatted}</span>
           </div>
-          <div style="color:var(--text-secondary); font-size:0.7rem;">${t.vs(result.target.name, this.body)}</div>
+          <div style="color:var(--text-secondary); font-size:0.7rem;">${t.vs(result.target.name, this.bodyOf(result.target))}</div>
         </div>
       `, { className: 'scientific-tooltip', offset: [0, -18], direction: 'top' });
 
       marker.on('click', () => this.selectSite(site));
       marker.addTo(this.markersLayer);
     });
+  },
+
+  // A classic map pin (like a "dropped location") above the selected site
+  showSelectedPin(site) {
+    if (!this.map || typeof L === 'undefined') return;
+    if (this.selectedPin) this.map.removeLayer(this.selectedPin);
+    const pinSvg = `
+      <svg class="selected-pin-svg" viewBox="0 0 32 44" width="32" height="44" aria-hidden="true">
+        <path d="M16 0C7.2 0 0 7.1 0 15.9 0 27.8 16 44 16 44s16-16.2 16-28.1C32 7.1 24.8 0 16 0z" fill="#ff3b30" stroke="#ffffff" stroke-width="2"/>
+        <circle cx="16" cy="16" r="6" fill="#ffffff"/>
+      </svg>`;
+    this.selectedPin = L.marker([site.lat, site.lon], {
+      icon: L.divIcon({ className: 'selected-site-pin', html: pinSvg, iconSize: [32, 44], iconAnchor: [16, 44] }),
+      zIndexOffset: 10000,
+      interactive: false,
+      keyboard: false
+    }).addTo(this.map);
   },
 
   /* ---------- Heat map (similarity glow) ---------- */
@@ -401,14 +445,19 @@ const SiteFinder = {
   },
 
   /* ---------- Left panel ---------- */
-  applyBody(body) {
+  // Default reference when the page opens or the body changes:
+  // Mars -> Jezero (Perseverance), Moon -> Shackleton (Artemis), Both -> best match overall
+  DEFAULT_REFERENCE: { mars: 'Jezero', moon: 'Shackleton' },
+
+  applyBody(body, referenceId) {
     this.body = body;
-    this.referenceId = 'best';
+    const def = (this.targets[body] || []).find(x => x.name === this.DEFAULT_REFERENCE[body]);
+    this.referenceId = referenceId || (def ? def.id : 'best');
     document.querySelectorAll('.body-toggle-btn').forEach(b => {
       b.classList.toggle('active', b.getAttribute('data-body') === body);
     });
     // Header profile menu: hide profiles that don't apply (e.g. Habitat & Thermal on the Moon)
-    if (this.mpm()) this.mpm().setAvailableForBody(body);
+    if (this.mpm()) this.mpm().setAvailableForBody(body === 'both' ? null : body);
     this.refreshAll();
   },
 
@@ -418,6 +467,7 @@ const SiteFinder = {
     setText('targetSelectTitle', t.targetTitle);
     setText('bodyBtnMoon', t.moon);
     setText('bodyBtnMars', t.mars);
+    setText('bodyBtnBoth', t.both);
     setText('referenceSiteLabel', t.refLabel);
     setText('activeWeightsTitle', t.activeWeights);
     setText('mobileFiltersBtnLabel', t.filters);
@@ -442,8 +492,16 @@ const SiteFinder = {
     const select = document.getElementById('referenceSiteSelect');
     if (!select) return;
     const list = this.getTargetList();
-    select.innerHTML = `<option value="best">${t.refBest(this.body)}</option>` +
-      list.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+    const opts = (arr) => arr.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+    // Famous landing sites first, then every other site of that body
+    const groups = (b) => {
+      const label = `${this.bodyIcon(b)} ${b === 'moon' ? t.groupMoon : t.groupMars}`;
+      const arr = this.targets[b] || [];
+      return `<optgroup label="${t.groupFeatured(label)}">${opts(arr.filter(x => x.featured))}</optgroup>` +
+             `<optgroup label="${t.groupOther(label)}">${opts(arr.filter(x => !x.featured))}</optgroup>`;
+    };
+    const bodies = this.body === 'both' ? ['mars', 'moon'] : [this.body];
+    select.innerHTML = `<option value="best">${t.refBest(this.body, list.length)}</option>` + bodies.map(groups).join('');
     select.value = this.referenceId;
 
     const desc = document.getElementById('referenceSiteDesc');
@@ -475,7 +533,7 @@ const SiteFinder = {
     const hint = document.getElementById('editWeightsHint');
     if (hint) {
       const extra = [];
-      if (this.body === 'moon') extra.push(t.moonNoThermal);
+      if (this.body !== 'mars') extra.push(t.moonNoThermal);
       if (mpm.activeProfile === 'landing') extra.push(t.landingHint);
       hint.innerHTML = [t.editHint, ...extra].map(x => `<span>${x}</span>`).join('<br>');
     }
@@ -485,6 +543,7 @@ const SiteFinder = {
   selectSite(site, openSheet = true) {
     this.selectedSite = site;
     this.renderSiteDetail(site);
+    this.showSelectedPin(site);
 
     if (this.map) this.map.panTo([site.lat, site.lon], { animate: true, duration: 0.8 });
     if (window.UserSystem) window.UserSystem.discoverSite(site.id, site.name);
@@ -525,13 +584,14 @@ const SiteFinder = {
 
     // Score + uncertainty + confidence
     setText('detailScoreVal', `${result.score.toFixed(1)}%`);
-    setText('detailUncertaintyVal', `${t.vs(target.name, this.body)} · ${t.uncertainty(unc)}`);
+    const tBody = this.bodyOf(target);
+    setText('detailUncertaintyVal', `${t.vs(target.name, tBody)} · ${t.uncertainty(unc)}`);
     const confKey = unc <= 2 ? 'high' : unc <= 4 ? 'medium' : 'low';
     setText('detailConfidenceVal', t.conf[confKey]);
 
     // Most similar: top 3 of the 6 reference sites (with current weights)
     const ranked = this.getTargetList()
-      .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, this.body).score }))
+      .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, this.bodyOf(x)).score }))
       .sort((a, b) => b.s - a.s)
       .slice(0, 3);
     const mostEl = document.getElementById('mostSimilarList');
@@ -539,7 +599,7 @@ const SiteFinder = {
       mostEl.innerHTML = ranked.map(({ x, s }) => `
         <li>
           <button class="most-similar-item ${x.id === target.id ? 'active' : ''}" data-target="${x.id}" title="${x.description}">
-            <span class="most-similar-name">${this.body === 'moon' ? '🌕' : '🔴'} ${x.name}</span>
+            <span class="most-similar-name">${this.bodyIcon(this.bodyOf(x))} ${x.name}</span>
             <span class="most-similar-score">${s.toFixed(1)}%</span>
           </button>
         </li>`).join('');
@@ -574,8 +634,18 @@ const SiteFinder = {
     }
     matches.sort((a, b) => b.sim - a.sim);
     diffs.sort((a, b) => a.sim - b.sim);
-    if (this.body === 'moon') diffs.push({ text: t.moonThermal(this.fmt.thermal(site), this.fmt.thermal(target)) });
-    diffs.push({ text: t.bodyLimit[this.body] });
+    if (tBody === 'moon') diffs.push({ text: t.moonThermal(this.fmt.thermal(site), this.fmt.thermal(target)) });
+    diffs.push({ text: t.bodyLimit[tBody] });
+
+    // "Both": say which world this Earth site resembles more
+    if (this.body === 'both') {
+      const bestOf = (b) => this.targets[b]
+        .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, b).score }))
+        .sort((a, c) => c.s - a.s)[0];
+      const m = bestOf('mars'), n = bestOf('moon');
+      const [w, l, wb, lb] = m.s >= n.s ? [m, n, 'mars', 'moon'] : [n, m, 'moon', 'mars'];
+      matches.unshift({ sim: 999, text: `<strong>${t.closerTo(wb, w.x.name, w.s.toFixed(1), lb, l.x.name, l.s.toFixed(1))}</strong>` });
+    }
 
     const whyMatchesList = document.getElementById('detailWhyMatchesList');
     if (whyMatchesList) whyMatchesList.innerHTML = matches.map(m => `<li>${m.text}</li>`).join('') || '<li>—</li>';
