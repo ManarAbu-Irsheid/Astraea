@@ -46,6 +46,9 @@ const EvidenceController = {
         tr.en.evidence.chip_moon = tr.en.evidence.chip_moon || 'Moon';
         tr.en.evidence.chip_mars = tr.en.evidence.chip_mars || 'Mars';
         tr.en.evidence.chip_earth = tr.en.evidence.chip_earth || 'Earth';
+        tr.en.evidence.btn_show_formula = tr.en.evidence.btn_show_formula || 'Show formula';
+        tr.en.evidence.btn_hide_formula = tr.en.evidence.btn_hide_formula || 'Hide formula';
+        tr.en.evidence.sensitivity_explanation = tr.en.evidence.sensitivity_explanation || "We changed how much each attribute counts and re-ranked all sites. They barely moved, so the results don't depend on our choice of weights.";
       }
       if (tr.ar) {
         tr.ar.evidence = tr.ar.evidence || {};
@@ -55,6 +58,9 @@ const EvidenceController = {
         tr.ar.evidence.chip_moon = tr.ar.evidence.chip_moon || 'القمر';
         tr.ar.evidence.chip_mars = tr.ar.evidence.chip_mars || 'المريخ';
         tr.ar.evidence.chip_earth = tr.ar.evidence.chip_earth || 'الأرض';
+        tr.ar.evidence.btn_show_formula = tr.ar.evidence.btn_show_formula || 'عرض المعادلة';
+        tr.ar.evidence.btn_hide_formula = tr.ar.evidence.btn_hide_formula || 'إخفاء المعادلة';
+        tr.ar.evidence.sensitivity_explanation = tr.ar.evidence.sensitivity_explanation || "غيّرنا أهمية كل خاصية وأعدنا ترتيب المواقع، فبالكاد تحركت، أي أن النتائج لا تعتمد على اختيارنا للأوزان.";
       }
     }
 
@@ -99,6 +105,19 @@ const EvidenceController = {
           : (isAr ? 'كتم الصوت' : 'Mute video');
         muteBtn.setAttribute('aria-label', label);
         muteBtn.setAttribute('title', label);
+      }
+
+      // Update formula toggle button label on language change
+      const formulaBtn = document.getElementById('btnFormulaToggle');
+      if (formulaBtn) {
+        const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+        const isExpanded = formulaBtn.getAttribute('aria-expanded') === 'true';
+        const textSpan = formulaBtn.querySelector('.formula-toggle-text');
+        if (textSpan) {
+          textSpan.textContent = isExpanded 
+            ? (isAr ? 'إخفاء المعادلة' : 'Hide formula') 
+            : (isAr ? 'عرض المعادلة' : 'Show formula');
+        }
       }
     });
   },
@@ -1210,9 +1229,10 @@ const EvidenceController = {
   },
 
   /**
-   * 4. Method & Sensitivity Matrix:
-   * Center-Zero Diverging Bars: +25% blue, -25% orange->red.
-   * Stability index: thin blue progress bar.
+   * 4. Method & Ranking Stability:
+   * 4 clean cards in 1 row (Slope, Regolith, Thermal, Spectral).
+   * Weight pill, glowing ring gauge with stability % in center (orange for lowest stability),
+   * and max rank shift line.
    */
   renderSensitivityMatrix() {
     const container = document.getElementById('sensitivityTableBody');
@@ -1225,69 +1245,73 @@ const EvidenceController = {
     // Dynamically compute minimum stability percentage from data
     const stabilities = params.map(p => parseFloat(p.stability_index)).filter(n => !isNaN(n));
     const minStability = stabilities.length > 0 ? Math.round(Math.min(...stabilities)) : 94;
+    const minStabilityVal = stabilities.length > 0 ? Math.min(...stabilities) : 94;
 
     const subEl = document.getElementById('sensitivitySubtitle');
     if (subEl) {
-      subEl.textContent = isAr 
-        ? `يبقى الترتيب ثابتاً بنسبة ${minStability}% على الأقل حتى عند تغيير أي وزن بنسبة ±25%.`
+      subEl.innerHTML = isAr 
+        ? `يبقى الترتيب ثابتاً بنسبة <bdi class="bidi-isolate">${minStability}%</bdi> على الأقل حتى عند تغيير أهمية أي خاصية بنسبة <bdi class="bidi-isolate">±25%</bdi>.`
         : `Rankings stay at least ${minStability}% stable even when any weight changes by ±25%.`;
     }
 
-    // Max scale for diverging bar is 3.0 ranks
-    const maxShift = 3.0;
-
     container.innerHTML = params.map(p => {
-      // Parse +25% shift (e.g. "+0.4 ranks (ΔS = +1.2%)" -> +0.4)
-      const plusMatch = p.plus_25_rank_shift ? p.plus_25_rank_shift.match(/\+?([0-9.]+)/) : null;
-      const plusVal = plusMatch ? parseFloat(plusMatch[1]) : 0.5;
-      const plusBarWidth = Math.min(100, (plusVal / maxShift) * 100);
+      // Short name: Slope, Regolith, Thermal, Spectral (AR: الانحدار، التربة، الحرارة، الطيف)
+      let shortName = '';
+      const pLower = (p.parameter || '').toLowerCase();
+      if (pLower.includes('slope')) shortName = isAr ? 'الانحدار' : 'Slope';
+      else if (pLower.includes('regolith')) shortName = isAr ? 'التربة' : 'Regolith';
+      else if (pLower.includes('thermal')) shortName = isAr ? 'الحرارة' : 'Thermal';
+      else if (pLower.includes('spectral')) shortName = isAr ? 'الطيف' : 'Spectral';
+      else shortName = isAr ? (p.parameter_ar || p.parameter) : p.parameter;
 
-      // Parse -25% shift (e.g. "-0.6 ranks (ΔS = -1.4%)" -> -0.6)
-      const minusMatch = p.minus_25_rank_shift ? p.minus_25_rank_shift.match(/-([0-9.]+)/) : null;
-      const minusVal = minusMatch ? parseFloat(minusMatch[1]) : 0.6;
-      const minusBarWidth = Math.min(100, (minusVal / maxShift) * 100);
+      // Small pill with its weight: "Weight 28%" (AR: "الأهمية 28%")
+      const weightPct = (p.base_weight * 100).toFixed(0);
+      const weightText = isAr 
+        ? `الأهمية <bdi class="bidi-isolate">${weightPct}%</bdi>` 
+        : `Weight ${weightPct}%`;
 
-      // Stability % (e.g. "98.2%" -> 98.2)
+      // Stability % in the center; parameter with lowest stability gets orange ring
       const stabVal = parseFloat(p.stability_index) || 95;
+      const isLowest = Math.abs(stabVal - minStabilityVal) < 0.05;
+
+      // Circumference C = 2 * PI * 32 = 201.06
+      const C = 201.06;
+      const offset = (C * (1 - (stabVal / 100))).toFixed(1);
+      const stabText = `${stabVal.toFixed(1)}%`;
+
+      // Larger absolute value of the +25% / -25% rank shifts
+      const plusMatch = p.plus_25_rank_shift ? p.plus_25_rank_shift.match(/\+?([0-9.]+)/) : null;
+      const plusVal = plusMatch ? parseFloat(plusMatch[1]) : 0;
+      const minusMatch = p.minus_25_rank_shift ? p.minus_25_rank_shift.match(/-([0-9.]+)/) : null;
+      const minusVal = minusMatch ? parseFloat(minusMatch[1]) : 0;
+      const maxShiftVal = Math.max(plusVal, minusVal);
+      const shiftFormatted = maxShiftVal.toFixed(1);
+
+      const shiftText = isAr
+        ? `يتغير ترتيبه <bdi class="bidi-isolate">±${shiftFormatted}</bdi> مرتبة كحد أقصى`
+        : `Moves at most ±${shiftFormatted} places`;
 
       return `
-        <tr>
-          <td>
-            <div class="param-cell-title">${isAr ? p.parameter_ar : p.parameter}</div>
-          </td>
-          
-          <td style="text-align:center;">
-            <span class="weight-badge-cell mono">${(p.base_weight * 100).toFixed(0)}%</span>
-          </td>
+        <div class="sensitivity-param-card ${isLowest ? 'card-orange' : 'card-blue'}" tabindex="0">
+          <div class="param-card-header">
+            <h4 class="param-card-name">${shortName}</h4>
+            <span class="param-weight-pill mono">${weightText}</span>
+          </div>
 
-          <td>
-            <div class="diverging-chart-wrap" title="-25% Perturbation: ${p.minus_25_rank_shift} | +25% Perturbation: ${p.plus_25_rank_shift}">
-              <!-- Negative side (-25% shift): Orange->Red bar growing left -->
-              <div class="diverge-side negative">
-                <span class="diverge-label minus-label mono">-${minusVal.toFixed(1)}</span>
-                <div class="diverge-bar-fill minus-bar" style="width: ${minusBarWidth.toFixed(1)}%;"></div>
-              </div>
-
-              <!-- Center zero divider -->
-              <div class="diverge-center-zero"></div>
-
-              <!-- Positive side (+25% shift): Blue bar growing right -->
-              <div class="diverge-side positive">
-                <div class="diverge-bar-fill plus-bar" style="width: ${plusBarWidth.toFixed(1)}%;"></div>
-                <span class="diverge-label plus-label mono">+${plusVal.toFixed(1)}</span>
-              </div>
+          <div class="param-ring-side">
+            <div class="param-ring-wrapper">
+              <svg class="kpi-ring-svg param-ring-svg" viewBox="0 0 80 80" aria-hidden="true">
+                <circle cx="40" cy="40" r="32" class="kpi-ring-bg"></circle>
+                <circle cx="40" cy="40" r="32" class="kpi-ring-fill ${isLowest ? 'ring-candidate' : 'ring-main'}" style="stroke-dasharray: 201.06; stroke-dashoffset: ${offset};"></circle>
+              </svg>
+              <div class="param-ring-center-val ${isLowest ? 'kpi-val-candidate' : 'kpi-val-main'} mono">${stabText}</div>
             </div>
-          </td>
+          </div>
 
-          <td>
-            <div class="stability-metric-box" title="Stability Rating: ${p.rating}">
-              <div class="stability-track">
-                <div class="stability-fill" style="width: ${stabVal}%;"></div>
-              </div>
-              <span class="stability-text mono">${p.stability_index}</span>
-            </div>
-          </td>
-        </tr>
+          <div class="param-card-footer">
+            <span class="param-shift-text">${shiftText}</span>
+          </div>
+        </div>
       `;
     }).join('');
   },
@@ -1468,6 +1492,26 @@ const EvidenceController = {
         this.renderDataCatalogTable();
       });
     });
+
+    // Formula collapsible toggle button
+    const formulaBtn = document.getElementById('btnFormulaToggle');
+    const formulaBanner = document.getElementById('formulaDisplayBanner');
+    if (formulaBtn && formulaBanner) {
+      formulaBtn.addEventListener('click', () => {
+        const isCollapsed = formulaBanner.classList.contains('collapsed');
+        formulaBanner.classList.toggle('collapsed', !isCollapsed);
+        formulaBtn.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
+
+        const lang = window.I18n ? window.I18n.currentLang : 'en';
+        const isAr = lang === 'ar';
+        const textSpan = formulaBtn.querySelector('.formula-toggle-text');
+        if (textSpan) {
+          textSpan.textContent = isCollapsed 
+            ? (isAr ? 'إخفاء المعادلة' : 'Hide formula') 
+            : (isAr ? 'عرض المعادلة' : 'Show formula');
+        }
+      });
+    }
   }
 };
 

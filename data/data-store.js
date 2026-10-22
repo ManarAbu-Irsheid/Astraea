@@ -1362,9 +1362,9 @@ window.__TERRATWIN_DATA__ = {
         "legend_failure": "Failure case",
         "sensitivity_title": "Method & ranking stability",
         "sensitivity_subtitle": "Rankings stay at least 94% stable even when any weight changes by ±25%.",
-
-
-
+        "sensitivity_explanation": "We changed how much each attribute counts and re-ranked all sites. They barely moved, so the results don't depend on our choice of weights.",
+        "btn_show_formula": "Show formula",
+        "btn_hide_formula": "Hide formula",
         "formula_label": "Similarity Formulation",
         "key_weight": "weight",
         "key_similarity": "similarity",
@@ -1586,7 +1586,10 @@ window.__TERRATWIN_DATA__ = {
         "legend_candidate": "مرشح جديد",
         "legend_failure": "حالة فشل",
         "sensitivity_title": "المنهجية وثبات الترتيب",
-        "sensitivity_subtitle": "يبقى الترتيب ثابتاً بنسبة 94% على الأقل حتى عند تغيير أي وزن بنسبة ±25%.",
+        "sensitivity_subtitle": "يبقى الترتيب ثابتاً بنسبة 94% على الأقل حتى عند تغيير أهمية أي خاصية بنسبة ±25%.",
+        "sensitivity_explanation": "غيّرنا أهمية كل خاصية وأعدنا ترتيب المواقع، فبالكاد تحركت، أي أن النتائج لا تعتمد على اختيارنا للأوزان.",
+        "btn_show_formula": "عرض المعادلة",
+        "btn_hide_formula": "إخفاء المعادلة",
         "key_weight": "الوزن",
         "key_similarity": "التشابه",
         "key_mahalanobis": "مسافة ماهالانوبيس",

@@ -417,72 +417,79 @@
 
         </div>
 
-        <!-- 3. Methodology & Weight Sensitivity Matrix Card (MathML Formula + Diverging Bar Chart) -->
+        <!-- 3. Methodology & Weight Sensitivity Matrix Card (4 Parameter Stability Cards + Collapsible MathML Formula) -->
         <div class="methodology-card">
           <div class="card-header-row">
             <div>
               <h3 class="dashboard-card-title" data-i18n="evidence.sensitivity_title">Method &amp; ranking stability</h3>
-              <p class="dashboard-card-sub sensitivity-takeaway-highlight" id="sensitivitySubtitle" data-i18n="evidence.sensitivity_subtitle">
+            </div>
+          </div>
+
+          <!-- Main Takeaway Box (Soft Blue Glow Box) -->
+          <div class="sensitivity-takeaway-box" id="sensitivityTakeawayBox">
+            <div class="sensitivity-takeaway-main">
+              <span class="takeaway-check-icon" aria-hidden="true">✓</span>
+              <span class="takeaway-text" id="sensitivitySubtitle" data-i18n="evidence.sensitivity_subtitle">
                 Rankings stay at least 94% stable even when any weight changes by ±25%.
-              </p>
+              </span>
             </div>
+            <p class="sensitivity-explanation-text" data-i18n="evidence.sensitivity_explanation">
+              We changed how much each attribute counts and re-ranked all sites. They barely moved, so the results don't depend on our choice of weights.
+            </p>
           </div>
 
-          <!-- Formula Display Banner (Real MathML, Not Raw LaTeX Text) -->
-          <div class="formula-display-banner">
-            <div class="formula-mathml-box">
-              <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
-                <mrow>
-                  <mi mathvariant="script">S</mi>
-                  <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
-                  <mo>=</mo>
-                  <munderover>
-                    <mo>&#x2211;</mo>
-                    <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
-                    <mi>K</mi>
-                  </munderover>
-                  <msub><mi>w</mi><mi>k</mi></msub>
-                  <mo>&#x22C5;</mo>
-                  <msub><mi>&#x3D5;</mi><mi>k</mi></msub>
-                  <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
-                  <mo>&#x22C5;</mo>
-                  <mi>exp</mi>
-                  <mo>(</mo>
-                  <mo>&#x2212;</mo>
-                  <mfrac>
-                    <mrow>
-                      <msubsup><mi>d</mi><mi>M</mi><mn>2</mn></msubsup>
-                      <mo stretchy="false">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>y</mi><mi>k</mi></msub><mo stretchy="false">)</mo>
-                    </mrow>
-                    <mrow>
-                      <mn>2</mn><msubsup><mi>&#x3C3;</mi><mi>k</mi><mn>2</mn></msubsup>
-                    </mrow>
-                  </mfrac>
-                  <mo>)</mo>
-                </mrow>
-              </math>
-            </div>
-            <div class="formula-key-grid">
-              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">wₖ</span> = <span data-i18n="evidence.key_weight">weight</span></div>
-              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">φₖ</span> = <span data-i18n="evidence.key_similarity">similarity</span></div>
-              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">d<sub>M</sub></span> = <span data-i18n="evidence.key_mahalanobis">Mahalanobis distance</span></div>
-              <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">σₖ</span> = <span data-i18n="evidence.key_spread">spread</span></div>
-            </div>
-          </div>
+          <!-- 4 Parameter Stability Cards (Replaces the old table, id sensitivityTableBody preserved as a div) -->
+          <div class="sensitivity-cards-grid" id="sensitivityTableBody"></div>
 
-          <!-- Sensitivity Table with Center-Zero Diverging Bars (+25% Blue, -25% Orange->Red) -->
-          <div class="sensitivity-table-wrapper">
-            <table class="sensitivity-table">
-              <thead>
-                <tr>
-                  <th style="width:28%;" data-i18n="evidence.col_param">Attribute</th>
-                  <th style="width:14%; text-align:center;" data-i18n="evidence.col_base_weight">Weight</th>
-                  <th style="width:34%; text-align:center;" data-i18n="evidence.col_rank_change">Rank change at ±25%</th>
-                  <th style="width:24%;" data-i18n="evidence.col_stability">Stability</th>
-                </tr>
-              </thead>
-              <tbody id="sensitivityTableBody"></tbody>
-            </table>
+          <!-- Collapsible Formula & Key Section (Collapsed by default) -->
+          <div class="formula-collapsible-wrapper">
+            <button type="button" class="btn-formula-toggle" id="btnFormulaToggle" aria-expanded="false" aria-controls="formulaDisplayBanner">
+              <span class="formula-toggle-icon" aria-hidden="true">📐</span>
+              <span class="formula-toggle-text" data-i18n="evidence.btn_show_formula">Show formula</span>
+              <span class="formula-toggle-chevron" aria-hidden="true">▾</span>
+            </button>
+
+            <!-- Formula Display Banner (Real MathML) -->
+            <div class="formula-display-banner collapsed" id="formulaDisplayBanner">
+              <div class="formula-mathml-box">
+                <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+                  <mrow>
+                    <mi mathvariant="script">S</mi>
+                    <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                    <mo>=</mo>
+                    <munderover>
+                      <mo>&#x2211;</mo>
+                      <mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow>
+                      <mi>K</mi>
+                    </munderover>
+                    <msub><mi>w</mi><mi>k</mi></msub>
+                    <mo>&#x22C5;</mo>
+                    <msub><mi>&#x3D5;</mi><mi>k</mi></msub>
+                    <mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo>
+                    <mo>&#x22C5;</mo>
+                    <mi>exp</mi>
+                    <mo>(</mo>
+                    <mo>&#x2212;</mo>
+                    <mfrac>
+                      <mrow>
+                        <msubsup><mi>d</mi><mi>M</mi><mn>2</mn></msubsup>
+                        <mo stretchy="false">(</mo><msub><mi>x</mi><mi>k</mi></msub><mo>,</mo><msub><mi>y</mi><mi>k</mi></msub><mo stretchy="false">)</mo>
+                      </mrow>
+                      <mrow>
+                        <mn>2</mn><msubsup><mi>&#x3C3;</mi><mi>k</mi><mn>2</mn></msubsup>
+                      </mrow>
+                    </mfrac>
+                    <mo>)</mo>
+                  </mrow>
+                </math>
+              </div>
+              <div class="formula-key-grid">
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">wₖ</span> = <span data-i18n="evidence.key_weight">weight</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">φₖ</span> = <span data-i18n="evidence.key_similarity">similarity</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">d<sub>M</sub></span> = <span data-i18n="evidence.key_mahalanobis">Mahalanobis distance</span></div>
+                <div class="formula-key-item" tabindex="0"><span class="formula-sym mono">σₖ</span> = <span data-i18n="evidence.key_spread">spread</span></div>
+              </div>
+            </div>
           </div>
         </div>
 
