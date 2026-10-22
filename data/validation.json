@@ -208,56 +208,72 @@
       "agency": "NASA Goddard Space Flight Center",
       "resolution": "5 - 30 m/pixel",
       "license": "Public Domain (PDS)",
-      "application": "Lunar topographic slope, surface roughness, and crater rim elevation baselines."
+      "body": "moon",
+      "application": "Lunar slope, surface roughness, and elevation baselines.",
+      "application_ar": "الانحدار القمري، الخشونة السطحية، والارتفاعات المعيارية."
     },
     {
       "name": "LRO Diviner Lunar Radiometer Experiment",
       "agency": "UCLA / NASA Jet Propulsion Laboratory",
       "resolution": "128 pixels/degree (~240 m)",
       "license": "Public Domain (PDS)",
-      "application": "Lunar thermal inertia, rock abundance fraction, and cryogenic PSR temperature mapping."
+      "body": "moon",
+      "application": "Lunar thermal inertia, rock abundance, and temperatures.",
+      "application_ar": "القصور الحراري القمري، وفرة الصخور، ودرجات الحرارة."
     },
     {
       "name": "MRO CRISM Targeted Empirical Datasets",
       "agency": "NASA JPL / JHU Applied Physics Lab",
       "resolution": "18 - 36 m/pixel",
       "license": "Public Domain (PDS)",
-      "application": "Martian hyperspectral mineralogy, clay/carbonate identification, and hydration bands."
+      "body": "mars",
+      "application": "Martian mineralogy, clay/carbonate identification, and hydration bands.",
+      "application_ar": "طيف المعادن المريخي، كشف الطين والكربونات والترطيب."
     },
     {
       "name": "MRO HiRISE Digital Terrain Models (DTMs)",
       "agency": "University of Arizona / NASA",
       "resolution": "0.25 - 1.0 m/pixel",
       "license": "Public Domain (PDS)",
-      "application": "Decameter rover obstacle avoidance, sand dune wavelength, and slope repose angles."
+      "body": "mars",
+      "application": "Rover obstacle avoidance, dune wavelength, and slopes.",
+      "application_ar": "تفادي عقبات الروفر، موجات الكثبان، والمنحدرات."
     },
     {
       "name": "Copernicus Sentinel-2 MSI Multi-Spectral",
       "agency": "European Space Agency (ESA)",
       "resolution": "10 - 20 m/pixel",
       "license": "CC-BY 4.0 Open Access",
-      "application": "Global Earth soil mineral mapping, hydration index extraction, and vegetation masking."
+      "body": "earth",
+      "application": "Earth soil minerals, hydration index, vegetation masking.",
+      "application_ar": "معادن التربة الأرضية، مؤشر الترطيب، واستبعاد النباتات."
     },
     {
       "name": "NASA SRTM & NASADEM Global Elevation",
       "agency": "NASA JPL / NGA",
       "resolution": "30 m/pixel",
       "license": "Public Domain",
-      "application": "Earth digital elevation models, terrain curvature, and geomorphic slope quantification."
+      "body": "earth",
+      "application": "Earth elevation models, curvature, and geomorphic slopes.",
+      "application_ar": "نماذج الارتفاع الرقمية، انحناء التضاريس، والمنحدرات الأرضية."
     },
     {
       "name": "ASTER Global Emissivity Dataset (GEDv4)",
       "agency": "NASA JPL / METI (Japan)",
       "resolution": "100 m/pixel",
       "license": "Public Domain",
-      "application": "Earth surface thermal inertia derivation, quartz index, and silica content calibration."
+      "body": "earth",
+      "application": "Earth thermal inertia, quartz index, silica calibration.",
+      "application_ar": "القصور الحراري الأرضي، مؤشر الكوارتز، ومعايرة السيليكا."
     },
     {
       "name": "Landsat 8-9 OLI/TIRS Surface Reflectance",
       "agency": "USGS / NASA",
       "resolution": "30 m/pixel",
       "license": "Public Domain",
-      "application": "Hyper-arid soil desiccation benchmarks and long-term surface temperature baselines."
+      "body": "earth",
+      "application": "Arid soil desiccation and surface temperature baselines.",
+      "application_ar": "جفاف التربة القاحلة ومعايير درجات الحرارة السطحية."
     }
   ],
   "roadmap": [
