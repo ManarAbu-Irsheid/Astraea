@@ -773,6 +773,138 @@
   font-family: var(--font-mono);
 }
 
+/* Moon | Mars toggle (2 buttons) */
+.target-body-toggle.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* Reference site dropdown */
+.finder-select-label {
+  display: block;
+  margin: 0.8rem 0 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.finder-select {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.finder-select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+/* Read-only active weights */
+.active-profile-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-blue);
+}
+
+.weights-pill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.35rem;
+}
+
+.profile-weights-box .finder-target-hint {
+  margin-top: 0.2rem;
+}
+
+/* Card: info sections (most similar + site facts) */
+.detail-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.detail-info-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.most-similar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.most-similar-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: start;
+  transition: all var(--transition-fast);
+}
+
+.most-similar-item:hover,
+.most-similar-item.active {
+  border-color: var(--accent-blue);
+}
+
+.most-similar-item.active {
+  background: var(--badge-bg);
+}
+
+.most-similar-score {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.site-facts-list {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+}
+
+.site-fact {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.55rem;
+}
+
+.site-fact dt {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.site-fact dd {
+  margin: 0.1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
 /* Mobile-only sheet elements: hidden on desktop */
 .sheet-header,
 .mobile-filters-btn,
@@ -1054,7 +1186,26 @@
   }
 
   .radar-chart-container,
-  .detail-score-banner {
+  .detail-score-banner,
+  .detail-info-section {
     break-inside: avoid;
+  }
+
+  /* Keep the brief on ONE page */
+  .finder-right-panel #finderDetailContent {
+    gap: 0.55rem !important;
+  }
+
+  .site-facts-list {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  .radar-chart-container canvas {
+    max-height: 170px;
+    width: auto !important;
+  }
+
+  .detail-bullet-list li {
+    font-size: 9pt;
   }
 }

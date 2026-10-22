@@ -53,60 +53,62 @@
         <div class="profile-selector-container">
           <button class="profile-badge-btn" id="profileBadgeBtn" aria-haspopup="true" aria-expanded="false" title="Configure Mission Profile & Weights">
             <span class="profile-indicator-dot"></span>
-            <span id="activeProfileLabel">Rover Testing</span>
+            <span id="activeProfileLabel">TASI Baseline</span>
             <span class="profile-chevron">▼</span>
           </button>
 
           <!-- Dropdown Panel (Internal weights sliders editable exclusively inside) -->
           <div class="profile-dropdown-panel" id="profileDropdownPanel">
             <div class="profile-panel-header">
-              <span class="profile-panel-title" data-i18n="nav.profile_label">Mission Profile</span>
+              <span class="profile-panel-title" id="profilePanelTitle">Mission Profile</span>
             </div>
 
             <div class="profile-options-grid">
-              <button class="profile-option-btn active" data-profile="rover" data-i18n="nav.profile_rover">Rover Testing</button>
-              <button class="profile-option-btn" data-profile="base" data-i18n="nav.profile_base">Human Base</button>
-              <button class="profile-option-btn" data-profile="isru" data-i18n="nav.profile_isru">ISRU Resources</button>
-              <button class="profile-option-btn" data-profile="caves" data-i18n="nav.profile_caves">Lava Tube Shelters</button>
+              <button class="profile-option-btn active" data-profile="tasi">TASI Baseline</button>
+              <button class="profile-option-btn" data-profile="rover">Rover Traverse</button>
+              <button class="profile-option-btn" data-profile="landing">Landing Site</button>
+              <button class="profile-option-btn" data-profile="thermal">Habitat &amp; Thermal</button>
+              <button class="profile-option-btn" data-profile="optics">Optics &amp; Solar</button>
             </div>
 
             <div class="weights-section-title">
-              <span data-i18n="nav.weights_title">Internal Weight Tuning</span>
+              <span id="weightsSectionTitle">Criteria Weights</span>
             </div>
 
-            <div class="weight-slider-group">
+            <!-- Weight sliders: the 4 criteria available in the real dataset -->
+            <div class="weight-slider-group" id="weightGroup_slope">
               <div class="weight-slider-header">
-                <span data-i18n="nav.weight_slope">Slope & Roughness</span>
-                <span class="weight-val" id="weightVal_slope">35%</span>
+                <span id="weightLabel_slope">Slope</span>
+                <span class="weight-val" id="weightVal_slope">25%</span>
               </div>
-              <input type="range" class="weight-slider" id="weightSlider_slope" min="0.05" max="0.70" step="0.05" value="0.35">
+              <input type="range" class="weight-slider" id="weightSlider_slope" min="0.05" max="0.70" step="0.05" value="0.25">
             </div>
 
-            <div class="weight-slider-group">
+            <div class="weight-slider-group" id="weightGroup_roughness">
               <div class="weight-slider-header">
-                <span data-i18n="nav.weight_ice">Ice & Volatiles</span>
-                <span class="weight-val" id="weightVal_ice">10%</span>
+                <span id="weightLabel_roughness">Roughness</span>
+                <span class="weight-val" id="weightVal_roughness">25%</span>
               </div>
-              <input type="range" class="weight-slider" id="weightSlider_ice" min="0.05" max="0.70" step="0.05" value="0.10">
+              <input type="range" class="weight-slider" id="weightSlider_roughness" min="0.05" max="0.70" step="0.05" value="0.25">
             </div>
 
-            <div class="weight-slider-group">
+            <div class="weight-slider-group" id="weightGroup_albedo">
               <div class="weight-slider-header">
-                <span data-i18n="nav.weight_regolith">Regolith Mechanics</span>
-                <span class="weight-val" id="weightVal_regolith">40%</span>
+                <span id="weightLabel_albedo">Albedo (brightness)</span>
+                <span class="weight-val" id="weightVal_albedo">25%</span>
               </div>
-              <input type="range" class="weight-slider" id="weightSlider_regolith" min="0.05" max="0.70" step="0.05" value="0.40">
+              <input type="range" class="weight-slider" id="weightSlider_albedo" min="0.05" max="0.70" step="0.05" value="0.25">
             </div>
 
-            <div class="weight-slider-group">
+            <div class="weight-slider-group" id="weightGroup_thermal">
               <div class="weight-slider-header">
-                <span data-i18n="nav.weight_volcanic">Volcanic / Cavities</span>
-                <span class="weight-val" id="weightVal_volcanic">15%</span>
+                <span id="weightLabel_thermal">Thermal Swing</span>
+                <span class="weight-val" id="weightVal_thermal">25%</span>
               </div>
-              <input type="range" class="weight-slider" id="weightSlider_volcanic" min="0.05" max="0.70" step="0.05" value="0.15">
+              <input type="range" class="weight-slider" id="weightSlider_thermal" min="0.05" max="0.70" step="0.05" value="0.25">
             </div>
 
-            <button class="weights-reset-btn" id="resetWeightsBtn" data-i18n="nav.reset_weights">Reset Defaults</button>
+            <button class="weights-reset-btn" id="resetWeightsBtn">Reset Defaults</button>
           </div>
         </div>
 

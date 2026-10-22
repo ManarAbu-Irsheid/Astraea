@@ -38,8 +38,8 @@ const GuidedTour = {
         target: '#finderCriteriaSpotlight',
         title_en: '1. Criteria',
         title_ar: '1. المعايير',
-        body_en: 'Choose the target (Moon or Mars), then the mission profile. The map recolours by similarity.',
-        body_ar: 'اختر الهدف (قمر أو مريخ) ثم البروفايل، والخريطة تتلوّن حسب التشابه.'
+        body_en: 'Choose the target (Moon or Mars) and a reference site, then the mission profile from the menu at the top. The map recolours by similarity.',
+        body_ar: 'اختر الهدف (قمر أو مريخ) والمكان المرجعي، ثم البروفايل من القائمة في الأعلى، والخريطة تتلوّن حسب التشابه.'
       },
       {
         target: '#finderMapSpotlight',

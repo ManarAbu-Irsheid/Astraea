@@ -1,140 +1,194 @@
 /**
  * TerraTwin - Page 2: Site Finder Controller
- * Geospatial Leaflet Map, Criteria Filters, Canvas Radar Chart,
- * and Site Detail Panel with Transfer to Compare Page.
+ *
+ * Data: data/terratwin-real.js  (generated from "final data.xlsx")
+ *   - 44 Earth analog sites that passed the NDVI gate (negative controls removed)
+ *   - 6 Mars + 6 Moon reference sites
+ * Score: TASI (the team's method) — see MissionProfileManager.calculateTASI in js/profile.js
+ *
+ * Layout: criteria (left) · Leaflet map with heat glow (center) · site card (right)
+ * Mobile: filters and site card become bottom sheets.
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
   await window.App.init('finder');
 
-  const cellsData = await window.App.fetchData('cells');
-  const targetsData = await window.App.fetchData('targets');
-
-  if (!cellsData) {
-    console.error('Cells data missing for Finder');
+  const data = window.TERRATWIN_REAL;
+  if (!data) {
+    console.error('Real dataset (data/terratwin-real.js) is missing for Finder');
     return;
   }
-
-  SiteFinder.init(cellsData.cells, targetsData ? targetsData.targets : []);
+  SiteFinder.init(data);
 });
 
-/**
- * Target-aware criteria: choosing Moon or Mars changes
- * the available mission profiles and the criteria names.
- */
-const FINDER_TARGET_CONFIG = {
-  all: {
-    profiles: ['rover', 'base', 'isru', 'caves', 'biosig'],
-    criteria: {
-      slope:    { en: 'Slope & Roughness',   ar: 'الانحدار والوعورة' },
-      ice:      { en: 'Ice & Volatiles',     ar: 'الجليد والمواد المتطايرة' },
-      regolith: { en: 'Regolith Mechanics',  ar: 'ميكانيكا التربة' },
-      volcanic: { en: 'Volcanic / Cavities', ar: 'البراكين والتجاويف' }
+/* ---------- All page texts (EN / AR) ---------- */
+const FINDER_TEXT = {
+  en: {
+    targetTitle: 'Find Earth sites similar to',
+    moon: '🌕 Moon', mars: '🔴 Mars',
+    refLabel: 'Reference site',
+    refBest: (body) => `Best match among all 6 ${body === 'moon' ? 'Moon' : 'Mars'} sites`,
+    refBestDesc: 'Each Earth site is scored against its closest reference site.',
+    activeWeights: 'Active Mission Weights',
+    editHint: 'Change the mission or weights from the profile menu at the top ↑',
+    moonNoThermal: 'On the Moon, temperature is not compared (vacuum).',
+    landingHint: 'Landing Site: steep sites (> 12°) are hidden — unsafe for landing.',
+    banner: (body, ref) => ref ? `Earth sites similar to ${ref}` : `Earth sites similar to ${body === 'moon' ? 'the Moon' : 'Mars'}`,
+    sites: (n) => n === 1 ? '1 site' : `${n} sites`,
+    filters: 'Filters', siteCard: 'Site Card',
+    satellite: 'Satellite', topo: 'Topography',
+    heatLegend: 'Glow = similarity', low: 'Low', high: 'High',
+    legendCandidate: 'New candidate', legendKnown: 'Known (official) analog',
+    candidate: '★ New Candidate', known: '● Known Analog',
+    vs: (t, body) => `vs ${t} (${body === 'moon' ? 'Moon' : 'Mars'})`,
+    uncertainty: (u) => `±${u.toFixed(1)}% if weights change ±25%`,
+    conf: { high: 'HIGH CONFIDENCE', medium: 'MEDIUM CONFIDENCE', low: 'LOW CONFIDENCE' },
+    mostSimilar: 'Most similar to',
+    radarTitle: 'Match per criterion',
+    whyMatches: 'Why it matches',
+    whyNot: 'Why not / differences',
+    facts: 'Site facts',
+    factLabels: {
+      region: 'Location', elevation: 'Elevation', temp: 'Surface temperature',
+      slope: 'Slope', roughness: 'Roughness', albedo: 'Albedo',
+      env: 'Environment', ndvi: 'NDVI (vegetation)'
     },
-    hint: {
-      en: 'Showing analogs for both the Moon and Mars.',
-      ar: 'يتم عرض المواقع المشابهة للقمر والمريخ معاً.'
+    ndviPassed: 'passed gate (≤ 0.20)',
+    crit: { slope: 'Slope', roughness: 'Roughness', albedo: 'Albedo', thermal: 'Thermal swing' },
+    more: { slope: 'steeper', roughness: 'rougher', albedo: 'brighter', thermal: 'bigger temperature swing' },
+    less: { slope: 'flatter', roughness: 'smoother', albedo: 'darker', thermal: 'smaller temperature swing' },
+    matchLine: (c, sim, ev, tv, t) => `${c}: ${sim}% match — ${ev} here vs ${tv} at ${t}`,
+    notLine: (c, sim, dir, ev, tv, t) => `${c}: only ${sim}% — this site is ${dir} (${ev} vs ${tv} at ${t})`,
+    moonThermal: (ev, tv) => `Temperature is not compared for the Moon (vacuum): ${ev} swing here vs ${tv} on the Moon.`,
+    bodyLimit: {
+      mars: 'Earth has 1 g gravity and thick air; Mars has 0.38 g and ~1% of Earth\'s air pressure.',
+      moon: 'Earth has 1 g gravity and air; the Moon has 0.16 g and no atmosphere (vacuum).'
     }
   },
-  moon: {
-    profiles: ['rover', 'base', 'isru', 'caves'],
-    criteria: {
-      slope:    { en: 'Crater Slopes & Boulders', ar: 'منحدرات الفوهات والصخور' },
-      ice:      { en: 'Polar Ice (PSR)',          ar: 'الجليد القطبي (المناطق المظللة)' },
-      regolith: { en: 'Sharp Lunar Regolith',     ar: 'تربة القمر الحادة' },
-      volcanic: { en: 'Lava Tubes & Basalt',      ar: 'أنابيب الحمم والبازلت' }
+  ar: {
+    targetTitle: 'ابحث عن أماكن على الأرض تشبه',
+    moon: '🌕 القمر', mars: '🔴 المريخ',
+    refLabel: 'المكان المرجعي',
+    refBest: (body) => `الأقرب من بين ${body === 'moon' ? 'مواقع القمر' : 'مواقع المريخ'} الستة`,
+    refBestDesc: 'كل موقع على الأرض يُقارن بأقرب مكان مرجعي له.',
+    activeWeights: 'أوزان المهمة الحالية',
+    editHint: 'غيّر نوع المهمة أو الأوزان من قائمة المهمة في الأعلى ↑',
+    moonNoThermal: 'على القمر لا تُقارن الحرارة (لا يوجد غلاف جوي).',
+    landingHint: 'موقع الهبوط: المواقع شديدة الانحدار (أكثر من 12°) مخفية لأنها غير آمنة للهبوط.',
+    banner: (body, ref) => ref ? `أماكن على الأرض تشبه ${ref}` : `أماكن على الأرض تشبه ${body === 'moon' ? 'القمر' : 'المريخ'}`,
+    sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
+    filters: 'الفلاتر', siteCard: 'بطاقة الموقع',
+    satellite: 'قمر صناعي', topo: 'تضاريس',
+    heatLegend: 'التوهج = نسبة التشابه', low: 'أقل', high: 'أعلى',
+    legendCandidate: 'مرشح جديد', legendKnown: 'موقع معروف (رسمي)',
+    candidate: '★ مرشح جديد', known: '● موقع معروف',
+    vs: (t, body) => `مقارنة مع ${t} (${body === 'moon' ? 'القمر' : 'المريخ'})`,
+    uncertainty: (u) => `±${u.toFixed(1)}% إذا تغيرت الأوزان ±25%`,
+    conf: { high: 'ثقة عالية', medium: 'ثقة متوسطة', low: 'ثقة منخفضة' },
+    mostSimilar: 'يشبه أكثر',
+    radarTitle: 'التطابق لكل معيار',
+    whyMatches: 'لماذا يشبه',
+    whyNot: 'لماذا لا / الاختلافات',
+    facts: 'معلومات الموقع',
+    factLabels: {
+      region: 'الموقع', elevation: 'الارتفاع', temp: 'حرارة السطح',
+      slope: 'الانحدار', roughness: 'الخشونة', albedo: 'السطوع (الألبيدو)',
+      env: 'نوع البيئة', ndvi: 'NDVI (الغطاء النباتي)'
     },
-    hint: {
-      en: 'Moon baseline: vacuum, 0.16 g, abrasive dust, polar ice in shadowed craters.',
-      ar: 'مرجع القمر: فراغ، جاذبية 0.16، غبار حاد، وجليد في الفوهات المظللة.'
-    }
-  },
-  mars: {
-    profiles: ['rover', 'base', 'isru', 'biosig'],
-    criteria: {
-      slope:    { en: 'Slope & Rock Density',      ar: 'الانحدار وكثافة الصخور' },
-      ice:      { en: 'Subsurface Ice / Water',    ar: 'الجليد والماء تحت السطح' },
-      regolith: { en: 'Fine Dust & Perchlorates',  ar: 'الغبار الناعم والبيركلورات' },
-      volcanic: { en: 'Hydrated & Volcanic Minerals', ar: 'المعادن المائية والبركانية' }
-    },
-    hint: {
-      en: 'Mars baseline: thin CO₂ air, 0.38 g, hyper-arid soils, ancient water minerals.',
-      ar: 'مرجع المريخ: غلاف رقيق من CO₂، جاذبية 0.38، تربة شديدة الجفاف، ومعادن مائية قديمة.'
+    ndviPassed: 'اجتاز الفحص (≤ 0.20)',
+    crit: { slope: 'الانحدار', roughness: 'الخشونة', albedo: 'السطوع', thermal: 'فرق الحرارة' },
+    more: { slope: 'أشد انحداراً', roughness: 'أكثر خشونة', albedo: 'أكثر سطوعاً', thermal: 'فرق حرارته أكبر' },
+    less: { slope: 'أكثر استواءً', roughness: 'أنعم', albedo: 'أغمق', thermal: 'فرق حرارته أصغر' },
+    matchLine: (c, sim, ev, tv, t) => `${c}: تطابق ${sim}% — ${ev} هنا مقابل ${tv} في ${t}`,
+    notLine: (c, sim, dir, ev, tv, t) => `${c}: ${sim}% فقط — هذا الموقع ${dir} (${ev} مقابل ${tv} في ${t})`,
+    moonThermal: (ev, tv) => `لا تُقارن الحرارة مع القمر (فراغ): فرق الحرارة هنا ${ev} مقابل ${tv} على القمر.`,
+    bodyLimit: {
+      mars: 'جاذبية الأرض 1g وهواؤها كثيف؛ جاذبية المريخ 0.38g وضغط هوائه حوالي 1% من الأرض.',
+      moon: 'جاذبية الأرض 1g ولها غلاف جوي؛ جاذبية القمر 0.16g ولا يوجد غلاف جوي (فراغ).'
     }
   }
-};
-
-const FINDER_UI_TEXT = {
-  profileTitle: { en: 'Mission Profile', ar: 'نوع المهمة' },
-  filters:      { en: 'Filters',         ar: 'الفلاتر' },
-  siteCard:     { en: 'Site Card',       ar: 'بطاقة الموقع' },
-  targetTitle:  { en: 'Find Earth sites similar to', ar: 'ابحث عن أماكن على الأرض تشبه' },
-  bodyAll:      { en: 'Both',     ar: 'الاثنين' },
-  bodyMoon:     { en: '🌕 Moon',  ar: '🌕 القمر' },
-  bodyMars:     { en: '🔴 Mars',  ar: '🔴 المريخ' },
-  reset:        { en: 'Reset Defaults',  ar: 'إعادة الضبط' },
-  layerSatellite: { en: 'Satellite',  ar: 'قمر صناعي' },
-  layerTopo:      { en: 'Topography', ar: 'تضاريس' },
-  layerDark:      { en: 'Dark Map',   ar: 'خريطة داكنة' },
-  heatLegend:     { en: 'Glow = similarity', ar: 'التوهج = نسبة التشابه' },
-  heatLow:        { en: 'Low',  ar: 'أقل' },
-  heatHigh:       { en: 'High', ar: 'أعلى' }
-};
-
-// Banner on top of the map: tells the user what the map is showing
-const FINDER_BANNER = {
-  all:  { icon: '🌍', en: 'Earth sites similar to the Moon & Mars', ar: 'أماكن على الأرض تشبه القمر والمريخ' },
-  moon: { icon: '🌕', en: 'Earth sites similar to the Moon',        ar: 'أماكن على الأرض تشبه القمر' },
-  mars: { icon: '🔴', en: 'Earth sites similar to Mars',            ar: 'أماكن على الأرض تشبه المريخ' }
 };
 
 const SiteFinder = {
-  cells: [],
-  targets: [],
-  selectedSite: null,
-  activeTargetFilter: 'all', // 'all', 'moon', 'mars'
+  sites: [],
+  targets: { mars: [], moon: [] },
+  body: 'mars',            // 'mars' | 'moon'
+  referenceId: 'best',     // 'best' or a target id
   activeTerrainFilter: 'all',
-  discoveryFilter: 'all', // 'all', 'candidates_only', 'known_only'
+  discoveryFilter: 'all',  // 'all' | 'candidates_only' | 'known_only'
+  selectedSite: null,
   map: null,
   markersLayer: null,
-
+  heatLayer: null,
   tileLayers: {},
   currentLayer: 'satellite',
 
-  init(cells, targets) {
-    this.cells = cells;
-    this.targets = targets;
+  init(data) {
+    this.sites = data.earth;
+    this.targets = data.targets;
 
     this.initMap();
     this.bindFilters();
     this.bindMobileSheets();
-    this.applyTarget(this.activeTargetFilter);
+    this.applyBody(this.body);
 
-    // Default select first site (e.g. Yungay or Al-Labbah)
-    if (this.cells.length > 0) {
-      this.selectSite(this.cells[0], false); // don't pop the card open on page load
-    }
+    // Select the best-matching site by default (card stays closed on mobile)
+    const ranked = this.getFilteredSites().map(s => ({ s, r: this.scoreSite(s) })).sort((a, b) => b.r.score - a.r.score);
+    if (ranked.length) this.selectSite(ranked[0].s, false);
 
-    document.addEventListener('languageChanged', () => {
-      this.renderCriteria();
-      this.renderMarkers();
-      if (this.selectedSite) this.renderSiteDetail(this.selectedSite);
-    });
-
-    document.addEventListener('profileChanged', () => {
-      this.syncCriteriaUI();
-      this.renderMarkers();
-      if (this.selectedSite) this.renderSiteDetail(this.selectedSite);
-    });
+    document.addEventListener('languageChanged', () => this.refreshAll());
+    document.addEventListener('profileChanged', () => this.refreshAll());
   },
 
+  t() { return FINDER_TEXT[this.lang()]; },
+  lang() { return (window.I18n ? window.I18n.currentLang : 'en') === 'ar' ? 'ar' : 'en'; },
+  mpm() { return window.MissionProfileManager; },
+
+  refreshAll() {
+    this.renderStaticTexts();
+    this.renderReferenceSelect();
+    this.renderActiveWeights();
+    this.renderMarkers();
+    if (this.selectedSite) this.renderSiteDetail(this.selectedSite);
+  },
+
+  /* ---------- Scoring ---------- */
+  getTargetList() { return this.targets[this.body] || []; },
+
+  // Score one Earth site against the reference (or its best match among the 6 targets)
+  scoreSite(site, weights) {
+    const mpm = this.mpm();
+    const list = this.getTargetList();
+    const pool = this.referenceId === 'best' ? list : list.filter(t => t.id === this.referenceId);
+    let best = null;
+    pool.forEach(t => {
+      const r = mpm.calculateTASI(site.f, t.f, this.body, weights);
+      if (!best || r.score > best.score) best = { ...r, target: t };
+    });
+    return best;
+  },
+
+  // Uncertainty = biggest change in score when any weight moves ±25% (rank-stability test)
+  scoreUncertainty(site) {
+    const mpm = this.mpm();
+    const base = this.scoreSite(site).score;
+    let maxDelta = 0;
+    mpm.CRITERIA.forEach(k => {
+      [0.75, 1.25].forEach(f => {
+        const w = { ...mpm.weights, [k]: mpm.weights[k] * f };
+        maxDelta = Math.max(maxDelta, Math.abs(this.scoreSite(site, w).score - base));
+      });
+    });
+    return maxDelta;
+  },
+
+  /* ---------- Map ---------- */
   initMap() {
     const mapContainer = document.getElementById('leafletMap');
     if (!mapContainer) return;
 
     try {
       if (typeof L !== 'undefined') {
-        // Initialize Leaflet Map
         this.map = L.map('leafletMap', {
           center: [20, 10],
           zoom: 2.3,
@@ -145,7 +199,7 @@ const SiteFinder = {
 
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
 
-        // 1. Authentic High-Resolution True Satellite Imagery (NASA / USGS / ESRI)
+        // Real satellite imagery (ESRI) + place labels
         this.tileLayers.satellite = L.layerGroup([
           L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics, USDA, USGS',
@@ -158,24 +212,15 @@ const SiteFinder = {
           })
         ]);
 
-        // 2. High-Precision Geological Terrain Relief
+        // Terrain relief
         this.tileLayers.topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
           attribution: 'Tiles &copy; Esri &mdash; USGS, NOAA',
           maxZoom: 18
         });
 
-        // 3. Cyber Dark Deep Space Radar Map
-        this.tileLayers.dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; CARTO &copy; OpenStreetMap',
-          subdomains: 'abcd',
-          maxZoom: 19
-        });
-
-        // Set default layer to True Satellite Imagery
         this.tileLayers.satellite.addTo(this.map);
         this.currentLayer = 'satellite';
 
-        // Layer Switcher Buttons
         const switcherBtns = document.querySelectorAll('.layer-switch-btn');
         switcherBtns.forEach(btn => {
           btn.addEventListener('click', (e) => {
@@ -199,102 +244,59 @@ const SiteFinder = {
 
         this.markersLayer = L.layerGroup().addTo(this.map);
       } else {
-        console.warn('Leaflet library not loaded, using SVG fallback visualizer');
-        mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-family:var(--font-mono);">Geospatial Map Canvas Active (Standard Remote Sensing Baseline)</div>';
+        console.warn('Leaflet library not loaded');
+        mapContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-family:var(--font-mono);">Map could not load (no internet connection?)</div>';
       }
     } catch (e) {
       console.warn('Map initialization failed:', e);
     }
   },
 
-  getFilteredCells() {
-    return this.cells.filter(cell => {
-      // Target Filter
-      if (this.activeTargetFilter !== 'all') {
-        if (cell.target_affinity !== 'both' && cell.target_affinity !== this.activeTargetFilter) {
-          return false;
-        }
-      }
-
-      // Terrain Filter
-      if (this.activeTerrainFilter !== 'all') {
-        if (cell.terrain_type !== this.activeTerrainFilter) {
-          return false;
-        }
-      }
-
-      // Discovery Filter
-      if (this.discoveryFilter === 'candidates_only' && !cell.is_candidate) {
-        return false;
-      }
-      if (this.discoveryFilter === 'known_only' && cell.is_candidate) {
-        return false;
-      }
-
+  getFilteredSites() {
+    const mpm = this.mpm();
+    return this.sites.filter(site => {
+      if (this.activeTerrainFilter !== 'all' && site.terrain !== this.activeTerrainFilter) return false;
+      if (this.discoveryFilter === 'candidates_only' && site.is_official) return false;
+      if (this.discoveryFilter === 'known_only' && !site.is_official) return false;
+      // Landing Site profile: steep slopes are unsafe -> hidden
+      if (mpm && mpm.activeProfile === 'landing' && String(site.slope_class).startsWith('Steep')) return false;
       return true;
     });
   },
 
-  // Update the banner on top of the map (title + how many sites are shown)
-  updateTargetBanner() {
-    const lang = this.lang();
-    const t = this.activeTargetFilter;
-    const b = FINDER_BANNER[t] || FINDER_BANNER.all;
-    const n = this.getFilteredCells().length;
-
+  updateTargetBanner(count) {
+    const t = this.t();
+    const ref = this.referenceId === 'best' ? null : (this.getTargetList().find(x => x.id === this.referenceId) || {}).name;
     const banner = document.getElementById('mapTargetBanner');
-    if (banner) banner.setAttribute('data-body', t);
+    if (banner) banner.setAttribute('data-body', this.body);
     const icon = document.getElementById('mapTargetIcon');
-    if (icon) icon.textContent = b.icon;
+    if (icon) icon.textContent = this.body === 'moon' ? '🌕' : '🔴';
     const title = document.getElementById('mapTargetTitle');
-    if (title) title.textContent = b[lang];
-
-    let countText;
-    if (lang === 'ar') {
-      if (n === 0) countText = 'لا توجد مواقع';
-      else if (n === 1) countText = 'موقع واحد';
-      else if (n === 2) countText = 'موقعان';
-      else if (n <= 10) countText = `${n} مواقع`;
-      else countText = `${n} موقعاً`;
-    } else {
-      countText = n === 1 ? '1 site' : `${n} sites`;
-    }
-    const count = document.getElementById('mapTargetCount');
-    if (count) count.textContent = countText;
+    if (title) title.textContent = t.banner(this.body, ref);
+    const countEl = document.getElementById('mapTargetCount');
+    if (countEl) countEl.textContent = t.sites(count);
   },
 
   renderMarkers() {
-    this.updateTargetBanner();
+    const filtered = this.getFilteredSites();
+    this.updateTargetBanner(filtered.length);
     if (!this.map || !this.markersLayer) return;
     this.markersLayer.clearLayers();
     if (this.heatLayer) this.heatLayer.clearLayers();
 
-    const filtered = this.getFilteredCells();
-    const countBadge = document.getElementById('mapFilteredCount');
-    if (countBadge) {
-      countBadge.textContent = `${filtered.length} / ${this.cells.length} Sites`;
-    }
+    const t = this.t();
 
-    const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
-
-    filtered.forEach(cell => {
-      const isCandidate = cell.is_candidate;
-      let score = cell.similarity_score;
-      if (window.MissionProfileManager && cell.radar_parameters) {
-        score = window.MissionProfileManager.calculateScore(cell.radar_parameters);
-      }
-
-      const scoreClass = score >= 88 ? 'high' : 'med';
-
-      // Heat glow: bigger + hotter colour = more similar
-      this.drawHeat(cell, score);
+    filtered.forEach(site => {
+      const isCandidate = !site.is_official;
+      const result = this.scoreSite(site);
+      const score = result.score;
+      const scoreClass = score >= 85 ? 'high' : 'med';
       const scoreFormatted = score.toFixed(1) + '%';
-      const displayName = isAr ? cell.name_ar : cell.name;
-      const displayCountry = isAr ? cell.country_ar : cell.country;
 
-      // Creative High-Tech Sonar Radar Marker with Floating Badge
-      let iconHtml = `
-        <div class="sonar-pin-container" title="${displayName} (${scoreFormatted})">
+      this.drawHeat(site, score);
+
+      const iconHtml = `
+        <div class="sonar-pin-container" title="${site.name} (${scoreFormatted})">
           <div class="pin-floating-score ${isCandidate ? 'candidate-badge' : scoreClass}">${scoreFormatted}</div>
           <div class="sonar-wave ${isCandidate ? 'candidate' : 'known'}"></div>
           <div class="pin-core-icon ${isCandidate ? 'candidate' : 'known'}">
@@ -303,242 +305,31 @@ const SiteFinder = {
         </div>
       `;
 
-      const customIcon = L.divIcon({
-        className: 'custom-leaflet-marker',
-        html: iconHtml,
-        iconSize: [36, 42],
-        iconAnchor: [18, 24]
+      const marker = L.marker([site.lat, site.lon], {
+        icon: L.divIcon({ className: 'custom-leaflet-marker', html: iconHtml, iconSize: [36, 42], iconAnchor: [18, 24] })
       });
 
-      const marker = L.marker([cell.lat, cell.lon], { icon: customIcon });
-
-      // Interactive Scientific Tooltip
       marker.bindTooltip(`
         <div style="font-family:var(--font-sans); line-height:1.35; padding:2px;">
-          <div style="font-weight:800; color:#ffffff; font-size:0.85rem;">${displayName}</div>
-          <div style="color:var(--text-secondary); font-size:0.72rem;">${displayCountry} • (${cell.lat.toFixed(2)}°, ${cell.lon.toFixed(2)}°)</div>
+          <div style="font-weight:800; color:#ffffff; font-size:0.85rem;">${site.name}</div>
+          <div style="color:var(--text-secondary); font-size:0.72rem;">${site.region} • (${site.lat.toFixed(2)}°, ${site.lon.toFixed(2)}°)</div>
           <div style="margin-top:3px; display:flex; justify-content:space-between; gap:8px;">
-            <span style="color:${isCandidate ? '#ffd700' : '#00e5a3'}; font-weight:800;">${isCandidate ? (isAr ? '★ مرشح جديد' : '★ New Candidate') : (isAr ? 'موقع معروف' : 'Known Analog')}</span>
+            <span style="color:${isCandidate ? '#ffd700' : '#00e5a3'}; font-weight:800;">${isCandidate ? t.candidate : t.known}</span>
             <span style="font-family:var(--font-mono); font-weight:700; color:var(--accent-cyan);">${scoreFormatted}</span>
           </div>
+          <div style="color:var(--text-secondary); font-size:0.7rem;">${t.vs(result.target.name, this.body)}</div>
         </div>
-      `, {
-        className: 'scientific-tooltip',
-        offset: [0, -18],
-        direction: 'top'
-      });
+      `, { className: 'scientific-tooltip', offset: [0, -18], direction: 'top' });
 
-      marker.on('click', () => {
-        this.selectSite(cell);
-        if (window.UserSystem) {
-          window.UserSystem.discoverSite(cell.id, displayName);
-        }
-      });
-
+      marker.on('click', () => this.selectSite(site));
       marker.addTo(this.markersLayer);
     });
   },
 
-  selectSite(cell, openSheet = true) {
-    this.selectedSite = cell;
-    this.renderSiteDetail(cell);
-
-    if (this.map) {
-      this.map.panTo([cell.lat, cell.lon], { animate: true, duration: 0.8 });
-    }
-
-    // Award XP via Gamification Engine
-    if (window.UserSystem) {
-      const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
-      window.UserSystem.discoverSite(cell.id, isAr ? cell.name_ar : cell.name);
-    }
-
-    // On mobile, slide the site card up from the bottom
-    if (openSheet && this.isMobile()) {
-      this.openSheet('card');
-    }
-  },
-
-  renderSiteDetail(cell) {
-    const lang = window.I18n ? window.I18n.currentLang : 'en';
-    const isAr = lang === 'ar';
-
-    const placeholder = document.getElementById('finderDetailPlaceholder');
-    const content = document.getElementById('finderDetailContent');
-    if (placeholder) placeholder.style.display = 'none';
-    if (content) content.style.display = 'flex';
-
-    // Calculate score based on current weights
-    let computedScore = cell.similarity_score;
-    if (window.MissionProfileManager && cell.radar_parameters) {
-      computedScore = window.MissionProfileManager.calculateScore(cell.radar_parameters);
-    }
-
-    // Site Name and Badges
-    const nameEl = document.getElementById('detailSiteName');
-    const regionEl = document.getElementById('detailSiteRegion');
-    const badgeEl = document.getElementById('detailCandidateBadge');
-
-    if (nameEl) nameEl.textContent = isAr ? cell.name_ar : cell.name;
-    if (regionEl) regionEl.textContent = `${isAr ? cell.country_ar : cell.country} • (${cell.lat.toFixed(2)}°, ${cell.lon.toFixed(2)}°)`;
-
-    if (badgeEl) {
-      if (cell.is_candidate) {
-        badgeEl.textContent = isAr ? '★ مرشح جديد' : '★ New Candidate';
-        badgeEl.className = 'sci-badge candidate';
-      } else {
-        badgeEl.textContent = isAr ? '● موقع معروف' : '● Known Historic Analog';
-        badgeEl.className = 'sci-badge validated';
-      }
-    }
-
-    // Score Banner
-    const scoreValEl = document.getElementById('detailScoreVal');
-    const uncertaintyEl = document.getElementById('detailUncertaintyVal');
-    const confidenceEl = document.getElementById('detailConfidenceVal');
-
-    if (scoreValEl) scoreValEl.textContent = `${computedScore.toFixed(1)}%`;
-    if (uncertaintyEl) uncertaintyEl.textContent = cell.uncertainty || '±3.5%';
-    if (confidenceEl) confidenceEl.textContent = isAr ? cell.confidence_ar : cell.confidence;
-
-    // Bullets: Why It Matches
-    const whyMatchesList = document.getElementById('detailWhyMatchesList');
-    if (whyMatchesList) {
-      const points = isAr ? cell.why_matches_ar : cell.why_matches;
-      whyMatchesList.innerHTML = (points || []).map(p => `<li>${p}</li>`).join('');
-    }
-
-    // Bullets: Scientific Divergences
-    const whyNotList = document.getElementById('detailWhyNotList');
-    if (whyNotList) {
-      const divergences = isAr ? cell.why_not_ar : cell.why_not;
-      whyNotList.innerHTML = (divergences || []).map(d => `<li>${d}</li>`).join('');
-    }
-
-    // Render Canvas Radar Chart
-    this.renderRadarChart(cell.radar_parameters);
-
-    // Bind Compare & Export buttons
-    const compareBtn = document.getElementById('btnDetailCompare');
-    if (compareBtn) {
-      compareBtn.onclick = () => {
-        window.location.href = `compare.html?siteA=${cell.id}`;
-      };
-    }
-
-    const exportBtn = document.getElementById('btnDetailExport');
-    if (exportBtn) {
-      exportBtn.onclick = () => {
-        window.print();
-      };
-    }
-  },
-
-  renderRadarChart(params) {
-    const canvas = document.getElementById('radarCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = 80;
-
-    ctx.clearRect(0, 0, width, height);
-
-    const axes = [
-      { key: 'slope', label: 'Slope', label_ar: 'الانحدار' },
-      { key: 'regolith', label: 'Regolith', label_ar: 'الحطام' },
-      { key: 'thermal', label: 'Thermal', label_ar: 'القصور' },
-      { key: 'radiation', label: 'Radiation', label_ar: 'الإشعاع' },
-      { key: 'mineralogy', label: 'Mineral', label_ar: 'المعادن' }
-    ];
-
-    const numAxes = axes.length;
-    const angleStep = (Math.PI * 2) / numAxes;
-    const lang = window.I18n ? window.I18n.currentLang : 'en';
-    const isAr = lang === 'ar';
-
-    // Draw background concentric rings
-    ctx.strokeStyle = 'rgba(64, 110, 160, 0.25)';
-    ctx.lineWidth = 1;
-
-    for (let r = 20; r <= radius; r += 20) {
-      ctx.beginPath();
-      for (let i = 0; i < numAxes; i++) {
-        const angle = i * angleStep - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * r;
-        const y = centerY + Math.sin(angle) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.stroke();
-    }
-
-    // Draw axis lines and labels
-    ctx.font = '10px monospace';
-    ctx.fillStyle = '#8ea5c0';
-    ctx.textAlign = 'center';
-
-    for (let i = 0; i < numAxes; i++) {
-      const angle = i * angleStep - Math.PI / 2;
-      const x = centerX + Math.cos(angle) * radius;
-      const y = centerY + Math.sin(angle) * radius;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.lineTo(x, y);
-      ctx.stroke();
-
-      // Label text
-      const labelX = centerX + Math.cos(angle) * (radius + 18);
-      const labelY = centerY + Math.sin(angle) * (radius + 14);
-      const label = isAr ? axes[i].label_ar : axes[i].label;
-      ctx.fillText(label, labelX, labelY);
-    }
-
-    // Draw radar data polygon
-    if (params) {
-      ctx.beginPath();
-      for (let i = 0; i < numAxes; i++) {
-        const val = params[axes[i].key] || 75;
-        const r = (val / 100) * radius;
-        const angle = i * angleStep - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * r;
-        const y = centerY + Math.sin(angle) * r;
-
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-
-      ctx.fillStyle = 'rgba(0, 229, 212, 0.25)';
-      ctx.fill();
-      ctx.strokeStyle = '#00e5d4';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      // Draw point dots
-      for (let i = 0; i < numAxes; i++) {
-        const val = params[axes[i].key] || 75;
-        const r = (val / 100) * radius;
-        const angle = i * angleStep - Math.PI / 2;
-        const x = centerX + Math.cos(angle) * r;
-        const y = centerY + Math.sin(angle) * r;
-
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-      }
-    }
-  },
-
   /* ---------- Heat map (similarity glow) ---------- */
-  // score 78% or less -> cool blue, ~86% -> yellow, 95% or more -> hot red
+  // 50% or less -> cool blue, ~72% -> yellow, 95% or more -> hot red
   heatColor(score) {
-    const t = Math.min(1, Math.max(0, (score - 78) / (95 - 78)));
+    const t = Math.min(1, Math.max(0, (score - 50) / (95 - 50)));
     const stops = [
       [0.0, [0, 163, 255]],   // blue
       [0.5, [245, 214, 35]],  // yellow
@@ -553,13 +344,12 @@ const SiteFinder = {
     return { color: `rgb(${rgb.join(',')})`, t };
   },
 
-  drawHeat(cell, score) {
+  drawHeat(site, score) {
     if (!this.heatLayer || typeof L === 'undefined') return;
     const { color, t } = this.heatColor(score);
     const baseRadius = 22 + t * 30; // pixels
-    // 3 soft rings, from wide/faint to small/strong
     [[1.0, 0.14], [0.65, 0.22], [0.35, 0.34]].forEach(([scale, opacity]) => {
-      L.circleMarker([cell.lat, cell.lon], {
+      L.circleMarker([site.lat, site.lon], {
         pane: 'heatPane',
         radius: baseRadius * scale,
         stroke: false,
@@ -570,129 +360,280 @@ const SiteFinder = {
     });
   },
 
-  /* ---------- Target-aware criteria ---------- */
-  lang() {
-    return (window.I18n ? window.I18n.currentLang : 'en') === 'ar' ? 'ar' : 'en';
+  /* ---------- Left panel ---------- */
+  applyBody(body) {
+    this.body = body;
+    this.referenceId = 'best';
+    document.querySelectorAll('.body-toggle-btn').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-body') === body);
+    });
+    // Header profile menu: hide profiles that don't apply (e.g. Habitat & Thermal on the Moon)
+    if (this.mpm()) this.mpm().setAvailableForBody(body);
+    this.refreshAll();
   },
 
-  // Called when the user picks All / Moon / Mars
-  applyTarget(target) {
-    this.activeTargetFilter = target;
-    const cfg = FINDER_TARGET_CONFIG[target] || FINDER_TARGET_CONFIG.all;
-    const mpm = window.MissionProfileManager;
+  renderStaticTexts() {
+    const t = this.t();
+    const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    setText('targetSelectTitle', t.targetTitle);
+    setText('bodyBtnMoon', t.moon);
+    setText('bodyBtnMars', t.mars);
+    setText('referenceSiteLabel', t.refLabel);
+    setText('activeWeightsTitle', t.activeWeights);
+    setText('mobileFiltersBtnLabel', t.filters);
+    setText('filtersSheetTitle', t.filters);
+    setText('cardSheetTitle', t.siteCard);
+    setText('layerLabelSatellite', t.satellite);
+    setText('layerLabelTopo', t.topo);
+    setText('heatLegendTitle', t.heatLegend);
+    setText('heatLegendLow', t.low);
+    setText('heatLegendHigh', t.high);
+    setText('legendCandidate', t.legendCandidate);
+    setText('legendKnown', t.legendKnown);
+    setText('mostSimilarTitle', t.mostSimilar);
+    setText('radarTitle', t.radarTitle);
+    setText('whyMatchesTitle', t.whyMatches);
+    setText('whyNotTitle', t.whyNot);
+    setText('siteFactsTitle', t.facts);
+  },
 
-    // If the current profile does not exist for this target, switch to the first one
-    if (mpm && !cfg.profiles.includes(mpm.activeProfile)) {
-      mpm.setProfile(cfg.profiles[0], false); // fires profileChanged -> map re-renders
+  renderReferenceSelect() {
+    const t = this.t();
+    const select = document.getElementById('referenceSiteSelect');
+    if (!select) return;
+    const list = this.getTargetList();
+    select.innerHTML = `<option value="best">${t.refBest(this.body)}</option>` +
+      list.map(x => `<option value="${x.id}">${x.name}</option>`).join('');
+    select.value = this.referenceId;
+
+    const desc = document.getElementById('referenceSiteDesc');
+    if (desc) {
+      const target = list.find(x => x.id === this.referenceId);
+      desc.textContent = target ? target.description : t.refBestDesc;
+    }
+  },
+
+  renderActiveWeights() {
+    const mpm = this.mpm();
+    if (!mpm) return;
+    const t = this.t();
+    const lang = this.lang();
+
+    const nameEl = document.getElementById('activeProfileName');
+    if (nameEl) nameEl.textContent = mpm.label(mpm.activeProfile);
+
+    const keys = this.body === 'moon' ? ['slope', 'roughness', 'albedo'] : mpm.CRITERIA;
+    const pills = document.getElementById('activeWeightsPills');
+    if (pills) {
+      pills.innerHTML = keys.map(k => `
+        <div class="weight-mini-pill">
+          <span>${mpm.criteriaLabels[lang][k]}</span>
+          <span class="weight-mini-val">${Math.round(mpm.weights[k] * 100)}%</span>
+        </div>`).join('');
     }
 
-    this.updateTerrainChips();
-    this.renderCriteria();
-    this.renderMarkers();
+    const hint = document.getElementById('editWeightsHint');
+    if (hint) {
+      const extra = [];
+      if (this.body === 'moon') extra.push(t.moonNoThermal);
+      if (mpm.activeProfile === 'landing') extra.push(t.landingHint);
+      hint.innerHTML = [t.editHint, ...extra].map(x => `<span>${x}</span>`).join('<br>');
+    }
   },
 
-  // Hide terrain chips that have no sites for the selected target
-  updateTerrainChips() {
-    const t = this.activeTargetFilter;
-    const available = new Set(
-      this.cells
-        .filter(c => t === 'all' || c.target_affinity === 'both' || c.target_affinity === t)
-        .map(c => c.terrain_type)
-    );
-    document.querySelectorAll('.terrain-chip').forEach(chip => {
-      const terrain = chip.getAttribute('data-terrain');
-      const show = terrain === 'all' || available.has(terrain);
-      chip.style.display = show ? '' : 'none';
-      if (!show && chip.classList.contains('active')) {
-        chip.classList.remove('active');
-        const allChip = document.querySelector('.terrain-chip[data-terrain="all"]');
-        if (allChip) allChip.classList.add('active');
-        this.activeTerrainFilter = 'all';
+  /* ---------- Site card ---------- */
+  selectSite(site, openSheet = true) {
+    this.selectedSite = site;
+    this.renderSiteDetail(site);
+
+    if (this.map) this.map.panTo([site.lat, site.lon], { animate: true, duration: 0.8 });
+    if (window.UserSystem) window.UserSystem.discoverSite(site.id, site.name);
+
+    // On mobile, slide the site card up from the bottom
+    if (openSheet && this.isMobile()) this.openSheet('card');
+  },
+
+  fmt: {
+    slope: (s) => `${s.slope_deg}°`,
+    roughness: (s) => `${s.roughness_m} m`,
+    albedo: (s) => `${s.albedo}`,
+    thermal: (s) => `${s.temp_swing_C}°C`
+  },
+
+  renderSiteDetail(site) {
+    const t = this.t();
+    const mpm = this.mpm();
+
+    const placeholder = document.getElementById('finderDetailPlaceholder');
+    const content = document.getElementById('finderDetailContent');
+    if (placeholder) placeholder.style.display = 'none';
+    if (content) content.style.display = 'flex';
+
+    const result = this.scoreSite(site);
+    const target = result.target;
+    const unc = this.scoreUncertainty(site);
+
+    // Header
+    const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    setText('detailSiteName', site.name);
+    setText('detailSiteRegion', `${site.region} • (${site.lat.toFixed(2)}°, ${site.lon.toFixed(2)}°)`);
+    const badgeEl = document.getElementById('detailCandidateBadge');
+    if (badgeEl) {
+      badgeEl.textContent = site.is_official ? t.known : t.candidate;
+      badgeEl.className = site.is_official ? 'sci-badge validated' : 'sci-badge candidate';
+    }
+
+    // Score + uncertainty + confidence
+    setText('detailScoreVal', `${result.score.toFixed(1)}%`);
+    setText('detailUncertaintyVal', `${t.vs(target.name, this.body)} · ${t.uncertainty(unc)}`);
+    const confKey = unc <= 2 ? 'high' : unc <= 4 ? 'medium' : 'low';
+    setText('detailConfidenceVal', t.conf[confKey]);
+
+    // Most similar: top 3 of the 6 reference sites (with current weights)
+    const ranked = this.getTargetList()
+      .map(x => ({ x, s: mpm.calculateTASI(site.f, x.f, this.body).score }))
+      .sort((a, b) => b.s - a.s)
+      .slice(0, 3);
+    const mostEl = document.getElementById('mostSimilarList');
+    if (mostEl) {
+      mostEl.innerHTML = ranked.map(({ x, s }) => `
+        <li>
+          <button class="most-similar-item ${x.id === target.id ? 'active' : ''}" data-target="${x.id}" title="${x.description}">
+            <span class="most-similar-name">${this.body === 'moon' ? '🌕' : '🔴'} ${x.name}</span>
+            <span class="most-similar-score">${s.toFixed(1)}%</span>
+          </button>
+        </li>`).join('');
+      // Click -> use it as the reference site
+      mostEl.querySelectorAll('.most-similar-item').forEach(btn => {
+        btn.onclick = () => this.setReference(btn.getAttribute('data-target'));
+      });
+    }
+
+    // Radar: match % per criterion
+    this.renderRadarChart(result.perCriterion, result.keys);
+
+    // Why it matches / why not — written from the real numbers
+    const matches = [], diffs = [];
+    result.keys.forEach(k => {
+      const sim = Math.round(result.perCriterion[k]);
+      const ev = this.fmt[k](site), tv = this.fmt[k](target);
+      if (sim >= 80) {
+        matches.push({ sim, text: t.matchLine(t.crit[k], sim, ev, tv, target.name) });
+      } else {
+        const dir = site.f[k] > target.f[k] ? t.more[k] : t.less[k];
+        diffs.push({ sim, text: t.notLine(t.crit[k], sim, dir, ev, tv, target.name) });
       }
     });
+    // Nothing above 80%? still show the closest criterion
+    if (!matches.length && diffs.length) {
+      const best = result.keys.reduce((a, k) => (result.perCriterion[k] > result.perCriterion[a] ? k : a), result.keys[0]);
+      const sim = Math.round(result.perCriterion[best]);
+      matches.push({ sim, text: t.matchLine(t.crit[best], sim, this.fmt[best](site), this.fmt[best](target), target.name) });
+      const idx = diffs.findIndex(d => d.text.startsWith(t.crit[best]));
+      if (idx >= 0) diffs.splice(idx, 1);
+    }
+    matches.sort((a, b) => b.sim - a.sim);
+    diffs.sort((a, b) => a.sim - b.sim);
+    if (this.body === 'moon') diffs.push({ text: t.moonThermal(this.fmt.thermal(site), this.fmt.thermal(target)) });
+    diffs.push({ text: t.bodyLimit[this.body] });
+
+    const whyMatchesList = document.getElementById('detailWhyMatchesList');
+    if (whyMatchesList) whyMatchesList.innerHTML = matches.map(m => `<li>${m.text}</li>`).join('') || '<li>—</li>';
+    const whyNotList = document.getElementById('detailWhyNotList');
+    if (whyNotList) whyNotList.innerHTML = diffs.map(d => `<li>${d.text}</li>`).join('');
+
+    // Site facts (shown for information — not used in the score)
+    const L_ = t.factLabels;
+    const facts = [
+      [L_.region, site.region],
+      [L_.elevation, `${Math.round(site.elevation_m).toLocaleString()} m`],
+      [L_.temp, `${site.temp_min_C}°C → ${site.temp_max_C}°C`],
+      [L_.slope, `${site.slope_deg}° · ${site.slope_class}`],
+      [L_.roughness, `${site.roughness_m} m`],
+      [L_.albedo, `${site.albedo}`],
+      [L_.env, site.environment],
+      [L_.ndvi, `${site.ndvi} · ${t.ndviPassed}`]
+    ];
+    const factsEl = document.getElementById('siteFactsList');
+    if (factsEl) factsEl.innerHTML = facts.map(([k, v]) => `<div class="site-fact"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+
+    // Compare & Export
+    const compareBtn = document.getElementById('btnDetailCompare');
+    if (compareBtn) compareBtn.onclick = () => { window.location.href = `compare.html?siteA=${site.id}`; };
+    const exportBtn = document.getElementById('btnDetailExport');
+    if (exportBtn) exportBtn.onclick = () => window.print();
   },
 
-  // Draw profile chips + weight sliders for the selected target
-  renderCriteria() {
-    const lang = this.lang();
-    const cfg = FINDER_TARGET_CONFIG[this.activeTargetFilter] || FINDER_TARGET_CONFIG.all;
-    const mpm = window.MissionProfileManager;
-    if (!mpm) return;
-
-    const title = document.getElementById('finderProfileTitle');
-    if (title) title.textContent = FINDER_UI_TEXT.profileTitle[lang];
-    const resetBtn = document.getElementById('finderResetWeightsBtn');
-    if (resetBtn) resetBtn.textContent = FINDER_UI_TEXT.reset[lang];
-    const filtersLabel = document.getElementById('mobileFiltersBtnLabel');
-    if (filtersLabel) filtersLabel.textContent = FINDER_UI_TEXT.filters[lang];
-    const filtersTitle = document.getElementById('filtersSheetTitle');
-    if (filtersTitle) filtersTitle.textContent = FINDER_UI_TEXT.filters[lang];
-    const cardTitle = document.getElementById('cardSheetTitle');
-    if (cardTitle) cardTitle.textContent = FINDER_UI_TEXT.siteCard[lang];
-    const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
-    setText('targetSelectTitle', FINDER_UI_TEXT.targetTitle[lang]);
-    setText('bodyBtnAll', FINDER_UI_TEXT.bodyAll[lang]);
-    setText('bodyBtnMoon', FINDER_UI_TEXT.bodyMoon[lang]);
-    setText('bodyBtnMars', FINDER_UI_TEXT.bodyMars[lang]);
-    setText('layerLabelSatellite', FINDER_UI_TEXT.layerSatellite[lang]);
-    setText('layerLabelTopo', FINDER_UI_TEXT.layerTopo[lang]);
-    setText('layerLabelDark', FINDER_UI_TEXT.layerDark[lang]);
-    setText('heatLegendTitle', FINDER_UI_TEXT.heatLegend[lang]);
-    setText('heatLegendLow', FINDER_UI_TEXT.heatLow[lang]);
-    setText('heatLegendHigh', FINDER_UI_TEXT.heatHigh[lang]);
-    const hint = document.getElementById('finderTargetHint');
-    if (hint) hint.textContent = cfg.hint[lang];
-
-    // Profile chips
-    const chipsBox = document.getElementById('finderProfileChips');
-    if (chipsBox) {
-      chipsBox.innerHTML = '';
-      cfg.profiles.forEach(id => {
-        const btn = document.createElement('button');
-        btn.className = 'finder-profile-chip';
-        btn.setAttribute('data-profile', id);
-        btn.textContent = (mpm.profileLabels[lang] && mpm.profileLabels[lang][id]) || id;
-        btn.addEventListener('click', () => mpm.setProfile(id, false));
-        chipsBox.appendChild(btn);
-      });
-    }
-
-    // Weight sliders
-    const slidersBox = document.getElementById('finderWeightSliders');
-    if (slidersBox) {
-      slidersBox.innerHTML = '';
-      Object.keys(cfg.criteria).forEach(key => {
-        const group = document.createElement('div');
-        group.className = 'weight-slider-group';
-        group.innerHTML = `
-          <div class="weight-slider-header">
-            <span>${cfg.criteria[key][lang]}</span>
-            <span class="weight-val" id="finderWeightVal_${key}"></span>
-          </div>
-          <input type="range" class="weight-slider" id="finderWeightSlider_${key}"
-                 min="0.05" max="0.70" step="0.05">`;
-        slidersBox.appendChild(group);
-        group.querySelector('input').addEventListener('input', (e) => {
-          mpm.setWeight(key, e.target.value); // fires profileChanged -> map re-renders
-        });
-      });
-    }
-
-    this.syncCriteriaUI();
+  setReference(id) {
+    this.referenceId = id;
+    this.refreshAll();
   },
 
-  // Keep chips & sliders in sync with the current profile/weights
-  syncCriteriaUI() {
-    const mpm = window.MissionProfileManager;
-    if (!mpm) return;
-    document.querySelectorAll('.finder-profile-chip').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-profile') === mpm.activeProfile);
+  renderRadarChart(perCriterion, keys) {
+    const canvas = document.getElementById('radarCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width, height = canvas.height;
+    const centerX = width / 2, centerY = height / 2;
+    const radius = 62;
+    ctx.clearRect(0, 0, width, height);
+
+    const labels = this.mpm().criteriaLabels[this.lang()];
+    const numAxes = keys.length;
+    const angleStep = (Math.PI * 2) / numAxes;
+    const point = (i, r) => {
+      const angle = i * angleStep - Math.PI / 2;
+      return [centerX + Math.cos(angle) * r, centerY + Math.sin(angle) * r];
+    };
+
+    // Rings
+    ctx.strokeStyle = 'rgba(64, 110, 160, 0.25)';
+    ctx.lineWidth = 1;
+    for (let r = radius / 4; r <= radius; r += radius / 4) {
+      ctx.beginPath();
+      for (let i = 0; i < numAxes; i++) {
+        const [x, y] = point(i, r);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
+
+    // Axes + labels (with the % value)
+    ctx.font = '10px monospace';
+    ctx.fillStyle = '#8ea5c0';
+    ctx.textAlign = 'center';
+    keys.forEach((k, i) => {
+      const [x, y] = point(i, radius);
+      ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(x, y); ctx.stroke();
+      // Label on two lines (name / %), aligned away from the centre so it never gets cut
+      const [lx, ly] = point(i, radius + 10);
+      const dx = lx - centerX;
+      ctx.textAlign = Math.abs(dx) < 5 ? 'center' : (dx > 0 ? 'left' : 'right');
+      const top = ly < centerY - 5, bottom = ly > centerY + 5;
+      const y0 = top ? ly - 14 : bottom ? ly + 6 : ly - 4;
+      ctx.fillStyle = '#8ea5c0';
+      ctx.fillText(labels[k].split(' (')[0], lx, y0);
+      ctx.fillStyle = '#00e5d4';
+      ctx.fillText(`${Math.round(perCriterion[k])}%`, lx, y0 + 12);
     });
-    Object.entries(mpm.weights).forEach(([key, val]) => {
-      const slider = document.getElementById(`finderWeightSlider_${key}`);
-      const readout = document.getElementById(`finderWeightVal_${key}`);
-      if (slider) slider.value = val;
-      if (readout) readout.textContent = `${Math.round(val * 100)}%`;
+
+    // Data polygon
+    ctx.beginPath();
+    keys.forEach((k, i) => {
+      const [x, y] = point(i, (perCriterion[k] / 100) * radius);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0, 229, 212, 0.25)';
+    ctx.fill();
+    ctx.strokeStyle = '#00e5d4';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    keys.forEach((k, i) => {
+      const [x, y] = point(i, (perCriterion[k] / 100) * radius);
+      ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill();
     });
   },
 
@@ -753,20 +694,16 @@ const SiteFinder = {
   },
 
   bindFilters() {
-    const finderReset = document.getElementById('finderResetWeightsBtn');
-    if (finderReset && window.MissionProfileManager) {
-      finderReset.addEventListener('click', () => window.MissionProfileManager.resetCurrentWeights());
-    }
-    // Target Body Switcher
+    // Moon / Mars
     document.querySelectorAll('.body-toggle-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.body-toggle-btn').forEach(b => b.classList.remove('active'));
-        e.currentTarget.classList.add('active');
-        this.applyTarget(e.currentTarget.getAttribute('data-body'));
-      });
+      btn.addEventListener('click', (e) => this.applyBody(e.currentTarget.getAttribute('data-body')));
     });
 
-    // Terrain Chips
+    // Reference site
+    const select = document.getElementById('referenceSiteSelect');
+    if (select) select.addEventListener('change', (e) => this.setReference(e.target.value));
+
+    // Terrain chips
     document.querySelectorAll('.terrain-chip').forEach(chip => {
       chip.addEventListener('click', (e) => {
         document.querySelectorAll('.terrain-chip').forEach(c => c.classList.remove('active'));
@@ -776,7 +713,7 @@ const SiteFinder = {
       });
     });
 
-    // Discovery Radio Switch
+    // Known / New candidates
     document.querySelectorAll('input[name="discoveryFilter"]').forEach(radio => {
       radio.addEventListener('change', (e) => {
         this.discoveryFilter = e.target.value;

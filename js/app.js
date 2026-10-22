@@ -78,8 +78,9 @@ const App = {
     document.addEventListener('missionProfileChanged', (e) => {
       const missionEl = document.getElementById('userProfileActiveMission');
       if (missionEl && e.detail && e.detail.profile) {
-        const labels = { rover: 'Rover Testing', base: 'Human Base Camp', isru: 'ISRU Extraction', caves: 'Lava Tube Shelter' };
-        missionEl.textContent = labels[e.detail.profile] || e.detail.profile;
+        missionEl.textContent = window.MissionProfileManager
+          ? window.MissionProfileManager.label(e.detail.profile)
+          : e.detail.profile;
       }
     });
   },
