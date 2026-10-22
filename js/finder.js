@@ -66,7 +66,23 @@ const FINDER_TARGET_CONFIG = {
 
 const FINDER_UI_TEXT = {
   profileTitle: { en: 'Mission Profile', ar: 'نوع المهمة' },
-  reset:        { en: 'Reset Defaults',  ar: 'إعادة الضبط' }
+  filters:      { en: 'Filters',         ar: 'الفلاتر' },
+  siteCard:     { en: 'Site Card',       ar: 'بطاقة الموقع' },
+  targetTitle:  { en: 'Find Earth sites similar to', ar: 'ابحث عن أماكن على الأرض تشبه' },
+  bodyAll:      { en: 'Both',     ar: 'الاثنين' },
+  bodyMoon:     { en: '🌕 Moon',  ar: '🌕 القمر' },
+  bodyMars:     { en: '🔴 Mars',  ar: '🔴 المريخ' },
+  reset:        { en: 'Reset Defaults',  ar: 'إعادة الضبط' },
+  layerSatellite: { en: 'Satellite',  ar: 'قمر صناعي' },
+  layerTopo:      { en: 'Topography', ar: 'تضاريس' },
+  layerDark:      { en: 'Dark Map',   ar: 'خريطة داكنة' }
+};
+
+// Banner on top of the map: tells the user what the map is showing
+const FINDER_BANNER = {
+  all:  { icon: '🌍', en: 'Earth sites similar to the Moon & Mars', ar: 'أماكن على الأرض تشبه القمر والمريخ' },
+  moon: { icon: '🌕', en: 'Earth sites similar to the Moon',        ar: 'أماكن على الأرض تشبه القمر' },
+  mars: { icon: '🔴', en: 'Earth sites similar to Mars',            ar: 'أماكن على الأرض تشبه المريخ' }
 };
 
 const SiteFinder = {
@@ -88,11 +104,12 @@ const SiteFinder = {
 
     this.initMap();
     this.bindFilters();
+    this.bindMobileSheets();
     this.applyTarget(this.activeTargetFilter);
 
     // Default select first site (e.g. Yungay or Al-Labbah)
     if (this.cells.length > 0) {
-      this.selectSite(this.cells[0]);
+      this.selectSite(this.cells[0], false); // don't pop the card open on page load
     }
 
     document.addEventListener('languageChanged', () => {
@@ -209,7 +226,36 @@ const SiteFinder = {
     });
   },
 
+  // Update the banner on top of the map (title + how many sites are shown)
+  updateTargetBanner() {
+    const lang = this.lang();
+    const t = this.activeTargetFilter;
+    const b = FINDER_BANNER[t] || FINDER_BANNER.all;
+    const n = this.getFilteredCells().length;
+
+    const banner = document.getElementById('mapTargetBanner');
+    if (banner) banner.setAttribute('data-body', t);
+    const icon = document.getElementById('mapTargetIcon');
+    if (icon) icon.textContent = b.icon;
+    const title = document.getElementById('mapTargetTitle');
+    if (title) title.textContent = b[lang];
+
+    let countText;
+    if (lang === 'ar') {
+      if (n === 0) countText = 'لا توجد مواقع';
+      else if (n === 1) countText = 'موقع واحد';
+      else if (n === 2) countText = 'موقعان';
+      else if (n <= 10) countText = `${n} مواقع`;
+      else countText = `${n} موقعاً`;
+    } else {
+      countText = n === 1 ? '1 site' : `${n} sites`;
+    }
+    const count = document.getElementById('mapTargetCount');
+    if (count) count.textContent = countText;
+  },
+
   renderMarkers() {
+    this.updateTargetBanner();
     if (!this.map || !this.markersLayer) return;
     this.markersLayer.clearLayers();
 
@@ -280,7 +326,7 @@ const SiteFinder = {
     });
   },
 
-  selectSite(cell) {
+  selectSite(cell, openSheet = true) {
     this.selectedSite = cell;
     this.renderSiteDetail(cell);
 
@@ -294,10 +340,9 @@ const SiteFinder = {
       window.UserSystem.discoverSite(cell.id, isAr ? cell.name_ar : cell.name);
     }
 
-    // Expand mobile bottom sheet if on mobile view
-    const rightPanel = document.querySelector('.finder-right-panel');
-    if (rightPanel) {
-      rightPanel.classList.add('sheet-expanded');
+    // On mobile, slide the site card up from the bottom
+    if (openSheet && this.isMobile()) {
+      this.openSheet('card');
     }
   },
 
@@ -530,6 +575,20 @@ const SiteFinder = {
     if (title) title.textContent = FINDER_UI_TEXT.profileTitle[lang];
     const resetBtn = document.getElementById('finderResetWeightsBtn');
     if (resetBtn) resetBtn.textContent = FINDER_UI_TEXT.reset[lang];
+    const filtersLabel = document.getElementById('mobileFiltersBtnLabel');
+    if (filtersLabel) filtersLabel.textContent = FINDER_UI_TEXT.filters[lang];
+    const filtersTitle = document.getElementById('filtersSheetTitle');
+    if (filtersTitle) filtersTitle.textContent = FINDER_UI_TEXT.filters[lang];
+    const cardTitle = document.getElementById('cardSheetTitle');
+    if (cardTitle) cardTitle.textContent = FINDER_UI_TEXT.siteCard[lang];
+    const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+    setText('targetSelectTitle', FINDER_UI_TEXT.targetTitle[lang]);
+    setText('bodyBtnAll', FINDER_UI_TEXT.bodyAll[lang]);
+    setText('bodyBtnMoon', FINDER_UI_TEXT.bodyMoon[lang]);
+    setText('bodyBtnMars', FINDER_UI_TEXT.bodyMars[lang]);
+    setText('layerLabelSatellite', FINDER_UI_TEXT.layerSatellite[lang]);
+    setText('layerLabelTopo', FINDER_UI_TEXT.layerTopo[lang]);
+    setText('layerLabelDark', FINDER_UI_TEXT.layerDark[lang]);
     const hint = document.getElementById('finderTargetHint');
     if (hint) hint.textContent = cfg.hint[lang];
 
@@ -584,6 +643,50 @@ const SiteFinder = {
       if (slider) slider.value = val;
       if (readout) readout.textContent = `${Math.round(val * 100)}%`;
     });
+  },
+
+  /* ---------- Mobile bottom sheets (filters + site card) ---------- */
+  isMobile() {
+    return window.matchMedia('(max-width: 768px)').matches;
+  },
+
+  // which: 'filters' or 'card'. Only one sheet is open at a time.
+  openSheet(which) {
+    const filters = document.querySelector('.finder-left-panel');
+    const card = document.querySelector('.finder-right-panel');
+    const backdrop = document.getElementById('finderSheetBackdrop');
+    if (filters) filters.classList.toggle('sheet-open', which === 'filters');
+    if (card) card.classList.toggle('sheet-expanded', which === 'card');
+    const anyOpen = which === 'filters' || which === 'card';
+    if (backdrop) backdrop.classList.toggle('show', anyOpen);
+    document.body.classList.toggle('finder-sheet-open', anyOpen);
+  },
+
+  closeSheets() {
+    this.openSheet(null);
+  },
+
+  bindMobileSheets() {
+    const filtersBtn = document.getElementById('mobileFiltersBtn');
+    if (filtersBtn) filtersBtn.addEventListener('click', () => this.openSheet('filters'));
+
+    const filtersClose = document.getElementById('filtersSheetClose');
+    if (filtersClose) filtersClose.addEventListener('click', () => this.closeSheets());
+
+    const cardHeader = document.getElementById('cardSheetHeader');
+    if (cardHeader) {
+      cardHeader.addEventListener('click', () => {
+        const card = document.querySelector('.finder-right-panel');
+        const isOpen = card && card.classList.contains('sheet-expanded');
+        this.openSheet(isOpen ? null : 'card');
+      });
+    }
+
+    const backdrop = document.getElementById('finderSheetBackdrop');
+    if (backdrop) backdrop.addEventListener('click', () => this.closeSheets());
+
+    // Leaving mobile size (e.g. rotating a tablet) -> reset sheets
+    window.matchMedia('(max-width: 768px)').addEventListener('change', () => this.closeSheets());
   },
 
   bindFilters() {

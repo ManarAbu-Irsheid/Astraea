@@ -670,6 +670,85 @@
   color: var(--text-muted);
 }
 
+
+/* Banner on top of the map: what is being shown (Moon / Mars / Both) */
+.map-target-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  background: rgba(3, 7, 18, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--accent-cyan);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  pointer-events: auto;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Let the map top bar wrap to a 2nd line instead of overflowing */
+.map-top-bar {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.layer-switch-btn {
+  white-space: nowrap;
+}
+
+/* Medium screens: the banner matters more than the datum pill */
+@media (max-width: 1400px) {
+  .map-top-bar .map-status-pill {
+    display: none;
+  }
+}
+
+.map-target-banner[data-body="mars"] {
+  border-color: var(--accent-mars);
+}
+
+.map-target-banner[data-body="moon"] {
+  border-color: #b0c8e6;
+}
+
+.map-target-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.map-target-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.map-target-text strong {
+  color: #ffffff;
+  font-size: 0.85rem;
+}
+
+.map-target-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+}
+
+.map-target-banner[data-body="mars"] .map-target-count {
+  color: var(--accent-mars);
+}
+
+.map-target-banner[data-body="moon"] .map-target-count {
+  color: #b0c8e6;
+}
+
+/* Mobile-only sheet elements: hidden on desktop */
+.sheet-header,
+.mobile-filters-btn,
+.sheet-backdrop {
+  display: none;
+}
+
 /* ==========================================================================
    MOBILE BOTTOM SHEET RESPONSIVENESS
    ========================================================================== */
@@ -689,25 +768,145 @@
     grid-template-columns: 1fr;
     height: auto;
   }
-  .finder-left-panel {
-    order: 2;
-  }
   .finder-center-canvas {
     order: 1;
-    height: 420px;
+    height: 70vh;
+    min-height: 420px;
   }
+
+  /* Leave room so the peeking card never hides the footer */
+  body {
+    padding-bottom: 56px;
+  }
+
+  /* --- Shared bottom-sheet look --- */
+  .finder-left-panel,
   .finder-right-panel {
-    order: 3;
     position: fixed;
-    bottom: 0;
     left: 0;
     right: 0;
+    bottom: 0;
+    max-height: 78vh;
+    overflow-y: auto;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    z-index: 1000;
-    transform: translateY(calc(100% - 48px));
+    padding-top: 0;
     transition: transform 0.3s ease;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  .sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    margin: 0 -1.25rem;
+    padding: 1.1rem 1.25rem 0.6rem;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .sheet-header-btn {
+    width: calc(100% + 2.5rem);
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .sheet-grabber {
+    position: absolute;
+    top: 0.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-full);
+    background: var(--border-color);
+  }
+
+  .sheet-header-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-primary);
+  }
+
+  .sheet-close-btn,
+  .sheet-toggle-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  /* --- Filters sheet: fully hidden until opened --- */
+  .finder-left-panel {
+    z-index: 1002;
+    transform: translateY(105%);
+  }
+  .finder-left-panel.sheet-open {
+    transform: translateY(0);
+  }
+
+  /* --- Site card sheet: header peeks from the bottom --- */
+  .finder-right-panel {
+    z-index: 1001;
+    transform: translateY(calc(100% - 52px));
   }
   .finder-right-panel.sheet-expanded {
     transform: translateY(0);
+  }
+  .finder-right-panel.sheet-expanded .sheet-toggle-icon {
+    transform: rotate(180deg);
+  }
+
+  /* --- Floating "Filters" button on the map --- */
+  .mobile-filters-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--accent-blue);
+    background: var(--bg-card);
+    color: var(--accent-blue);
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+  }
+
+  /* Lift the chatbot above the peeking card, hide it while a sheet is open */
+  .chatbot-widget-container {
+    bottom: 68px;
+  }
+  body.finder-sheet-open .chatbot-widget-container {
+    display: none;
+  }
+
+  /* Map banner: keep only the banner on small screens */
+  .map-top-bar .map-layer-switcher,
+  .map-top-bar .map-status-pill {
+    display: none;
+  }
+
+  /* --- Backdrop behind an open sheet --- */
+  .sheet-backdrop.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
   }
 }

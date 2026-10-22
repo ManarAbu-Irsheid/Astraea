@@ -216,17 +216,26 @@
       <!-- ==================================================================
            LEFT PANEL: CRITERIA & FILTERS
            ================================================================== -->
+      <!-- Mobile: dark backdrop behind open bottom sheets -->
+      <div class="sheet-backdrop" id="finderSheetBackdrop"></div>
+
       <aside class="finder-left-panel" id="finderCriteriaSpotlight">
+        <!-- Mobile bottom-sheet header (hidden on desktop) -->
+        <div class="sheet-header" id="filtersSheetHeader">
+          <span class="sheet-grabber"></span>
+          <span class="sheet-header-title" id="filtersSheetTitle">Filters</span>
+          <button class="sheet-close-btn" id="filtersSheetClose" aria-label="Close">✕</button>
+        </div>
         
         <div>
           <div class="filter-section-title">
-            <span data-i18n="finder.target_select_label">Target Body Baseline</span>
+            <span id="targetSelectTitle">Find Earth sites similar to</span>
           </div>
           <!-- Target Selector: Moon / Mars / All -->
           <div class="target-body-toggle">
-            <button class="body-toggle-btn active" data-body="all" data-i18n="finder.body_all">All Bodies</button>
-            <button class="body-toggle-btn" data-body="moon" data-i18n="finder.body_moon">Moon</button>
-            <button class="body-toggle-btn" data-body="mars" data-i18n="finder.body_mars">Mars</button>
+            <button class="body-toggle-btn active" data-body="all" id="bodyBtnAll">Both</button>
+            <button class="body-toggle-btn" data-body="moon" id="bodyBtnMoon">🌕 Moon</button>
+            <button class="body-toggle-btn" data-body="mars" id="bodyBtnMars">🔴 Mars</button>
           </div>
         </div>
 
@@ -307,25 +316,29 @@
            CENTER CANVAS: INTERACTIVE GEOSPATIAL MAP
            ================================================================== -->
       <section class="finder-center-canvas" id="finderMapSpotlight">
+        <!-- Mobile: open the filters bottom sheet (hidden on desktop) -->
+        <button class="mobile-filters-btn" id="mobileFiltersBtn">
+          <span>⚙</span> <span id="mobileFiltersBtnLabel">Filters</span>
+        </button>
         <div class="map-top-bar">
-          <div class="map-status-pill">
-            <span>RASTER ENGINE:</span>
-            <span class="map-status-val" id="mapFilteredCount">12 / 12 Sites</span>
+          <!-- What the map is showing: changes with Moon / Mars -->
+          <div class="map-target-banner" id="mapTargetBanner" data-body="all">
+            <span class="map-target-icon" id="mapTargetIcon">🌍</span>
+            <span class="map-target-text">
+              <strong id="mapTargetTitle">Earth sites similar to the Moon &amp; Mars</strong>
+              <span class="map-target-count" id="mapTargetCount">12 sites</span>
+            </span>
           </div>
 
           <!-- Scientific Tile Layer Selector (Real Satellite Imagery) -->
           <div class="map-layer-switcher" id="mapLayerSwitcher">
             <button class="layer-switch-btn active" data-layer="satellite" id="layerBtnSatellite">
               <span>🛰️</span>
-              <span>Satellite (أقمار صناعية حقيقية)</span>
+              <span id="layerLabelSatellite">Satellite</span>
             </button>
             <button class="layer-switch-btn" data-layer="topo" id="layerBtnTopo">
               <span>🏔️</span>
-              <span>Topography (تضاريس)</span>
-            </button>
-            <button class="layer-switch-btn" data-layer="dark" id="layerBtnDark">
-              <span>🌌</span>
-              <span>Cyber Dark</span>
+              <span id="layerLabelTopo">Topography</span>
             </button>
           </div>
 
@@ -341,6 +354,12 @@
            RIGHT PANEL: SITE DETAIL CARD (Radar Chart & Telemetry)
            ================================================================== -->
       <aside class="finder-right-panel" id="finderDetailSpotlight">
+        <!-- Mobile bottom-sheet header: tap to open / close the site card -->
+        <button class="sheet-header sheet-header-btn" id="cardSheetHeader">
+          <span class="sheet-grabber"></span>
+          <span class="sheet-header-title" id="cardSheetTitle">Site Card</span>
+          <span class="sheet-toggle-icon">▲</span>
+        </button>
         
         <!-- Placeholder State -->
         <div class="panel-placeholder-state" id="finderDetailPlaceholder">
