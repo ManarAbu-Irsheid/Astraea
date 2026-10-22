@@ -895,6 +895,11 @@
     display: none;
   }
 
+  /* Phones zoom with two fingers, so hide the +/- buttons */
+  .finder-center-canvas .leaflet-control-zoom {
+    display: none;
+  }
+
   /* Map banner: keep only the banner on small screens */
   .map-top-bar .map-layer-switcher,
   .map-top-bar .map-status-pill {

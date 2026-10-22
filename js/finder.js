@@ -140,7 +140,7 @@ const SiteFinder = {
           zoomControl: false
         });
 
-        L.control.zoom({ position: 'topright' }).addTo(this.map);
+        L.control.zoom({ position: 'bottomleft' }).addTo(this.map);
 
         // 1. Authentic High-Resolution True Satellite Imagery (NASA / USGS / ESRI)
         this.tileLayers.satellite = L.layerGroup([
