@@ -44,16 +44,18 @@ const FINDER_TEXT = {
     showMore: (n) => `Show all ${n} sites ▾`, showLess: 'Show top 10 ▴',
     closerTo: (b, bt, bs, o, ot, os) => `Closer to ${b === 'moon' ? 'the Moon' : 'Mars'} (${bt} ${bs}%) than to ${o === 'moon' ? 'the Moon' : 'Mars'} (${ot} ${os}%)`,
     sites: (n) => n === 1 ? '1 site' : `${n} sites`,
-    similarCount: (n, total) => `${n} of ${total} sites ≥ 90% similar`,
     closestTitle: (ref) => ref ? `Closest on Earth to ${ref}` : 'Top matches on Earth',
-    bestLine: (name, score) => `Best: ${name} ${score}%`,
-    noneLine: (name, score, tier) => `No Earth site reaches 90% · Closest: ${name} ${score}% (${tier} match)`,
     tiers: { strong: 'strong', moderate: 'moderate', weak: 'weak' },
+    topLine: (name, score, tier) => `Ranked by similarity · #1: ${name} ${score}% (${tier} match)`,
     filters: 'Filters', siteCard: 'Site Card',
     satellite: 'Satellite', topo: 'Topography',
     heatLegend: 'Glow = similarity', low: 'Low', high: 'High',
-    legendCandidate: 'New candidate', legendKnown: 'Known (official) analog',
-    candidate: '★ New Candidate', known: '● Known Analog',
+    legendCandidate: 'New candidate', legendKnown: 'Known analog',
+    candidate: '★ New candidate', known: '● Known analog',
+    discAll: 'All sites', discNew: '★ New candidates only', discKnown: '● Known analogs only',
+    ndviNote: (n, ex) => `${n} sites are not shown: they failed the NDVI vegetation gate (> 0.20), e.g. ${ex}.`,
+    radarNote: 'Each criterion is compared by its position inside its own world (0 = lowest, 100 = highest), not by raw values — this keeps the TASI score fair across different sensors.',
+    bodyName: { mars: 'Mars', moon: 'the Moon' },
     vs: (t, body) => `vs ${t} (${body === 'moon' ? 'Moon' : 'Mars'})`,
     uncertainty: (u) => `±${u.toFixed(1)}% if weights change ±25%`,
     conf: { high: 'HIGH CONFIDENCE', medium: 'MEDIUM CONFIDENCE', low: 'LOW CONFIDENCE' },
@@ -71,8 +73,8 @@ const FINDER_TEXT = {
     crit: { slope: 'Slope', roughness: 'Roughness', albedo: 'Albedo', thermal: 'Thermal swing' },
     more: { slope: 'steeper', roughness: 'rougher', albedo: 'brighter', thermal: 'bigger temperature swing' },
     less: { slope: 'flatter', roughness: 'smoother', albedo: 'darker', thermal: 'smaller temperature swing' },
-    matchLine: (c, sim, ev, tv, t) => `${c}: ${sim}% match — ${ev} here vs ${tv} at ${t}`,
-    notLine: (c, sim, dir, ev, tv, t) => `${c}: only ${sim}% — this site is ${dir} (${ev} vs ${tv} at ${t})`,
+    matchLine: (c, sim, pe, pt, b, ev, tv, t) => `${c}: ${sim}% match — position ${pe}/100 on Earth vs ${pt}/100 on ${b} (actual: ${ev} here, ${tv} at ${t})`,
+    notLine: (c, sim, dir, pe, pt, b, ev, tv, t) => `${c}: only ${sim}% — ${dir} for its world (position ${pe}/100 vs ${pt}/100 on ${b}; actual: ${ev} here, ${tv} at ${t})`,
     moonThermal: (ev, tv) => `Temperature is not compared for the Moon (vacuum): ${ev} swing here vs ${tv} on the Moon.`,
     bodyLimit: {
       mars: 'Earth has 1 g gravity and thick air; Mars has 0.38 g and ~1% of Earth\'s air pressure.',
@@ -100,16 +102,18 @@ const FINDER_TEXT = {
     showMore: (n) => `عرض كل المواقع (${n}) ▾`, showLess: 'عرض أعلى 10 ▴',
     closerTo: (b, bt, bs, o, ot, os) => `أقرب إلى ${b === 'moon' ? 'القمر' : 'المريخ'} (${bt} ${bs}%) منه إلى ${o === 'moon' ? 'القمر' : 'المريخ'} (${ot} ${os}%)`,
     sites: (n) => n === 0 ? 'لا توجد مواقع' : n === 1 ? 'موقع واحد' : n === 2 ? 'موقعان' : n <= 10 ? `${n} مواقع` : `${n} موقعاً`,
-    similarCount: (n, total) => `${n} من ${total} موقعاً بتشابه 90% أو أكثر`,
     closestTitle: (ref) => ref ? `أقرب الأماكن على الأرض إلى ${ref}` : 'أعلى الأماكن تشابهاً على الأرض',
-    bestLine: (name, score) => `الأعلى: ${name} ${score}%`,
-    noneLine: (name, score, tier) => `لا يوجد موقع على الأرض يصل 90% · الأقرب: ${name} ${score}% (تشابه ${tier})`,
     tiers: { strong: 'قوي', moderate: 'متوسط', weak: 'ضعيف' },
+    topLine: (name, score, tier) => `مرتبة حسب نسبة التشابه · الأول: ${name} ${score}% (تشابه ${tier})`,
     filters: 'الفلاتر', siteCard: 'بطاقة الموقع',
     satellite: 'قمر صناعي', topo: 'تضاريس',
     heatLegend: 'التوهج = نسبة التشابه', low: 'أقل', high: 'أعلى',
-    legendCandidate: 'مرشح جديد', legendKnown: 'موقع معروف (رسمي)',
+    legendCandidate: 'مرشح جديد', legendKnown: 'موقع معروف',
     candidate: '★ مرشح جديد', known: '● موقع معروف',
+    discAll: 'كل المواقع', discNew: '★ المرشحون الجدد فقط', discKnown: '● المواقع المعروفة فقط',
+    ndviNote: (n, ex) => `${n} مواقع غير معروضة لأنها لم تجتز فحص الغطاء النباتي NDVI (أكثر من 0.20)، مثل ${ex}.`,
+    radarNote: 'كل معيار يُقارن حسب موقعه داخل كوكبه (0 = الأقل، 100 = الأعلى) وليس بالأرقام الخام، حتى تكون مقارنة TASI عادلة بين أجهزة قياس مختلفة.',
+    bodyName: { mars: 'المريخ', moon: 'القمر' },
     vs: (t, body) => `مقارنة مع ${t} (${body === 'moon' ? 'القمر' : 'المريخ'})`,
     uncertainty: (u) => `±${u.toFixed(1)}% إذا تغيرت الأوزان ±25%`,
     conf: { high: 'ثقة عالية', medium: 'ثقة متوسطة', low: 'ثقة منخفضة' },
@@ -127,8 +131,8 @@ const FINDER_TEXT = {
     crit: { slope: 'الانحدار', roughness: 'الخشونة', albedo: 'السطوع', thermal: 'فرق الحرارة' },
     more: { slope: 'أشد انحداراً', roughness: 'أكثر خشونة', albedo: 'أكثر سطوعاً', thermal: 'فرق حرارته أكبر' },
     less: { slope: 'أكثر استواءً', roughness: 'أنعم', albedo: 'أغمق', thermal: 'فرق حرارته أصغر' },
-    matchLine: (c, sim, ev, tv, t) => `${c}: تطابق ${sim}% — ${ev} هنا مقابل ${tv} في ${t}`,
-    notLine: (c, sim, dir, ev, tv, t) => `${c}: ${sim}% فقط — هذا الموقع ${dir} (${ev} مقابل ${tv} في ${t})`,
+    matchLine: (c, sim, pe, pt, b, ev, tv, t) => `${c}: تطابق ${sim}% — الموقع ${pe}/100 على الأرض مقابل ${pt}/100 على ${b} (القيم الفعلية: ${ev} هنا، ${tv} في ${t})`,
+    notLine: (c, sim, dir, pe, pt, b, ev, tv, t) => `${c}: ${sim}% فقط — ${dir} بالنسبة لكوكبه (الموقع ${pe}/100 مقابل ${pt}/100 على ${b}؛ القيم الفعلية: ${ev} هنا، ${tv} في ${t})`,
     moonThermal: (ev, tv) => `لا تُقارن الحرارة مع القمر (فراغ): فرق الحرارة هنا ${ev} مقابل ${tv} على القمر.`,
     bodyLimit: {
       mars: 'جاذبية الأرض 1g وهواؤها كثيف؛ جاذبية المريخ 0.38g وضغط هوائه حوالي 1% من الأرض.',
@@ -153,6 +157,7 @@ const SiteFinder = {
 
   init(data) {
     this.sites = data.earth;
+    this.rejected = data.rejected || [];
     this.targets = data.targets;
 
     this.initMap();
@@ -321,7 +326,7 @@ const SiteFinder = {
     });
   },
 
-  // Banner on top of the map: what is shown + how many are really similar (≥ 90%) + the best one
+  // Banner on top of the map: what is shown + the #1 ranked site and its strength
   updateTargetBanner(scored) {
     const t = this.t();
     const ref = this.referenceId === 'best' ? null : (this.getTargetList().find(x => x.id === this.referenceId) || {}).name;
@@ -334,19 +339,17 @@ const SiteFinder = {
 
     this.renderClosestList(scored, ref);
 
-    const similar = scored.filter(x => x.score >= 90).length;
+    // No threshold / no count: sites are simply ranked by score. Show the #1 site and how strong it is.
     const best = scored.reduce((a, x) => (!a || x.score > a.score ? x : a), null);
-    let parts;
-    if (similar > 0 || !best) {
-      parts = [t.similarCount(similar, scored.length)];
-      if (best) parts.push(t.bestLine(best.site.name, best.score.toFixed(1)));
-    } else {
-      // No strong match: say so honestly and show the closest one with its strength
-      const tier = best.score >= 80 ? t.tiers.moderate : t.tiers.weak;
-      parts = [t.noneLine(best.site.name, best.score.toFixed(1), tier)];
-    }
     const countEl = document.getElementById('mapTargetCount');
-    if (countEl) countEl.textContent = parts.join(' · ');
+    if (countEl) {
+      if (!best) {
+        countEl.textContent = t.sites(0);
+      } else {
+        const tier = best.score >= 90 ? t.tiers.strong : best.score >= 80 ? t.tiers.moderate : t.tiers.weak;
+        countEl.textContent = t.topLine(best.site.name, best.score.toFixed(1), tier);
+      }
+    }
   },
 
   // Left panel: the 5 Earth sites closest to the reference (click = open its card)
@@ -519,6 +522,12 @@ const SiteFinder = {
     setText('heatLegendHigh', t.high);
     setText('legendCandidate', t.legendCandidate);
     setText('legendKnown', t.legendKnown);
+    setText('discAll', t.discAll);
+    setText('discNew', t.discNew);
+    setText('discKnown', t.discKnown);
+    setText('radarNote', t.radarNote);
+    const rej = this.rejected || [];
+    setText('ndviNote', rej.length ? t.ndviNote(rej.length, rej.slice(3, 6).map(x => x.name.split(' (')[0]).join(', ')) : '');
     setText('mostSimilarTitle', t.mostSimilar);
     setText('radarTitle', t.radarTitle);
     setText('whyMatchesTitle', t.whyMatches);
@@ -624,7 +633,8 @@ const SiteFinder = {
     // Header
     const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
     setText('detailSiteName', site.name);
-    setText('detailSiteRegion', `${site.region} • (${site.lat.toFixed(2)}°, ${site.lon.toFixed(2)}°)`);
+    const coords = `(${site.lat.toFixed(2)}°, ${site.lon.toFixed(2)}°)`;
+    setText('detailSiteRegion', site.region && site.region !== site.name ? `${site.region} • ${coords}` : coords);
     const badgeEl = document.getElementById('detailCandidateBadge');
     if (badgeEl) {
       badgeEl.textContent = site.is_official ? t.known : t.candidate;
@@ -676,18 +686,20 @@ const SiteFinder = {
     result.keys.forEach(k => {
       const sim = Math.round(result.perCriterion[k]);
       const ev = this.fmt[k](site), tv = this.fmt[k](target);
+      const pe = Math.round(site.f[k] * 100), pt = Math.round(target.f[k] * 100);
+      const bName = t.bodyName[tBody];
       if (sim >= 80) {
-        matches.push({ sim, text: t.matchLine(t.crit[k], sim, ev, tv, target.name) });
+        matches.push({ sim, text: t.matchLine(t.crit[k], sim, pe, pt, bName, ev, tv, target.name) });
       } else {
         const dir = site.f[k] > target.f[k] ? t.more[k] : t.less[k];
-        diffs.push({ sim, text: t.notLine(t.crit[k], sim, dir, ev, tv, target.name) });
+        diffs.push({ sim, text: t.notLine(t.crit[k], sim, dir, pe, pt, bName, ev, tv, target.name) });
       }
     });
     // Nothing above 80%? still show the closest criterion
     if (!matches.length && diffs.length) {
       const best = result.keys.reduce((a, k) => (result.perCriterion[k] > result.perCriterion[a] ? k : a), result.keys[0]);
       const sim = Math.round(result.perCriterion[best]);
-      matches.push({ sim, text: t.matchLine(t.crit[best], sim, this.fmt[best](site), this.fmt[best](target), target.name) });
+      matches.push({ sim, text: t.matchLine(t.crit[best], sim, Math.round(site.f[best] * 100), Math.round(target.f[best] * 100), t.bodyName[tBody], this.fmt[best](site), this.fmt[best](target), target.name) });
       const idx = diffs.findIndex(d => d.text.startsWith(t.crit[best]));
       if (idx >= 0) diffs.splice(idx, 1);
     }

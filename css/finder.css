@@ -1013,6 +1013,15 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
+.radar-note,
+.ndvi-note {
+  display: block;
+  margin: 0.3rem 0 0;
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 /* Mobile-only sheet elements: hidden on desktop */
 .sheet-header,
 .mobile-filters-btn,

@@ -288,15 +288,15 @@
           <div class="discovery-options">
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="all" checked>
-              <span data-i18n="finder.discovery_all">All Planetary Analogs</span>
+              <span id="discAll">All sites</span>
             </label>
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="candidates_only">
-              <strong style="color:var(--accent-gold);" data-i18n="finder.discovery_candidates_only">★ New Candidates Only</strong>
+              <strong style="color:var(--accent-gold);" id="discNew">★ New candidates only</strong>
             </label>
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="known_only">
-              <span data-i18n="finder.discovery_known_only">● Known Historic Analogs</span>
+              <span id="discKnown">● Known analogs only</span>
             </label>
           </div>
         </div>
@@ -324,6 +324,7 @@
             </div>
           </div>
         </div>
+          <p class="ndvi-note" id="ndviNote"></p>
 
       </aside>
 
@@ -357,10 +358,6 @@
             </button>
           </div>
 
-          <div class="map-status-pill">
-            <span>COORDINATE DATUM:</span>
-            <span class="map-status-val">WGS-84 / EGM96</span>
-          </div>
         </div>
         <div id="leafletMap"></div>
       </section>
@@ -423,6 +420,7 @@
           <!-- Radar Chart (Multi-parameter matching breakdown) -->
           <div class="radar-chart-container">
             <span class="radar-title" id="radarTitle">Match per criterion</span>
+            <span class="radar-note" id="radarNote"></span>
             <canvas id="radarCanvas" width="300" height="220"></canvas>
           </div>
 
