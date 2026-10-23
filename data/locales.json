@@ -333,10 +333,10 @@
       "password_reg_label": "Clearance Password (5+ characters):",
       "remember_me": "Remember My Session",
       "forgot_password": "Forgot Password?",
-      "btn_signin": "Access Mission Platform 🚀",
-      "btn_demo": "⚡ 1-Click Fast Researcher Demo",
+      "btn_signin": "Access Mission Platform",
+      "btn_demo": "1-Click Fast Researcher Demo",
       "no_account": "Don't have an account yet?",
-      "goto_register": "Create New Researcher Account 🌟",
+      "goto_register": "Create New Researcher Account",
       "name_label": "Full Researcher Name:",
       "avatar_label": "Astronaut Identity & Avatar:",
       "avatar_male": "Male Astronaut",
@@ -350,9 +350,9 @@
       "role_isru": "In-Situ Resource Utilization (ISRU)",
       "role_geology": "Comparative Field Analog Geology",
       "ethics_agree": "I agree to the Planetary Protection & Scientific Ethics Charter",
-      "btn_register": "Grant Clearance & Begin Exploration 🚀",
+      "btn_register": "Grant Clearance & Begin Exploration",
       "has_account": "Already registered?",
-      "goto_signin": "Sign In to Your Account 🔑"
+      "goto_signin": "Sign In to Your Account"
     }
   },
   "ar": {
@@ -689,10 +689,10 @@
       "password_reg_label": "كلمة المرور (5 خانات على الأقل):",
       "remember_me": "تذكّر جلستي",
       "forgot_password": "نسيت كلمة المرور؟",
-      "btn_signin": "دخول المنصة العلمية 🚀",
-      "btn_demo": "⚡ دخول تجريبي سريع كباحث فلكي",
+      "btn_signin": "دخول المنصة العلمية",
+      "btn_demo": "دخول تجريبي سريع كباحث فلكي",
       "no_account": "ليس لديك حساب بعد؟",
-      "goto_register": "إنشاء حساب باحث جديد 🌟",
+      "goto_register": "إنشاء حساب باحث جديد",
       "name_label": "الاسم الكامل للباحث:",
       "avatar_label": "رتبة وهوية رائد الفضاء:",
       "avatar_male": "رائد فضاء",
@@ -706,9 +706,9 @@
       "role_isru": "استغلال الموارد الفضائية الموضعية (ISRU)",
       "role_geology": "جيولوجيا النظائر الميدانية المقارنة",
       "ethics_agree": "أوافق على ميثاق النزاهة العلمية وحماية الكواكب",
-      "btn_register": "إنشاء الحساب وبدء الاستكشاف 🚀",
+      "btn_register": "إنشاء الحساب وبدء الاستكشاف",
       "has_account": "لديك حساب بالفعل؟",
-      "goto_signin": "تسجيل الدخول إلى حسابك 🔑"
+      "goto_signin": "تسجيل الدخول إلى حسابك"
     }
   }
 }
