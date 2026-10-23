@@ -7,7 +7,7 @@
  * - Rayleigh scattering Fresnel atmospheric glow shader (Additive Blending)
  * - Ultra-Realistic Multi-Tiered Deep Space Starfield with Airy Disk Sprites & Diffraction Spikes
  * - Subtle astronomical scintillation (twinkle) and spectral stellar temperatures
- * - Authentic 3D Space Launch Rockets & Deep Space Orbital Craft with Glowing Plasma Exhaust & Particle Plumes
+ * - Authentic 3D Space Launch Rockets & Deep Space Orbital Craft with Photorealistic Supersonic Fire & Billowing Plumes
  * - Smooth 3D mouse parallax camera navigation
  * - Theme-responsive lighting and procedural fallback
  */
@@ -283,64 +283,383 @@
     scene.add(beaconStars);
 
     // =========================================================================
-    // 6. PHOTOREALISTIC 3D AEROSPACE LAUNCH VEHICLE & DEEP SPACE MISSION CRAFT
+    // 6. PHOTOREALISTIC PROCEDURAL ROCKET PROPULSION & FIRE TEXTURES
     // =========================================================================
 
-    // Procedural Vacuum Expansion Plume Texture (Supersonic Supra-Atmospheric Gradient)
-    function createVacuumPlumeTexture() {
+    // A. Volumetric Supersonic Flame Column Texture (Incandescent Core + Fire Orange Sheath)
+    function createRealisticFlameTexture() {
       const c = document.createElement('canvas');
-      c.width = 128; c.height = 256;
+      c.width = 128;
+      c.height = 512;
       const ctx = c.getContext('2d');
-      const grad = ctx.createLinearGradient(0, 0, 0, 256);
-      grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.98)'); // Combustion throat (white-hot)
-      grad.addColorStop(0.08, 'rgba(0, 245, 255, 0.92)');  // High-temp ionized cyan
-      grad.addColorStop(0.24, 'rgba(0, 150, 255, 0.68)');  // Hydrolox / Methalox blue
-      grad.addColorStop(0.55, 'rgba(30, 70, 230, 0.28)');  // Deep space expansion envelope
-      grad.addColorStop(0.85, 'rgba(80, 20, 210, 0.09)');  // High-vacuum boundary
+      ctx.clearRect(0, 0, 128, 512);
+
+      // Outer Fiery Combustion Plume
+      const outerGrad = ctx.createLinearGradient(64, 0, 64, 512);
+      outerGrad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');    // Nozzle throat white-hot
+      outerGrad.addColorStop(0.05, 'rgba(255, 245, 140, 0.98)');  // High-temp incandescent gold
+      outerGrad.addColorStop(0.18, 'rgba(255, 160, 20, 0.94)');   // Fiery orange
+      outerGrad.addColorStop(0.45, 'rgba(255, 80, 5, 0.78)');     // Blazing crimson-orange
+      outerGrad.addColorStop(0.72, 'rgba(210, 35, 0, 0.42)');     // Cooling amber flame
+      outerGrad.addColorStop(0.92, 'rgba(90, 15, 0, 0.14)');      // Ethereal flame tip
+      outerGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
+      // Draw tapered aerodynamic supersonic flame teardrop shape
+      ctx.save();
+      ctx.fillStyle = outerGrad;
+      ctx.beginPath();
+      ctx.moveTo(48, 0);
+      ctx.bezierCurveTo(24, 75, 16, 210, 36, 370);
+      ctx.bezierCurveTo(46, 430, 58, 485, 64, 512);
+      ctx.bezierCurveTo(70, 485, 82, 430, 92, 370);
+      ctx.bezierCurveTo(112, 210, 104, 75, 80, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // High-intensity white-hot central core jet
+      const coreGrad = ctx.createLinearGradient(64, 0, 64, 320);
+      coreGrad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+      coreGrad.addColorStop(0.2, 'rgba(255, 255, 240, 0.98)');
+      coreGrad.addColorStop(0.55, 'rgba(255, 215, 80, 0.75)');
+      coreGrad.addColorStop(0.85, 'rgba(255, 130, 15, 0.35)');
+      coreGrad.addColorStop(1.0, 'rgba(255, 70, 5, 0)');
+
+      ctx.save();
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.moveTo(56, 0);
+      ctx.bezierCurveTo(46, 55, 44, 140, 56, 230);
+      ctx.bezierCurveTo(60, 275, 64, 315, 64, 320);
+      ctx.bezierCurveTo(64, 315, 68, 275, 72, 230);
+      ctx.bezierCurveTo(84, 140, 82, 55, 72, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      // Subtle turbulent supersonic combustion streaks
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(64, 0);
+      ctx.lineTo(64, 190);
+      ctx.stroke();
+
+      return new THREE.CanvasTexture(c);
+    }
+    const realisticFlameTexture = createRealisticFlameTexture();
+
+    // B. Supersonic Mach Shock Diamond Texture (Acoustic Compression Nodes)
+    function createMachDiamondTexture() {
+      const c = document.createElement('canvas');
+      c.width = 64;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 64, 128);
+
+      const cx = 32, cy = 64;
+      const grad = ctx.createRadialGradient(cx, cy, 1, cx, cy, 55);
+      grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+      grad.addColorStop(0.18, 'rgba(255, 248, 190, 0.96)');
+      grad.addColorStop(0.42, 'rgba(255, 180, 45, 0.65)');
+      grad.addColorStop(0.72, 'rgba(255, 75, 0, 0.22)');
       grad.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
+      ctx.save();
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.moveTo(cx, 8);
+      ctx.bezierCurveTo(cx + 20, cy - 14, cx + 22, cy + 14, cx, 120);
+      ctx.bezierCurveTo(cx - 22, cy + 14, cx - 20, cy - 14, cx, 8);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      return new THREE.CanvasTexture(c);
+    }
+    const machDiamondTexture = createMachDiamondTexture();
+
+    // C. Supersonic Vacuum Free Expansion Plume Bell Texture (Twilight Phenomenon)
+    function createSupersonicPlumeTexture() {
+      const c = document.createElement('canvas');
+      c.width = 128;
+      c.height = 256;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 128, 256);
+
+      const grad = ctx.createLinearGradient(64, 0, 64, 256);
+      grad.addColorStop(0.0, 'rgba(255, 242, 190, 0.88)'); // Hot incandescent near nozzle
+      grad.addColorStop(0.12, 'rgba(255, 155, 45, 0.68)'); // Fiery gas expansion
+      grad.addColorStop(0.35, 'rgba(240, 85, 25, 0.38)');  // Vacuum twilight plume
+      grad.addColorStop(0.68, 'rgba(180, 55, 170, 0.16)'); // Ethereal outer vacuum boundary
+      grad.addColorStop(0.9, 'rgba(70, 120, 240, 0.06)');  // Ionized edge
+      grad.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 128, 256);
       return new THREE.CanvasTexture(c);
     }
-    const vacuumPlumeTexture = createVacuumPlumeTexture();
+    const supersonicPlumeTexture = createSupersonicPlumeTexture();
 
-    // Procedural Ion Engine Plume Texture (Xenon Hall-Effect Thruster)
-    function createIonPlumeTexture() {
+    // D. Engine Throat Optical Bloom Texture (Radiant Combustion Chamber Irradiance)
+    function createEngineGlowTexture() {
       const c = document.createElement('canvas');
-      c.width = 128; c.height = 256;
+      c.width = 128;
+      c.height = 128;
       const ctx = c.getContext('2d');
-      const grad = ctx.createLinearGradient(0, 0, 0, 256);
-      grad.addColorStop(0.0, 'rgba(230, 255, 255, 1.0)');  // Ionization grid core
-      grad.addColorStop(0.15, 'rgba(0, 255, 220, 0.85)');  // Turquoise plasma
-      grad.addColorStop(0.45, 'rgba(50, 160, 255, 0.50)'); // Electromagnetic beam
-      grad.addColorStop(0.85, 'rgba(140, 50, 250, 0.14)'); // Xenon halo
+      ctx.clearRect(0, 0, 128, 128);
+
+      const cx = 64, cy = 64;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
+      grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+      grad.addColorStop(0.16, 'rgba(255, 242, 160, 0.92)');
+      grad.addColorStop(0.38, 'rgba(255, 145, 35, 0.58)');
+      grad.addColorStop(0.68, 'rgba(255, 65, 10, 0.18)');
       grad.addColorStop(1.0, 'rgba(0, 0, 0, 0)');
+
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 128, 256);
+      ctx.fillRect(0, 0, 128, 128);
       return new THREE.CanvasTexture(c);
     }
-    const ionPlumeTexture = createIonPlumeTexture();
+    const engineGlowTexture = createEngineGlowTexture();
 
-    // Trailing Particle Texture
-    function createParticleTexture() {
+    // E. Soft Volumetric Billowing Smoke & Fire Puff Texture
+    function createSmokePuffTexture() {
       const c = document.createElement('canvas');
-      c.width = 64; c.height = 64;
+      c.width = 64;
+      c.height = 64;
       const ctx = c.getContext('2d');
-      const grad = ctx.createRadialGradient(32, 32, 2, 32, 32, 30);
-      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      grad.addColorStop(0.3, 'rgba(0, 229, 255, 0.8)');
-      grad.addColorStop(0.7, 'rgba(0, 100, 255, 0.25)');
-      grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.clearRect(0, 0, 64, 64);
+
+      const cx = 32, cy = 32;
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+      grad.addColorStop(0.0, 'rgba(255, 255, 255, 1.0)');
+      grad.addColorStop(0.22, 'rgba(255, 255, 255, 0.88)');
+      grad.addColorStop(0.55, 'rgba(255, 255, 255, 0.38)');
+      grad.addColorStop(0.82, 'rgba(255, 255, 255, 0.08)');
+      grad.addColorStop(1.0, 'rgba(255, 255, 255, 0)');
+
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 64, 64);
       return new THREE.CanvasTexture(c);
     }
-    const particleTexture = createParticleTexture();
+    const smokePuffTexture = createSmokePuffTexture();
+
+    // =========================================================================
+    // 7. CALM & SUBTLE VOLUMETRIC FLAME ASSEMBLY BUILDER
+    // =========================================================================
+    function createRocketFlameAssembly(scale = 1.0, isHeavy = true) {
+      const flameGroup = new THREE.Group();
+
+      // 1. Sleek, compact volumetric flame column (3 cross planes at 0°, 60°, 120°)
+      const flameWidth = (isHeavy ? 0.08 : 0.055) * scale;
+      const flameHeight = (isHeavy ? 0.58 : 0.38) * scale;
+      const flameGeom = new THREE.PlaneGeometry(flameWidth, flameHeight);
+      flameGeom.translate(0, -flameHeight / 2, 0);
+
+      const flameMat = new THREE.MeshBasicMaterial({
+        map: realisticFlameTexture,
+        transparent: true,
+        opacity: 0.85,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+
+      for (let i = 0; i < 3; i++) {
+        const plane = new THREE.Mesh(flameGeom, flameMat);
+        plane.rotation.y = (i * Math.PI) / 3;
+        flameGroup.add(plane);
+      }
+
+      // 2. Focused white-hot inner thrust core cone
+      const coreLength = (isHeavy ? 0.22 : 0.15) * scale;
+      const coreRadius = (isHeavy ? 0.016 : 0.011) * scale;
+      const coreGeom = new THREE.ConeGeometry(coreRadius, coreLength, 16);
+      coreGeom.translate(0, -coreLength / 2, 0);
+      coreGeom.rotateX(Math.PI);
+      const coreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.90,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      const coreMesh = new THREE.Mesh(coreGeom, coreMat);
+      flameGroup.add(coreMesh);
+
+      // 3. Subtle Mach Shock Diamonds (Small, elegant compression nodes)
+      const diamondMat = new THREE.MeshBasicMaterial({
+        map: machDiamondTexture,
+        transparent: true,
+        opacity: 0.70,
+        blending: THREE.AdditiveBlending,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      const diamondDistances = isHeavy ? [0.08, 0.18] : [0.06, 0.14];
+      const diamondMeshes = [];
+      diamondDistances.forEach((dist, idx) => {
+        const dSize = (isHeavy ? 0.032 : 0.022) * scale * (1.0 - idx * 0.2);
+        const dGeom = new THREE.PlaneGeometry(dSize * 0.7, dSize * 1.3);
+        for (let j = 0; j < 2; j++) {
+          const dMesh = new THREE.Mesh(dGeom, diamondMat);
+          dMesh.position.y = -dist * scale;
+          dMesh.rotation.y = j * (Math.PI / 2);
+          flameGroup.add(dMesh);
+          diamondMeshes.push(dMesh);
+        }
+      });
+
+      // 4. Delicate Engine Throat Optical Bloom (Soft, non-intrusive lens glint)
+      const bloomMat = new THREE.SpriteMaterial({
+        map: engineGlowTexture,
+        transparent: true,
+        opacity: 0.45,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+      const bloomSprite = new THREE.Sprite(bloomMat);
+      const bScale = (isHeavy ? 0.20 : 0.14) * scale;
+      bloomSprite.scale.set(bScale, bScale, 1.0);
+      bloomSprite.position.y = -0.01 * scale;
+      flameGroup.add(bloomSprite);
+
+      // 5. Calm warm PointLight softly illuminating the engine base
+      const engineLight = new THREE.PointLight(0xff8833, isHeavy ? 1.0 : 0.65, isHeavy ? 3.5 : 2.5);
+      engineLight.position.y = -0.06 * scale;
+      flameGroup.add(engineLight);
+
+      return {
+        flameGroup,
+        engineLight,
+        diamondMeshes,
+        bloomSprite,
+        coreMesh
+      };
+    }
+
+    // =========================================================================
+    // 8. CALM & ETHEREAL EXHAUST PARTICLE EMITTER SYSTEM
+    // =========================================================================
+    function createPlumeParticleSystem(maxParticles = 40) {
+      const geom = new THREE.BufferGeometry();
+      const positions = new Float32Array(maxParticles * 3);
+      const colors = new Float32Array(maxParticles * 3);
+
+      for (let i = 0; i < maxParticles * 3; i++) {
+        positions[i] = 9999;
+        colors[i] = 0.0;
+      }
+
+      geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 1.5,
+        map: smokePuffTexture,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.35,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+      });
+
+      const pointsMesh = new THREE.Points(geom, mat);
+      scene.add(pointsMesh);
+
+      const particles = [];
+      for (let i = 0; i < maxParticles; i++) {
+        particles.push({
+          x: 9999, y: 9999, z: 9999,
+          vx: 0, vy: 0, vz: 0,
+          age: 1.0,
+          maxAge: 25,
+          active: false
+        });
+      }
+
+      let spawnIndex = 0;
+
+      function emit(origin, thrustDir, scale = 1.0) {
+        const p = particles[spawnIndex];
+        spawnIndex = (spawnIndex + 1) % maxParticles;
+
+        p.active = true;
+        p.age = 0.0;
+        p.maxAge = 20 + Math.random() * 10;
+
+        // Eject softly backwards with very tight spread
+        const backwardSpeed = 0.012 + Math.random() * 0.008;
+        const spread = 0.006 * scale;
+        const rx = (Math.random() - 0.5) * spread;
+        const ry = (Math.random() - 0.5) * spread;
+        const rz = (Math.random() - 0.5) * spread;
+
+        p.x = origin.x + rx;
+        p.y = origin.y + ry;
+        p.z = origin.z + rz;
+
+        p.vx = -thrustDir.x * backwardSpeed + rx * 0.2;
+        p.vy = -thrustDir.y * backwardSpeed + ry * 0.2;
+        p.vz = -thrustDir.z * backwardSpeed + rz * 0.2;
+      }
+
+      function update() {
+        const posAttr = geom.attributes.position;
+        const colAttr = geom.attributes.color;
+
+        for (let i = 0; i < maxParticles; i++) {
+          const p = particles[i];
+          if (!p.active) {
+            posAttr.setXYZ(i, 9999, 9999, 9999);
+            colAttr.setXYZ(i, 0, 0, 0);
+            continue;
+          }
+
+          p.age += 1.0;
+          const t = p.age / p.maxAge;
+          if (t >= 1.0) {
+            p.active = false;
+            posAttr.setXYZ(i, 9999, 9999, 9999);
+            colAttr.setXYZ(i, 0, 0, 0);
+            continue;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+          p.z += p.vz;
+
+          p.vx *= 0.96;
+          p.vy *= 0.96;
+          p.vz *= 0.96;
+
+          posAttr.setXYZ(i, p.x, p.y, p.z);
+
+          // Smooth, delicate amber-warm fade
+          const alphaFade = Math.pow(1.0 - t, 1.4) * 0.45;
+          const r = 1.0 * alphaFade;
+          const g = (0.7 - t * 0.4) * alphaFade;
+          const b = (0.28 - t * 0.28) * alphaFade;
+
+          colAttr.setXYZ(i, r, g, b);
+        }
+
+        posAttr.needsUpdate = true;
+        colAttr.needsUpdate = true;
+      }
+
+      return {
+        emit,
+        update,
+        pointsMesh
+      };
+    }
 
     // -------------------------------------------------------------------------
-    // 6A. Heavy Orbital Launch Vehicle (SLS / Falcon 9 Multi-Stage Architecture)
+    // 9A. Heavy Orbital Launch Vehicle (SLS / Falcon 9 Multi-Stage Architecture)
     // -------------------------------------------------------------------------
-    function buildHeavyLaunchVehicle(scale = 1.0) {
+    function buildHeavyLaunchVehicle(scale = 1.15) {
       const rocket = new THREE.Group();
 
       const whiteCompositeMat = new THREE.MeshStandardMaterial({
@@ -369,7 +688,7 @@
 
       const cyanBandMat = new THREE.MeshBasicMaterial({ color: 0x00d2ff });
 
-      const r = 0.058 * scale; // Core radius (~1:15 Slender High-Performance Aspect Ratio)
+      const r = 0.058 * scale; // Core radius
 
       // 1. Stage 1 Booster Core
       const stage1Height = 1.15 * scale;
@@ -378,7 +697,7 @@
       stage1Mesh.position.y = -0.12 * scale;
       rocket.add(stage1Mesh);
 
-      // Exterior Fuel & Avionics Conduit Raceways (Two long slender pipes along hull)
+      // Exterior Fuel & Avionics Conduit Raceways
       const racewayGeom = new THREE.BoxGeometry(0.007 * scale, stage1Height * 0.96, 0.012 * scale);
       const raceway1 = new THREE.Mesh(racewayGeom, conduitRacewayMat);
       raceway1.position.set(r * 0.98, -0.12 * scale, 0);
@@ -388,7 +707,7 @@
       raceway2.position.set(-r * 0.98, -0.12 * scale, 0);
       rocket.add(raceway2);
 
-      // 4 Deployable Titanium Grid Fins (Mounted below interstage)
+      // 4 Deployable Titanium Grid Fins
       const finGeom = new THREE.BoxGeometry(0.012 * scale, 0.095 * scale, 0.065 * scale);
       for (let i = 0; i < 4; i++) {
         const fin = new THREE.Mesh(finGeom, titaniumInconelMat);
@@ -427,6 +746,17 @@
 
       // 4 Gimbaled Outer Engine Bells
       const outerNozzleGeom = new THREE.CylinderGeometry(0.009 * scale, 0.02 * scale, 0.07 * scale, 16, 1, true);
+      const outerNozzleFlameCones = [];
+      const outerCoreMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        transparent: true,
+        opacity: 0.80,
+        blending: THREE.AdditiveBlending
+      });
+      const outerFlameGeom = new THREE.ConeGeometry(0.006 * scale, 0.08 * scale, 12);
+      outerFlameGeom.translate(0, -0.04 * scale, 0);
+      outerFlameGeom.rotateX(Math.PI);
+
       for (let i = 0; i < 4; i++) {
         const nozzle = new THREE.Mesh(outerNozzleGeom, titaniumInconelMat);
         const angle = (i * Math.PI) / 2;
@@ -434,9 +764,15 @@
         nozzle.position.z = Math.sin(angle) * (0.024 * scale);
         nozzle.position.y = -0.825 * scale;
         rocket.add(nozzle);
+
+        // Subtle, compact flame tip from each outer engine bell
+        const outerFlame = new THREE.Mesh(outerFlameGeom, outerCoreMat);
+        outerFlame.position.set(nozzle.position.x, -0.85 * scale, nozzle.position.z);
+        rocket.add(outerFlame);
+        outerNozzleFlameCones.push(outerFlame);
       }
 
-      // 3. Interstage Decoupler (Carbon-composite band)
+      // 3. Interstage Decoupler
       const interstageHeight = 0.18 * scale;
       const interstageGeom = new THREE.CylinderGeometry(r * 0.99, r * 0.99, interstageHeight, 32);
       const interstage = new THREE.Mesh(interstageGeom, carbonInterstageMat);
@@ -449,14 +785,14 @@
       seam1.position.y = 0.45 * scale;
       rocket.add(seam1);
 
-      // 4. Second Stage Core (Upper Orbital Injection Stage)
+      // 4. Second Stage Core
       const stage2Height = 0.38 * scale;
       const stage2Geom = new THREE.CylinderGeometry(r, r, stage2Height, 32);
       const stage2 = new THREE.Mesh(stage2Geom, whiteCompositeMat);
       stage2.position.y = 0.82 * scale;
       rocket.add(stage2);
 
-      // 4 RCS Thruster Quads on Stage 2
+      // RCS Thruster Quads on Stage 2
       const rcsGeom = new THREE.BoxGeometry(0.012 * scale, 0.012 * scale, 0.012 * scale);
       for (let i = 0; i < 4; i++) {
         const rcs = new THREE.Mesh(rcsGeom, titaniumInconelMat);
@@ -467,7 +803,7 @@
         rocket.add(rcs);
       }
 
-      // 5. Authentic Von Kármán / Ogive Payload Fairing (Smooth Aerodynamic Curvature)
+      // 5. Authentic Von Kármán / Ogive Payload Fairing
       const fairingHeight = 0.52 * scale;
       const fairingSegments = 18;
       const fairingPoints = [];
@@ -488,275 +824,145 @@
       tipMesh.position.y = 1.01 * scale + fairingHeight + 0.035 * scale;
       rocket.add(tipMesh);
 
-      // =======================================================================
-      // SUPERSONIC VACUUM EXHAUST PLUME & MACH SHOCK DIAMONDS
-      // =======================================================================
-      const flameGroup = new THREE.Group();
-      flameGroup.position.y = -0.87 * scale;
-
-      // 1. Incandescent Combustion Throat Jet (Pure White Core)
-      const throatGeom = new THREE.ConeGeometry(0.024 * scale, 0.28 * scale, 16);
-      const throatMat = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: 0.98
-      });
-      const throatMesh = new THREE.Mesh(throatGeom, throatMat);
-      throatMesh.rotation.x = Math.PI;
-      throatMesh.position.y = -0.14 * scale;
-      flameGroup.add(throatMesh);
-
-      // 2. Mach Shock Diamonds (Supersonic Flow Nodes)
-      const diamondMat = new THREE.MeshBasicMaterial({
-        color: 0x99ffff,
-        transparent: true,
-        opacity: 0.9,
-        blending: THREE.AdditiveBlending
-      });
-      const diamondGeom = new THREE.OctahedronGeometry(0.016 * scale, 0);
-      const diamondDistances = [0.08, 0.19, 0.33, 0.50];
-      diamondDistances.forEach((dist, idx) => {
-        const dMesh = new THREE.Mesh(diamondGeom, diamondMat);
-        dMesh.position.y = -dist * scale;
-        const s = 1.0 - idx * 0.18;
-        dMesh.scale.set(0.7 * s, 2.2 * s, 0.7 * s);
-        flameGroup.add(dMesh);
-      });
-
-      // 3. Supersonic Vacuum Free Expansion Envelope (Curved Plume Bell)
-      const plumeBellPoints = [];
-      const plumeBellSegments = 16;
-      const plumeLength = 1.35 * scale;
-      for (let i = 0; i <= plumeBellSegments; i++) {
-        const t = i / plumeBellSegments;
-        const curY = -t * plumeLength;
-        const curR = (0.026 * scale) + (0.24 * scale) * Math.pow(t, 0.75);
-        plumeBellPoints.push(new THREE.Vector2(curR, curY));
-      }
-      const plumeBellGeom = new THREE.LatheGeometry(plumeBellPoints, 28);
-      const plumeBellMat = new THREE.MeshBasicMaterial({
-        map: vacuumPlumeTexture,
-        transparent: true,
-        opacity: 0.88,
-        side: THREE.DoubleSide,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-      const plumeBellMesh = new THREE.Mesh(plumeBellGeom, plumeBellMat);
-      flameGroup.add(plumeBellMesh);
-
-      // Engine PointLight
-      const engineLight = new THREE.PointLight(0x00e5ff, 2.6, 6.0);
-      engineLight.position.y = -0.9 * scale;
-      rocket.add(engineLight);
-
-      rocket.add(flameGroup);
-
-      // 4. Trailing Dynamic Dispersal Particle Plume
-      const plumeCount = 50;
-      const pGeom = new THREE.BufferGeometry();
-      const pPos = new Float32Array(plumeCount * 3);
-      const pCol = new Float32Array(plumeCount * 3);
-      for (let i = 0; i < plumeCount * 3; i++) {
-        pPos[i] = 9999;
-        pCol[i] = 1.0;
-      }
-      pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-      pGeom.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
-
-      const pMat = new THREE.PointsMaterial({
-        size: 3.8,
-        map: particleTexture,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-      const plumePoints = new THREE.Points(pGeom, pMat);
-      scene.add(plumePoints);
+      // 6. Photorealistic Multi-Layer Supersonic Flame Assembly
+      const flameAssembly = createRocketFlameAssembly(scale, true);
+      flameAssembly.flameGroup.position.y = -0.87 * scale;
+      rocket.add(flameAssembly.flameGroup);
 
       return {
         mesh: rocket,
-        flameGroup,
-        engineLight,
-        plumePoints,
-        plumeHistory: [],
+        flameAssembly,
+        outerNozzleFlameCones,
         scale
       };
     }
 
     // -------------------------------------------------------------------------
-    // 6B. Deep Space Exploration Science Cruiser (Photovoltaic Wings & Ion Drive)
+    // 9B. Orbital Science Exploration Spacecraft (Deep Space Cruiser)
     // -------------------------------------------------------------------------
-    function buildDeepSpaceSurveyor(scale = 0.85) {
+    function buildOrbitalScienceCruiser(scale = 0.95) {
       const craft = new THREE.Group();
 
-      const chassisMat = new THREE.MeshStandardMaterial({
-        color: 0x0f172a,
-        roughness: 0.28,
-        metalness: 0.82
+      const thermalTileMat = new THREE.MeshStandardMaterial({
+        color: 0x111827,
+        roughness: 0.45,
+        metalness: 0.7
+      });
+
+      const whiteAeroMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc,
+        roughness: 0.22,
+        metalness: 0.48
       });
 
       const goldMliMat = new THREE.MeshStandardMaterial({
-        color: 0xca8a04,
-        roughness: 0.35,
-        metalness: 0.92
+        color: 0xd97706,
+        roughness: 0.32,
+        metalness: 0.94
       });
 
       const solarCellMat = new THREE.MeshStandardMaterial({
-        color: 0x071e3d,
+        color: 0x0284c7,
         roughness: 0.15,
         metalness: 0.65
       });
 
-      const whiteDishMat = new THREE.MeshStandardMaterial({
-        color: 0xf1f5f9,
-        roughness: 0.2,
-        metalness: 0.4
+      const titaniumMat = new THREE.MeshStandardMaterial({
+        color: 0x1f2937,
+        roughness: 0.25,
+        metalness: 0.85
       });
 
-      // 1. Octagonal Main Avionics Bus
-      const busGeom = new THREE.CylinderGeometry(0.08 * scale, 0.08 * scale, 0.32 * scale, 8);
-      const busMesh = new THREE.Mesh(busGeom, chassisMat);
-      craft.add(busMesh);
+      // 1. Sleek Aerodynamic Lifting Fuselage (Upper White Hull & Lower Thermal Heat Shield)
+      const bodyGeom = new THREE.CylinderGeometry(0.065 * scale, 0.085 * scale, 0.72 * scale, 24);
+      const bodyMesh = new THREE.Mesh(bodyGeom, whiteAeroMat);
+      craft.add(bodyMesh);
 
-      // Gold MLI Thermal Insulation Panels
-      const mliGeom = new THREE.BoxGeometry(0.125 * scale, 0.24 * scale, 0.125 * scale);
+      // Lower Heat Shield Underbelly Tile Strip
+      const heatShieldGeom = new THREE.BoxGeometry(0.12 * scale, 0.68 * scale, 0.04 * scale);
+      const heatShield = new THREE.Mesh(heatShieldGeom, thermalTileMat);
+      heatShield.position.set(0, 0, -0.05 * scale);
+      craft.add(heatShield);
+
+      // Forward Nosecone & Observation Viewport
+      const noseGeom = new THREE.ConeGeometry(0.065 * scale, 0.32 * scale, 24);
+      const noseMesh = new THREE.Mesh(noseGeom, whiteAeroMat);
+      noseMesh.position.y = 0.52 * scale;
+      craft.add(noseMesh);
+
+      // High-Tech Gold MLI Science Instrumentation Package
+      const mliGeom = new THREE.BoxGeometry(0.11 * scale, 0.22 * scale, 0.09 * scale);
       const mliMesh = new THREE.Mesh(mliGeom, goldMliMat);
+      mliMesh.position.set(0, 0.05 * scale, 0.02 * scale);
       craft.add(mliMesh);
 
-      // 2. High-Gain Communications Dish Antenna
-      const dishGeom = new THREE.SphereGeometry(0.085 * scale, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.42);
-      const dishMesh = new THREE.Mesh(dishGeom, whiteDishMat);
-      dishMesh.position.set(0, 0.16 * scale, 0.08 * scale);
-      dishMesh.rotation.x = Math.PI * 0.35;
-      craft.add(dishMesh);
+      // 2. Twin Swept Orbital Delta Wings with Solar Collectors
+      const wingGeom = new THREE.BoxGeometry(0.44 * scale, 0.14 * scale, 0.008 * scale);
 
-      // Subreflector Feed Horn on Tripod
-      const feedHornGeom = new THREE.ConeGeometry(0.012 * scale, 0.04 * scale, 8);
-      const feedHorn = new THREE.Mesh(feedHornGeom, goldMliMat);
-      feedHorn.position.set(0, 0.24 * scale, 0.14 * scale);
-      feedHorn.rotation.x = Math.PI * 0.35;
-      craft.add(feedHorn);
-
-      // 3. Symmetrical Deployable Solar Array Wings (Left & Right)
-      const panelGeom = new THREE.BoxGeometry(0.52 * scale, 0.14 * scale, 0.008 * scale);
-
-      // Left Solar Wing
-      const leftWing = new THREE.Mesh(panelGeom, solarCellMat);
-      leftWing.position.set(-0.36 * scale, 0, 0);
+      const leftWing = new THREE.Mesh(wingGeom, solarCellMat);
+      leftWing.position.set(-0.30 * scale, -0.05 * scale, 0);
+      leftWing.rotation.z = 0.12;
       craft.add(leftWing);
 
-      // Left Wing Strut
-      const strutGeom = new THREE.CylinderGeometry(0.004 * scale, 0.004 * scale, 0.1 * scale, 8);
-      const leftStrut = new THREE.Mesh(strutGeom, chassisMat);
-      leftStrut.rotation.z = Math.PI / 2;
-      leftStrut.position.set(-0.11 * scale, 0, 0);
-      craft.add(leftStrut);
-
-      // Right Solar Wing
-      const rightWing = new THREE.Mesh(panelGeom, solarCellMat);
-      rightWing.position.set(0.36 * scale, 0, 0);
+      const rightWing = new THREE.Mesh(wingGeom, solarCellMat);
+      rightWing.position.set(0.30 * scale, -0.05 * scale, 0);
+      rightWing.rotation.z = -0.12;
       craft.add(rightWing);
 
-      const rightStrut = new THREE.Mesh(strutGeom, chassisMat);
-      rightStrut.rotation.z = Math.PI / 2;
-      rightStrut.position.set(0.11 * scale, 0, 0);
-      craft.add(rightStrut);
+      // Twin Wingtip Vertical Stabilizer Fins
+      const finGeom = new THREE.BoxGeometry(0.006 * scale, 0.16 * scale, 0.07 * scale);
+      const leftFin = new THREE.Mesh(finGeom, thermalTileMat);
+      leftFin.position.set(-0.51 * scale, 0.02 * scale, 0);
+      craft.add(leftFin);
 
-      // 4. Stern Electric Xenon Ion Propulsion Thruster
-      const ionNozzleGeom = new THREE.CylinderGeometry(0.022 * scale, 0.04 * scale, 0.05 * scale, 16, 1, true);
-      const ionNozzle = new THREE.Mesh(ionNozzleGeom, chassisMat);
-      ionNozzle.position.y = -0.185 * scale;
-      craft.add(ionNozzle);
+      const rightFin = new THREE.Mesh(finGeom, thermalTileMat);
+      rightFin.position.set(0.51 * scale, 0.02 * scale, 0);
+      craft.add(rightFin);
 
-      // Ion Engine Plasma Exhaust Plume
-      const flameGroup = new THREE.Group();
-      flameGroup.position.y = -0.21 * scale;
+      // 3. Stern Twin High-Expansion Vacuum Rocket Engine Bells
+      const sternNozzleGeom = new THREE.CylinderGeometry(0.015 * scale, 0.035 * scale, 0.09 * scale, 18, 1, true);
+      const nozzle1 = new THREE.Mesh(sternNozzleGeom, titaniumMat);
+      nozzle1.position.set(-0.032 * scale, -0.40 * scale, 0);
+      craft.add(nozzle1);
 
-      // Ion Beam Core
-      const ionCoreGeom = new THREE.ConeGeometry(0.02 * scale, 0.35 * scale, 16);
-      const ionCoreMat = new THREE.MeshBasicMaterial({
-        color: 0xd8b4fe,
-        transparent: true,
-        opacity: 0.95
-      });
-      const ionCore = new THREE.Mesh(ionCoreGeom, ionCoreMat);
-      ionCore.rotation.x = Math.PI;
-      ionCore.position.y = -0.175 * scale;
-      flameGroup.add(ionCore);
+      const nozzle2 = new THREE.Mesh(sternNozzleGeom, titaniumMat);
+      nozzle2.position.set(0.032 * scale, -0.40 * scale, 0);
+      craft.add(nozzle2);
 
-      // Expanding Ion Halo
-      const ionHaloGeom = new THREE.ConeGeometry(0.09 * scale, 0.9 * scale, 16);
-      const ionHaloMat = new THREE.MeshBasicMaterial({
-        map: ionPlumeTexture,
-        transparent: true,
-        opacity: 0.82,
-        blending: THREE.AdditiveBlending,
-        side: THREE.DoubleSide,
-        depthWrite: false
-      });
-      const ionHalo = new THREE.Mesh(ionHaloGeom, ionHaloMat);
-      ionHalo.rotation.x = Math.PI;
-      ionHalo.position.y = -0.45 * scale;
-      flameGroup.add(ionHalo);
-
-      const engineLight = new THREE.PointLight(0xa855f7, 2.0, 5.0);
-      engineLight.position.y = -0.25 * scale;
-      craft.add(engineLight);
-
-      craft.add(flameGroup);
-
-      // Trailing Ion Particle Beam
-      const plumeCount = 50;
-      const pGeom = new THREE.BufferGeometry();
-      const pPos = new Float32Array(plumeCount * 3);
-      const pCol = new Float32Array(plumeCount * 3);
-      for (let i = 0; i < plumeCount * 3; i++) {
-        pPos[i] = 9999;
-        pCol[i] = 1.0;
-      }
-      pGeom.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-      pGeom.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
-
-      const pMat = new THREE.PointsMaterial({
-        size: 3.2,
-        map: particleTexture,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.85,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false
-      });
-      const plumePoints = new THREE.Points(pGeom, pMat);
-      scene.add(plumePoints);
+      // 4. Photorealistic Supersonic Rocket Flame Assembly
+      const flameAssembly = createRocketFlameAssembly(scale, false);
+      flameAssembly.flameGroup.position.y = -0.44 * scale;
+      craft.add(flameAssembly.flameGroup);
 
       return {
         mesh: craft,
-        flameGroup,
-        engineLight,
-        plumePoints,
-        plumeHistory: [],
+        flameAssembly,
         scale
       };
     }
 
-    // Craft 1: Heavy Orbital Launch Vehicle (Ascending from Earth Limb into Deep Space)
+    // =========================================================================
+    // 10. SCENE INSTANTIATION & TRAJECTORIES
+    // =========================================================================
+
+    // Craft 1: Heavy Multi-Stage Orbital Launch Rocket
     const rocket1 = buildHeavyLaunchVehicle(1.15);
     scene.add(rocket1.mesh);
 
-    // Craft 2: Deep-Space Orbital Science Surveyor
-    const rocket2 = buildDeepSpaceSurveyor(0.9);
+    // Craft 2: Sleek Orbital Science Cruiser
+    const rocket2 = buildOrbitalScienceCruiser(0.95);
     scene.add(rocket2.mesh);
 
-    // Trajectory Controller Functions
+    // Subtle and calm exhaust particle systems
+    const particleSystem1 = createPlumeParticleSystem(40);
+    const particleSystem2 = createPlumeParticleSystem(30);
+
+    // Trajectory Controllers
     let r1Progress = 0.05;
     let r2Progress = 0.55;
 
     function getRocket1Position(t) {
-      // Orbital ascent trajectory curving across the background
-      const angle = (t * 0.9) - 0.45;
+      // Orbital ascent curving gracefully across Earth's atmospheric limb
       const x = (t * 12.0) - 6.5;
       const y = Math.sin(t * Math.PI * 0.85) * 4.2 - 2.2;
       const z = (t * -2.5) - 0.5;
@@ -771,7 +977,7 @@
       return new THREE.Vector3(x, y, z);
     }
 
-    // 7. Interactive Mouse Parallax
+    // 11. Interactive Mouse Parallax
     let mouseX = 0, mouseY = 0;
     let targetX = 0, targetY = 0;
 
@@ -780,7 +986,7 @@
       targetY = (e.clientY / height - 0.5) * 1.2;
     });
 
-    // 8. Responsive Resizing
+    // 12. Responsive Resizing
     window.addEventListener('resize', () => {
       width = window.innerWidth;
       height = window.innerHeight;
@@ -790,7 +996,7 @@
       planetGroup.position.set(width > 768 ? 2.2 : 0, width > 768 ? -0.4 : -1.8, -1.5);
     });
 
-    // 9. Animation Loop
+    // 13. High-Fidelity Physics Animation Loop
     let clock = new THREE.Clock();
 
     function animate() {
@@ -819,10 +1025,10 @@
       midMat.opacity = 0.88 + Math.cos(elapsedTime * 1.8) * 0.08;
 
       // =====================================================================
-      // ROCKET FLIGHT & EXHAUST PLUME SIMULATION
+      // ROCKET FLIGHT & REALISTIC EXHAUST SIMULATION
       // =====================================================================
 
-      // Update Rocket 1 (Ascent Launcher)
+      // 1. Update Rocket 1 (Ascent Launcher)
       r1Progress += 0.0016;
       if (r1Progress > 1.05) r1Progress = 0.0;
 
@@ -834,31 +1040,36 @@
       // Orient rocket along its ascent velocity vector (tip forwards)
       rocket1.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir1);
 
-      // Engine Flame Combustion Flicker
-      const flameScale1 = 1.0 + Math.sin(elapsedTime * 34.0) * 0.12 + (Math.random() * 0.05);
-      rocket1.flameGroup.scale.set(1.0, flameScale1, 1.0);
-      rocket1.engineLight.intensity = 2.4 + Math.sin(elapsedTime * 28.0) * 0.45;
+      // Smooth, gentle flame breathing (calm, subtle, realistic)
+      const flameScale1 = 1.0 + Math.sin(elapsedTime * 8.0) * 0.035;
+      rocket1.flameAssembly.flameGroup.scale.set(1.0, flameScale1, 1.0);
 
-      // Particle Trail for Rocket 1 (Tail offset aligned with multi-engine cluster)
-      const tailPos1 = p1.clone().add(dir1.clone().multiplyScalar(-0.95 * rocket1.scale));
-      rocket1.plumeHistory.unshift(tailPos1);
-      if (rocket1.plumeHistory.length > 50) rocket1.plumeHistory.pop();
+      // Subtle shock diamond pulse
+      rocket1.flameAssembly.diamondMeshes.forEach((d, idx) => {
+        const pulse = 1.0 + Math.sin(elapsedTime * 6.0 + idx * 1.2) * 0.04;
+        d.scale.set(pulse, pulse, pulse);
+      });
 
-      const posAttr1 = rocket1.plumePoints.geometry.attributes.position;
-      const colAttr1 = rocket1.plumePoints.geometry.attributes.color;
-      for (let i = 0; i < 50; i++) {
-        if (rocket1.plumeHistory[i]) {
-          posAttr1.setXYZ(i, rocket1.plumeHistory[i].x, rocket1.plumeHistory[i].y, rocket1.plumeHistory[i].z);
-          const alphaFade = Math.max(0, 1.0 - (i / 50));
-          colAttr1.setXYZ(i, 0.2 * alphaFade, 0.9 * alphaFade, 1.0 * alphaFade);
-        } else {
-          posAttr1.setXYZ(i, 9999, 9999, 9999);
-        }
-      }
-      posAttr1.needsUpdate = true;
-      colAttr1.needsUpdate = true;
+      // Outer engine nozzle gentle shimmer
+      rocket1.outerNozzleFlameCones.forEach((cone) => {
+        const oPulse = 1.0 + Math.sin(elapsedTime * 10.0) * 0.04;
+        cone.scale.set(1.0, oPulse, 1.0);
+      });
 
-      // Update Rocket 2 (Orbital Deep Space Surveyor)
+      // Gentle optical throat bloom
+      const bloomPulse1 = (0.20 * rocket1.scale) * (1.0 + Math.sin(elapsedTime * 5.0) * 0.03);
+      rocket1.flameAssembly.bloomSprite.scale.set(bloomPulse1, bloomPulse1, 1.0);
+
+      // Soft warm firelight
+      rocket1.flameAssembly.engineLight.intensity = 1.0 + Math.sin(elapsedTime * 6.0) * 0.12;
+
+      // Emit and update subtle exhaust trail from the engine cluster
+      rocket1.mesh.updateMatrixWorld(true);
+      const tailPos1 = rocket1.mesh.localToWorld(new THREE.Vector3(0, -0.88 * rocket1.scale, 0));
+      particleSystem1.emit(tailPos1, dir1, rocket1.scale);
+      particleSystem1.update();
+
+      // 2. Update Rocket 2 (Orbital Science Cruiser)
       r2Progress += 0.0011;
       if (r2Progress > 1.05) r2Progress = 0.0;
 
@@ -869,27 +1080,23 @@
       rocket2.mesh.position.copy(p2);
       rocket2.mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir2);
 
-      const flameScale2 = 1.0 + Math.sin(elapsedTime * 24.0) * 0.1;
-      rocket2.flameGroup.scale.set(1.0, flameScale2, 1.0);
-      rocket2.engineLight.intensity = 2.0 + Math.cos(elapsedTime * 18.0) * 0.35;
+      const flameScale2 = 1.0 + Math.sin(elapsedTime * 7.0) * 0.03;
+      rocket2.flameAssembly.flameGroup.scale.set(1.0, flameScale2, 1.0);
 
-      const tailPos2 = p2.clone().add(dir2.clone().multiplyScalar(-0.35 * rocket2.scale));
-      rocket2.plumeHistory.unshift(tailPos2);
-      if (rocket2.plumeHistory.length > 50) rocket2.plumeHistory.pop();
+      rocket2.flameAssembly.diamondMeshes.forEach((d, idx) => {
+        const pulse = 1.0 + Math.sin(elapsedTime * 5.0 + idx * 1.2) * 0.04;
+        d.scale.set(pulse, pulse, pulse);
+      });
 
-      const posAttr2 = rocket2.plumePoints.geometry.attributes.position;
-      const colAttr2 = rocket2.plumePoints.geometry.attributes.color;
-      for (let i = 0; i < 50; i++) {
-        if (rocket2.plumeHistory[i]) {
-          posAttr2.setXYZ(i, rocket2.plumeHistory[i].x, rocket2.plumeHistory[i].y, rocket2.plumeHistory[i].z);
-          const alphaFade = Math.max(0, 1.0 - (i / 50));
-          colAttr2.setXYZ(i, 0.65 * alphaFade, 0.25 * alphaFade, 1.0 * alphaFade);
-        } else {
-          posAttr2.setXYZ(i, 9999, 9999, 9999);
-        }
-      }
-      posAttr2.needsUpdate = true;
-      colAttr2.needsUpdate = true;
+      const bloomPulse2 = (0.14 * rocket2.scale) * (1.0 + Math.sin(elapsedTime * 4.0) * 0.03);
+      rocket2.flameAssembly.bloomSprite.scale.set(bloomPulse2, bloomPulse2, 1.0);
+
+      rocket2.flameAssembly.engineLight.intensity = 0.65 + Math.cos(elapsedTime * 5.0) * 0.08;
+
+      rocket2.mesh.updateMatrixWorld(true);
+      const tailPos2 = rocket2.mesh.localToWorld(new THREE.Vector3(0, -0.44 * rocket2.scale, 0));
+      particleSystem2.emit(tailPos2, dir2, rocket2.scale);
+      particleSystem2.update();
 
       // Light Theme Adjustments
       const isLight = document.documentElement.getAttribute('data-theme') === 'light';

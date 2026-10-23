@@ -69,13 +69,17 @@ async function initAuth() {
   switchToView(isRegPage ? 'register' : 'login');
 
   // 5. Password Visibility Toggles
+  const eyeOpenSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+  const eyeOffSvg = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
   document.querySelectorAll('.auth-password-toggle').forEach(btn => {
+    btn.innerHTML = eyeOpenSvg;
     btn.addEventListener('click', () => {
       const input = btn.parentElement.querySelector('input');
       if (input) {
         const isPass = input.type === 'password';
         input.type = isPass ? 'text' : 'password';
-        btn.textContent = isPass ? '🙈' : '👁️';
+        btn.innerHTML = isPass ? eyeOffSvg : eyeOpenSvg;
       }
     });
   });
@@ -369,8 +373,8 @@ function performLogin(email, password, remember, isDemo = false) {
     return {
       success: true,
       message: isAr 
-        ? `أهلاً بك مجدداً يا ${matchedUser.nameAr || matchedUser.name}! جارٍ توجيهك إلى غرفة القيادة... 🚀` 
-        : `Welcome back, ${matchedUser.name}! Routing to mission observatory... 🚀`
+        ? `أهلاً بك مجدداً يا ${matchedUser.nameAr || matchedUser.name}! جارٍ توجيهك إلى غرفة القيادة...` 
+        : `Welcome back, ${matchedUser.name}! Routing to mission observatory...`
     };
   }
 
@@ -424,8 +428,8 @@ function performRegistration(data) {
   return {
     success: true,
     message: isAr 
-      ? `تم إنشاء حساب الباحث بنجاح! مرحباً بك في Astraea يا ${newUser.name}. 🚀` 
-      : `Clearance granted! Welcome to Astraea, ${newUser.name}. 🚀`
+      ? `تم إنشاء حساب الباحث بنجاح! مرحباً بك في Astraea يا ${newUser.name}.` 
+      : `Clearance granted! Welcome to Astraea, ${newUser.name}.`
   };
 }
 
