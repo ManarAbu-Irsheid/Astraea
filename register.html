@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraTwin — Researcher Clearance</title>
+  <meta name="description" content="Register as a planetary analog researcher on the TerraTwin scientific exploration platform.">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-viewport">
+
+  <!-- Ultra-Realistic Deep Space Orbit & Starfield Canvas -->
+  <canvas id="authCanvasBg"></canvas>
+
+  <!-- Ambient Radiant Nebula Glow Spheres -->
+  <div class="auth-ambient-glow top-left"></div>
+  <div class="auth-ambient-glow bottom-right"></div>
+
+  <!-- Top Navigation & Controls Bar -->
+  <header class="auth-top-bar">
+    <a href="index.html" class="auth-back-btn" title="Back to TerraTwin Platform">
+      <span>⬅️</span>
+      <span data-i18n="auth.back_home">العودة إلى المنصة الرئيسية</span>
+    </a>
+
+    <div class="auth-top-actions">
+      <button class="btn-control" id="authThemeBtn" onclick="toggleAuthTheme()" title="Toggle Dark/Light Mode">☀️</button>
+      <button class="btn-control" id="authLangBtn" onclick="toggleAuthLanguage()" title="Switch Language">English</button>
+    </div>
+  </header>
+
+  <!-- Floating Glassmorphic Authentication Card (Wide for Registration) -->
+  <main class="auth-card-container mode-register" id="authCardContainer">
+    <div class="auth-card">
+      
+      <!-- Holographic Laser Wipe Beam -->
+      <div class="auth-card-scanline" id="authCardScanline"></div>
+
+      <!-- Card Header -->
+      <div class="auth-header">
+        <div class="auth-brand-mark mode-register" id="authBrandMark">
+          <!-- Sign In Planetary Orbit Icon -->
+          <svg class="brand-icon-signin" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00e5d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <circle cx="12" cy="12" r="9"></circle>
+            <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-30 12 12)"></ellipse>
+            <circle cx="12" cy="12" r="2.5" fill="#00a3ff"></circle>
+          </svg>
+          <!-- Register Star Clearance Badge Icon -->
+          <svg class="brand-icon-register" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#00e5a3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            <circle cx="12" cy="12" r="3" fill="#f5a623"></circle>
+          </svg>
+        </div>
+        <h1 class="auth-title" id="authHeaderTitle" data-i18n="auth.register_title">إنشاء حساب باحث فلكي</h1>
+        <p class="auth-subtitle" id="authHeaderSub" data-i18n="auth.register_sub">انضم إلى شبكة Astraea العلمية لاستكشاف ومطابقة تضاريس الكواكب</p>
+      </div>
+
+      <!-- Animated Sliding Navigation Tabs -->
+      <div class="auth-nav-tabs" id="authNavTabs">
+        <div class="auth-tab-slider" id="authTabSlider"></div>
+        <button type="button" class="auth-nav-tab" id="tabBtnSignIn" data-i18n="auth.tab_signin">تسجيل الدخول</button>
+        <button type="button" class="auth-nav-tab active" id="tabBtnRegister" data-i18n="auth.tab_register">إنشاء حساب جديد</button>
+      </div>
+
+      <!-- Dynamic Alert Box -->
+      <div class="auth-alert-box" id="authAlertBox"></div>
+
+      <!-- Sliding Forms Container -->
+      <div class="auth-forms-slider">
+        
+        <!-- ==================== SIGN IN VIEW ==================== -->
+        <form class="auth-form-view hidden-left" id="signInFormView">
+          
+          <div class="auth-field-group">
+            <label class="auth-label" for="loginEmail" data-i18n="auth.email_label">البريد الإلكتروني المعتمد أو معرّف الباحث:</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="email" class="auth-input" id="loginEmail" placeholder="researcher@terratwin.space" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-label" for="loginPassword" data-i18n="auth.password_label">كلمة المرور:</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔐</span>
+              <input type="password" class="auth-input" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+              <button type="button" class="auth-password-toggle" title="Toggle password visibility">👁️</button>
+            </div>
+          </div>
+
+          <div class="auth-options-row">
+            <label class="auth-checkbox-label">
+              <input type="checkbox" id="rememberMeCheckbox" checked>
+              <span data-i18n="auth.remember_me">تذكّر جلستي</span>
+            </label>
+            <a href="#" class="auth-link-text" id="forgotPassLink" data-i18n="auth.forgot_password">نسيت كلمة المرور؟</a>
+          </div>
+
+          <button type="submit" class="auth-submit-btn" id="signInSubmitBtn">
+            <span data-i18n="auth.btn_signin">دخول المنصة العلمية 🚀</span>
+          </button>
+
+          <button type="button" class="auth-demo-btn" id="quickDemoLoginBtn">
+            <span data-i18n="auth.btn_demo">⚡ دخول تجريبي سريع كباحث فلكي</span>
+          </button>
+
+          <div class="auth-card-footer">
+            <span data-i18n="auth.no_account">ليس لديك حساب بعد؟</span>
+            <a href="#" class="auth-link-text" id="linkToRegister" style="margin-inline-start: 0.4rem;" data-i18n="auth.goto_register">إنشاء حساب باحث جديد 🌟</a>
+          </div>
+
+        </form>
+
+        <!-- ==================== REGISTER VIEW ==================== -->
+        <form class="auth-form-view active" id="registerFormView">
+          
+          <div class="auth-field-group">
+            <label class="auth-label" for="regName" data-i18n="auth.name_label">الاسم الكامل للباحث:</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">👤</span>
+              <input type="text" class="auth-input" id="regName" placeholder="Dr. Sarah Connor" required autocomplete="name">
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-label" for="regEmail" data-i18n="auth.email_label">البريد الإلكتروني المعتمد:</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">✉️</span>
+              <input type="email" class="auth-input" id="regEmail" placeholder="s.connor@agency.space" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-label" for="regPassword" data-i18n="auth.password_reg_label">كلمة المرور (5 خانات على الأقل):</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔐</span>
+              <input type="password" class="auth-input" id="regPassword" placeholder="••••••••" required autocomplete="new-password">
+              <button type="button" class="auth-password-toggle" title="Toggle password visibility">👁️</button>
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-label" data-i18n="auth.avatar_label">رتبة وهوية رائد الفضاء:</label>
+            <div class="auth-avatar-grid">
+              <label class="auth-avatar-card">
+                <input type="radio" name="userAvatarRadio" value="👨‍🚀" data-gender="male" checked>
+                <div class="auth-avatar-box">
+                  <span class="auth-avatar-emoji">👨‍🚀</span>
+                  <span class="auth-avatar-label" data-i18n="auth.avatar_male">رائد فضاء</span>
+                </div>
+              </label>
+              <label class="auth-avatar-card">
+                <input type="radio" name="userAvatarRadio" value="👩‍🚀" data-gender="female">
+                <div class="auth-avatar-box">
+                  <span class="auth-avatar-emoji">👩‍🚀</span>
+                  <span class="auth-avatar-label" data-i18n="auth.avatar_female">رائدة فضاء</span>
+                </div>
+              </label>
+              <label class="auth-avatar-card">
+                <input type="radio" name="userAvatarRadio" value="👽" data-gender="alien">
+                <div class="auth-avatar-box">
+                  <span class="auth-avatar-emoji">👽</span>
+                  <span class="auth-avatar-label" data-i18n="auth.avatar_alien">كائن حيوي فلكي</span>
+                </div>
+              </label>
+              <label class="auth-avatar-card">
+                <input type="radio" name="userAvatarRadio" value="🛸" data-gender="rover">
+                <div class="auth-avatar-box">
+                  <span class="auth-avatar-emoji">🛸</span>
+                  <span class="auth-avatar-label" data-i18n="auth.avatar_rover">مركبة روفر استكشافية</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="auth-field-group">
+            <label class="auth-label" for="regRole" data-i18n="auth.role_label">التخصص الاستكشافي الكوكبي:</label>
+            <div class="auth-input-wrapper">
+              <span class="auth-input-icon">🔬</span>
+              <select class="auth-input" id="regRole" style="cursor:pointer;">
+                <option value="Planetary Geospatial Engineering" data-i18n="auth.role_geospatial">هندسة تضاريس الكواكب</option>
+                <option value="Field Rover Autonomous Navigation" data-i18n="auth.role_rover">ملاحة الروبوتات الفضائية الميدانية</option>
+                <option value="Astrobiology & Extremophile Analogs" data-i18n="auth.role_astrobiology">علم الأحياء الفلكية والبيئات المتطرفة</option>
+                <option value="In-Situ Resource Utilization (ISRU)" data-i18n="auth.role_isru">استغلال الموارد الفضائية الموضعية (ISRU)</option>
+                <option value="Comparative Field Analog Geology" data-i18n="auth.role_geology">جيولوجيا النظائر الميدانية المقارنة</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="auth-options-row">
+            <label class="auth-checkbox-label">
+              <input type="checkbox" id="agreeEthicsCheckbox" required checked>
+              <span data-i18n="auth.ethics_agree">أوافق على ميثاق النزاهة العلمية وحماية الكواكب</span>
+            </label>
+          </div>
+
+          <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">
+            <span data-i18n="auth.btn_register">إنشاء الحساب وبدء الاستكشاف 🚀</span>
+          </button>
+
+          <div class="auth-card-footer">
+            <span data-i18n="auth.has_account">لديك حساب بالفعل؟</span>
+            <a href="#" class="auth-link-text" id="linkToLogin" style="margin-inline-start: 0.4rem;" data-i18n="auth.goto_signin">تسجيل الدخول إلى حسابك 🔑</a>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="data/data-store.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/user-system.js"></script>
+  <script src="js/auth-bg.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

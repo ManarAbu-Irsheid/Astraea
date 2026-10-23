@@ -51,15 +51,89 @@
 
       <!-- Header Controls: Mission Profile, Lang, Tour, Theme -->
       <div class="header-actions">
+        
+        <!-- Mission Profile Selector Badge & Dropdown -->
+        <div class="profile-selector-container">
+          <button class="profile-badge-btn" id="profileBadgeBtn" aria-haspopup="true" aria-expanded="false" title="Configure Mission Profile & Weights">
+            <span class="profile-indicator-dot"></span>
+            <span id="activeProfileLabel">TASI Baseline</span>
+            <span class="profile-chevron">▼</span>
+          </button>
+
+          <!-- Dropdown Panel (Internal weights sliders editable exclusively inside) -->
+          <div class="profile-dropdown-panel" id="profileDropdownPanel">
+            <div class="profile-panel-header">
+              <span class="profile-panel-title" id="profilePanelTitle">Mission Profile</span>
+            </div>
+
+            <div class="profile-options-grid">
+              <button class="profile-option-btn active" data-profile="tasi">TASI Baseline</button>
+              <button class="profile-option-btn" data-profile="rover">Rover Traverse</button>
+              <button class="profile-option-btn" data-profile="landing">Landing Site</button>
+              <button class="profile-option-btn" data-profile="thermal">Habitat &amp; Thermal</button>
+              <button class="profile-option-btn" data-profile="optics">Optics &amp; Solar</button>
+            </div>
+
+            <div class="weights-section-title">
+              <span id="weightsSectionTitle">Criteria Weights</span>
+            </div>
+
+            <!-- Weight sliders: the 4 criteria available in the real dataset -->
+            <div class="weight-slider-group" id="weightGroup_slope">
+              <div class="weight-slider-header">
+                <span id="weightLabel_slope">Slope</span>
+                <span class="weight-val" id="weightVal_slope">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_slope" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_roughness">
+              <div class="weight-slider-header">
+                <span id="weightLabel_roughness">Roughness</span>
+                <span class="weight-val" id="weightVal_roughness">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_roughness" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_albedo">
+              <div class="weight-slider-header">
+                <span id="weightLabel_albedo">Albedo (brightness)</span>
+                <span class="weight-val" id="weightVal_albedo">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_albedo" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_thermal">
+              <div class="weight-slider-header">
+                <span id="weightLabel_thermal">Thermal Swing</span>
+                <span class="weight-val" id="weightVal_thermal">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_thermal" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <button class="weights-reset-btn" id="resetWeightsBtn">Reset Defaults</button>
+          </div>
+        </div>
 
         <!-- Language Switcher [ EN | AR ] -->
         <button class="btn-control lang-toggle-btn" id="langToggleBtn" title="Switch Language">
           عربي
         </button>
 
+        <!-- Page Tour button ("?"): replays the 3-step guided tour -->
+        <button class="btn-control tour-help-btn" id="tourGuideBtn" title="Page Tour / جولة الصفحة" aria-label="Page Tour">?</button>
+
         <!-- User Profile Badge & Dropdown -->
         <div class="user-profile-container">
-          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile">
+          <!-- Guest Sign In / Register Button (Visible when not logged in) -->
+          <a href="login.html" class="nav-auth-login-btn" id="navAuthLoginBtn">
+            <span class="auth-btn-icon">🔐</span>
+            <span class="auth-btn-text auth-btn-text-full" data-i18n="auth.nav_login_btn">تسجيل الدخول / إنشاء حساب</span>
+            <span class="auth-btn-text auth-btn-text-short" data-i18n="auth.nav_login_btn_short">دخول</span>
+          </a>
+
+          <!-- User Profile Badge & Dropdown (Visible only when logged in) -->
+          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile" style="display: none;">
             <div class="user-avatar-badge">
               <span>👨‍🚀</span>
               <span class="user-status-dot" title="Status: Online"></span>
@@ -139,9 +213,8 @@
           </div>
         </div>
 
-        <!-- Hidden Tour & Theme triggers for compatibility with existing scripts -->
+        <!-- Hidden Theme trigger for compatibility with existing scripts -->
         <button class="btn-control" id="themeToggleBtn" style="display:none;" aria-hidden="true"></button>
-        <button class="btn-control" id="tourGuideBtn" style="display:none;" aria-hidden="true"></button>
 
       </div>
     </div>
@@ -156,46 +229,50 @@
       <!-- ==================================================================
            LEFT PANEL: CRITERIA & FILTERS
            ================================================================== -->
+      <!-- Mobile: dark backdrop behind open bottom sheets -->
+      <div class="sheet-backdrop" id="finderSheetBackdrop"></div>
+
       <aside class="finder-left-panel" id="finderCriteriaSpotlight">
+        <!-- Mobile bottom-sheet header (hidden on desktop) -->
+        <div class="sheet-header" id="filtersSheetHeader">
+          <span class="sheet-grabber"></span>
+          <span class="sheet-header-title" id="filtersSheetTitle">Filters</span>
+          <button class="sheet-close-btn" id="filtersSheetClose" aria-label="Close">✕</button>
+        </div>
         
         <div>
           <div class="filter-section-title">
-            <span data-i18n="finder.target_select_label">Target Body Baseline</span>
+            <span id="targetSelectTitle">Find Earth sites similar to</span>
           </div>
-          <!-- Target Selector: Moon / Mars / All -->
+          <!-- Target Selector: Moon / Mars -->
           <div class="target-body-toggle">
-            <button class="body-toggle-btn active" data-body="all" data-i18n="finder.body_all">All Bodies</button>
-            <button class="body-toggle-btn" data-body="moon" data-i18n="finder.body_moon">Moon</button>
-            <button class="body-toggle-btn" data-body="mars" data-i18n="finder.body_mars">Mars</button>
+            <button class="body-toggle-btn" data-body="both" id="bodyBtnBoth">Both</button>
+            <button class="body-toggle-btn" data-body="moon" id="bodyBtnMoon">🌕 Moon</button>
+            <button class="body-toggle-btn active" data-body="mars" id="bodyBtnMars">🔴 Mars</button>
+          </div>
+
+          <!-- Reference site on the Moon / Mars (from the dataset's 6 curated targets) -->
+          <label class="finder-select-label" for="referenceSiteSelect" id="referenceSiteLabel">Reference site</label>
+          <select class="finder-select" id="referenceSiteSelect"></select>
+          <p class="finder-target-hint" id="referenceSiteDesc"></p>
+
+          <!-- Closest Earth sites to the chosen reference (top 5, clickable) -->
+          <div class="closest-earth-box">
+            <div class="closest-earth-title" id="closestEarthTitle">Closest on Earth</div>
+            <ol class="closest-earth-list" id="closestEarthList"></ol>
+            <button class="closest-earth-more" id="closestEarthMore">Show more</button>
           </div>
         </div>
 
-        <!-- Active Weights Summary Indicator -->
+        <!-- Active mission weights (read-only — edited from the profile menu in the header) -->
         <div>
           <div class="filter-section-title">
-            <span data-i18n="finder.profile_summary_title">Active Mission Weights</span>
+            <span id="activeWeightsTitle">Active Mission Weights</span>
           </div>
           <div class="profile-weights-box">
-            <div class="weights-pill-row">
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_slope">Slope</span>
-                <span class="weight-mini-val" id="miniWeight_slope">35%</span>
-              </div>
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_ice">Ice/Vol</span>
-                <span class="weight-mini-val" id="miniWeight_ice">10%</span>
-              </div>
-            </div>
-            <div class="weights-pill-row">
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_regolith">Regolith</span>
-                <span class="weight-mini-val" id="miniWeight_regolith">40%</span>
-              </div>
-              <div class="weight-mini-pill">
-                <span data-i18n="nav.weight_volcanic">Volcanic</span>
-                <span class="weight-mini-val" id="miniWeight_volcanic">15%</span>
-              </div>
-            </div>
+            <div class="active-profile-name" id="activeProfileName">TASI Baseline</div>
+            <div class="weights-pill-grid" id="activeWeightsPills"></div>
+            <p class="finder-target-hint" id="editWeightsHint">Change the mission or weights from the profile menu at the top ↑</p>
           </div>
         </div>
 
@@ -209,7 +286,6 @@
             <button class="terrain-chip" data-terrain="desert" data-i18n="finder.terrain_desert">Desert</button>
             <button class="terrain-chip" data-terrain="volcanic" data-i18n="finder.terrain_volcanic">Volcanic</button>
             <button class="terrain-chip" data-terrain="polar" data-i18n="finder.terrain_polar">Polar / Permafrost</button>
-            <button class="terrain-chip" data-terrain="hydrothermal" data-i18n="finder.terrain_hydrothermal">Hydrothermal</button>
           </div>
         </div>
 
@@ -221,15 +297,15 @@
           <div class="discovery-options">
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="all" checked>
-              <span data-i18n="finder.discovery_all">All Planetary Analogs</span>
+              <span id="discAll">All sites</span>
             </label>
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="candidates_only">
-              <strong style="color:var(--accent-gold);" data-i18n="finder.discovery_candidates_only">★ New Candidates Only</strong>
+              <strong style="color:var(--accent-gold);" id="discNew">★ New candidates only</strong>
             </label>
             <label class="discovery-radio-label">
               <input type="radio" name="discoveryFilter" value="known_only">
-              <span data-i18n="finder.discovery_known_only">● Known Historic Analogs</span>
+              <span id="discKnown">● Known analogs only</span>
             </label>
           </div>
         </div>
@@ -241,21 +317,23 @@
           </div>
           <div class="legend-item">
             <span class="legend-symbol star">★</span>
-            <span data-i18n="finder.legend_candidate">New Validated Candidate</span>
+            <span id="legendCandidate">New candidate</span>
           </div>
           <div class="legend-item">
             <span class="legend-symbol circle"></span>
-            <span data-i18n="finder.legend_known">Known Historic Analog</span>
+            <span id="legendKnown">Known (official) analog</span>
           </div>
-          <div class="legend-item">
-            <span style="width:10px; height:10px; border-radius:50%; background:#00e5a3;"></span>
-            <span data-i18n="finder.legend_high_score">Similarity &gt; 88%</span>
-          </div>
-          <div class="legend-item">
-            <span style="width:10px; height:10px; border-radius:50%; background:#00a3ff;"></span>
-            <span data-i18n="finder.legend_mid_score">Similarity 80 - 88%</span>
+          <!-- Heat legend: glow colour = similarity -->
+          <div class="heat-legend">
+            <span class="heat-legend-title" id="heatLegendTitle">Glow = similarity</span>
+            <div class="heat-legend-bar"></div>
+            <div class="heat-legend-labels">
+              <span id="heatLegendLow">Low</span>
+              <span id="heatLegendHigh">High</span>
+            </div>
           </div>
         </div>
+          <p class="ndvi-note" id="ndviNote"></p>
 
       </aside>
 
@@ -263,32 +341,32 @@
            CENTER CANVAS: INTERACTIVE GEOSPATIAL MAP
            ================================================================== -->
       <section class="finder-center-canvas" id="finderMapSpotlight">
+        <!-- Mobile: open the filters bottom sheet (hidden on desktop) -->
+        <button class="mobile-filters-btn" id="mobileFiltersBtn">
+          <span>⚙</span> <span id="mobileFiltersBtnLabel">Filters</span>
+        </button>
         <div class="map-top-bar">
-          <div class="map-status-pill">
-            <span>RASTER ENGINE:</span>
-            <span class="map-status-val" id="mapFilteredCount">12 / 12 Sites</span>
+          <!-- What the map is showing: changes with Moon / Mars -->
+          <div class="map-target-banner" id="mapTargetBanner" data-body="all">
+            <span class="map-target-icon" id="mapTargetIcon">🌍</span>
+            <span class="map-target-text">
+              <strong id="mapTargetTitle">Earth sites similar to the Moon &amp; Mars</strong>
+              <span class="map-target-count" id="mapTargetCount">12 sites</span>
+            </span>
           </div>
 
           <!-- Scientific Tile Layer Selector (Real Satellite Imagery) -->
           <div class="map-layer-switcher" id="mapLayerSwitcher">
             <button class="layer-switch-btn active" data-layer="satellite" id="layerBtnSatellite">
               <span>🛰️</span>
-              <span>Satellite (أقمار صناعية حقيقية)</span>
+              <span id="layerLabelSatellite">Satellite</span>
             </button>
             <button class="layer-switch-btn" data-layer="topo" id="layerBtnTopo">
               <span>🏔️</span>
-              <span>Topography (تضاريس)</span>
-            </button>
-            <button class="layer-switch-btn" data-layer="dark" id="layerBtnDark">
-              <span>🌌</span>
-              <span>Cyber Dark</span>
+              <span id="layerLabelTopo">Topography</span>
             </button>
           </div>
 
-          <div class="map-status-pill">
-            <span>COORDINATE DATUM:</span>
-            <span class="map-status-val">WGS-84 / EGM96</span>
-          </div>
         </div>
         <div id="leafletMap"></div>
       </section>
@@ -297,6 +375,12 @@
            RIGHT PANEL: SITE DETAIL CARD (Radar Chart & Telemetry)
            ================================================================== -->
       <aside class="finder-right-panel" id="finderDetailSpotlight">
+        <!-- Mobile bottom-sheet header: tap to open / close the site card -->
+        <button class="sheet-header sheet-header-btn" id="cardSheetHeader">
+          <span class="sheet-grabber"></span>
+          <span class="sheet-header-title" id="cardSheetTitle">Site Card</span>
+          <span class="sheet-toggle-icon">▲</span>
+        </button>
         
         <!-- Placeholder State -->
         <div class="panel-placeholder-state" id="finderDetailPlaceholder">
@@ -336,16 +420,23 @@
             </div>
           </div>
 
+          <!-- Most similar Moon / Mars sites (top 3 of the 6 reference targets) -->
+          <div class="detail-info-section">
+            <div class="detail-info-title" id="mostSimilarTitle">Most similar to</div>
+            <ul class="most-similar-list" id="mostSimilarList"></ul>
+          </div>
+
           <!-- Radar Chart (Multi-parameter matching breakdown) -->
           <div class="radar-chart-container">
-            <span class="radar-title" data-i18n="finder.radar_chart_title">Multi-Parameter Matching Breakdown</span>
-            <canvas id="radarCanvas" width="260" height="200"></canvas>
+            <span class="radar-title" id="radarTitle">Match per criterion</span>
+            <span class="radar-note" id="radarNote"></span>
+            <canvas id="radarCanvas" width="300" height="220"></canvas>
           </div>
 
           <!-- Why It Matches -->
           <div class="detail-bullet-section">
             <div class="detail-bullet-title matches">
-              <span>✓</span> <span data-i18n="finder.why_matches_title">Why It Matches</span>
+              <span>✓</span> <span id="whyMatchesTitle">Why it matches</span>
             </div>
             <ul class="detail-bullet-list" id="detailWhyMatchesList"></ul>
           </div>
@@ -353,9 +444,15 @@
           <!-- Scientific Divergences / Why Not -->
           <div class="detail-bullet-section">
             <div class="detail-bullet-title divergences">
-              <span>⚠</span> <span data-i18n="finder.why_not_title">Scientific Divergences & Limitations</span>
+              <span>⚠</span> <span id="whyNotTitle">Why not / differences</span>
             </div>
             <ul class="detail-bullet-list" id="detailWhyNotList"></ul>
+          </div>
+
+          <!-- Site facts: data shown for information (not used in the score) -->
+          <div class="detail-info-section">
+            <div class="detail-info-title" id="siteFactsTitle">Site facts</div>
+            <dl class="site-facts-list" id="siteFactsList"></dl>
           </div>
 
           <!-- Action Buttons Inside Card -->
@@ -497,6 +594,7 @@
   <script src="js/tour.js"></script>
   <script src="js/chatbot.js"></script>
   <script src="js/app.js"></script>
+  <script src="data/terratwin-real.js"></script>
   <script src="js/finder.js"></script>
 </body>
 </html>

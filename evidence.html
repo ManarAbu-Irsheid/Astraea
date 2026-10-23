@@ -115,9 +115,20 @@
           عربي
         </button>
 
+        <!-- Page Tour & Mission Guide button ("?"): replays guided tour or opens guide -->
+        <button class="btn-control tour-help-btn" id="tourGuideBtn" title="Page Tour & Guide / دليل وجولة الصفحة" aria-label="Page Tour">?</button>
+
         <!-- User Profile Badge & Dropdown -->
         <div class="user-profile-container">
-          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile">
+          <!-- Guest Sign In / Register Button (Visible when not logged in) -->
+          <a href="login.html" class="nav-auth-login-btn" id="navAuthLoginBtn">
+            <span class="auth-btn-icon">🔐</span>
+            <span class="auth-btn-text auth-btn-text-full" data-i18n="auth.nav_login_btn">تسجيل الدخول / إنشاء حساب</span>
+            <span class="auth-btn-text auth-btn-text-short" data-i18n="auth.nav_login_btn_short">دخول</span>
+          </a>
+
+          <!-- User Profile Badge & Dropdown (Visible only when logged in) -->
+          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile" style="display: none;">
             <div class="user-avatar-badge">
               <span>👨‍🚀</span>
               <span class="user-status-dot" title="Status: Online"></span>
@@ -165,10 +176,10 @@
           
           <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
             <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
-            <button class="kebab-item-btn" id="kebabEthicsGuideBtn">
+            <a href="guide.html" class="kebab-item-btn" id="kebabEthicsGuideBtn">
               <span class="kebab-item-icon">📜</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_ethics">Mission Purpose, Ethics & Guide</span>
-            </button>
+            </a>
             <button class="kebab-item-btn" id="kebabProfileBtn">
               <span class="kebab-item-icon">👤</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
@@ -190,16 +201,15 @@
               <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
               <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
             </button>
-            <button class="kebab-item-btn" id="kebabAuthBtn">
+            <a href="login.html" class="kebab-item-btn" id="kebabAuthBtn">
               <span class="kebab-item-icon">🔐</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_auth">Account & Sign In</span>
-            </button>
+            </a>
           </div>
         </div>
 
-        <!-- Hidden Tour & Theme triggers for compatibility with existing scripts -->
+        <!-- Hidden Theme trigger for compatibility with existing scripts -->
         <button class="btn-control" id="themeToggleBtn" style="display:none;" aria-hidden="true"></button>
-        <button class="btn-control" id="tourGuideBtn" style="display:none;" aria-hidden="true"></button>
 
       </div>
     </div>

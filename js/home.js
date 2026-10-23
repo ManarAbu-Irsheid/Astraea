@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('planetSiteSelected', (e) => {
     if (e.detail && e.detail.id) {
       window.HomeShowcase.displayCustomSitePair(e.detail.id);
+      if (window.UserSystem && typeof window.UserSystem.recordComparison === 'function') {
+        window.UserSystem.recordComparison();
+      }
     }
   });
 });

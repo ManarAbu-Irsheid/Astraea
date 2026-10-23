@@ -156,19 +156,43 @@
 [data-theme="light"] .home-title {
   background: linear-gradient(
     105deg,
-    #07162b 0%,
-    #005bb5 20%,
-    #009688 38%,
-    #ffffff 48%,
-    #0077cc 58%,
-    #07162b 75%,
-    #005bb5 100%
-  );
-  background-size: 260% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: nasaTitleLightSweep 5.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
-  filter: drop-shadow(0 2px 10px rgba(0, 119, 204, 0.2));
+    #051124 0%,
+    #03366a 20%,
+    #0284c7 38%,
+    #00d2c4 48%,
+    #0284c7 58%,
+    #03366a 75%,
+    #051124 100%
+  ) !important;
+  background-size: 260% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: nasaTitleLightSweep 5.5s cubic-bezier(0.25, 1, 0.5, 1) infinite !important;
+  filter: drop-shadow(0 2px 8px rgba(2, 132, 199, 0.22)) !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .title-light-sweep-beam,
+html[data-theme="light"] .title-light-sweep-beam {
+  display: block !important;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(2, 132, 199, 0.1) 25%,
+    rgba(0, 180, 216, 0.35) 48%,
+    rgba(2, 132, 199, 0.6) 50%,
+    rgba(0, 180, 216, 0.35) 52%,
+    rgba(2, 132, 199, 0.1) 75%,
+    transparent 100%
+  ) !important;
+  box-shadow: 0 0 16px rgba(2, 132, 199, 0.35) !important;
+}
+
+[data-theme="light"] .title-optic-flare,
+html[data-theme="light"] .title-optic-flare {
+  display: block !important;
+  background: radial-gradient(circle, #0284c7 30%, #00e5d4 65%, transparent 100%) !important;
+  box-shadow: 0 0 16px #0284c7, 0 0 32px #00e5d4 !important;
 }
 
 /* Gliding Optic Lens Flare Spark */
@@ -232,21 +256,27 @@
   animation: nasaTitleLightSweepRtl 5.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 
-[dir="rtl"] [data-theme="light"] .home-title {
+[dir="rtl"][data-theme="light"] .home-title,
+[data-theme="light"][dir="rtl"] .home-title,
+[data-theme="light"] [dir="rtl"] .home-title,
+[dir="rtl"] [data-theme="light"] .home-title,
+html[data-theme="light"][dir="rtl"] .home-title {
   background: linear-gradient(
     -105deg,
-    #07162b 0%,
-    #005bb5 20%,
-    #009688 38%,
-    #ffffff 48%,
-    #0077cc 58%,
-    #07162b 75%,
-    #005bb5 100%
-  );
-  background-size: 260% 100%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: nasaTitleLightSweepRtl 5.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+    #051124 0%,
+    #03366a 20%,
+    #0284c7 38%,
+    #00d2c4 48%,
+    #0284c7 58%,
+    #03366a 75%,
+    #051124 100%
+  ) !important;
+  background-size: 260% 100% !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  animation: nasaTitleLightSweepRtl 5.5s cubic-bezier(0.25, 1, 0.5, 1) infinite !important;
+  filter: drop-shadow(0 2px 8px rgba(2, 132, 199, 0.22)) !important;
+  opacity: 1 !important;
 }
 
 [dir="rtl"] .title-light-sweep-beam {
@@ -1645,14 +1675,22 @@
     border-top: 1px solid var(--border-color);
   }
   .telemetry-cell {
-    padding: 0.65rem 0.75rem;
+    padding: 0.55rem 0.65rem;
     background: var(--bg-card);
+    min-width: 0;
+    overflow: hidden;
   }
   .telemetry-cell-label {
-    font-size: 0.66rem;
+    font-size: 0.62rem;
+    line-height: 1.25;
+    white-space: normal;
+    word-break: break-word;
   }
   .telemetry-cell-val {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
+    line-height: 1.3;
+    white-space: normal !important;
+    word-break: break-word;
   }
 
   /* Twin showcase container */
@@ -1687,27 +1725,45 @@
 
   /* Site Cards */
   .twin-site-card {
-    padding: 1rem;
+    padding: 0.95rem 0.85rem;
+    gap: 0.65rem;
+    overflow: visible;
   }
   .site-card-name {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
+    line-height: 1.3;
   }
   .site-card-region {
-    font-size: 0.74rem;
+    font-size: 0.72rem;
   }
   .site-visual-preview {
-    height: 105px;
+    height: 100px;
+    padding: 0.45rem 0.6rem;
+  }
+  .site-visual-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.4rem;
   }
   .site-card-insight {
-    font-size: 0.8rem;
-    padding: 0.5rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    padding: 0.45rem 0.6rem;
   }
   .site-spec-mini-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.35rem;
+    margin-top: 0.55rem;
+    padding-top: 0.5rem;
   }
   .spec-mini-item {
-    padding: 0.35rem 0.5rem;
+    padding: 0.28rem 0.45rem;
+    font-size: 0.7rem;
+    min-width: 0;
+  }
+  .spec-mini-label {
+    font-size: 0.64rem;
+  }
+  .spec-mini-val {
     font-size: 0.72rem;
   }
 
@@ -1770,19 +1826,318 @@
 
 @media (max-width: 480px) {
   .home-title {
-    font-size: 1.45rem;
+    font-size: 1.35rem;
   }
   .planet-3d-stage {
-    height: 300px;
+    height: 290px;
+  }
+  .planet-telemetry-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .telemetry-cell {
+    padding: 0.45rem 0.5rem;
+  }
+  .telemetry-cell-label {
+    font-size: 0.58rem;
+  }
+  .telemetry-cell-val {
+    font-size: 0.72rem;
+  }
+  .twin-showcase-container {
+    padding: 0.95rem 0.65rem;
+  }
+  .twin-site-card {
+    padding: 0.75rem;
+  }
+  .site-card-name {
+    font-size: 0.95rem;
+  }
+  .site-visual-preview {
+    height: 90px;
   }
   .twin-center-ring-panel {
-    padding: 0.85rem;
+    padding: 0.75rem 0.5rem;
+    max-width: 260px;
   }
   .ring-svg {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
   }
   .ring-score-number {
-    font-size: 1.85rem;
+    font-size: 1.65rem;
   }
+  .spec-mini-item {
+    padding: 0.24rem 0.35rem;
+  }
+  .spec-mini-label {
+    font-size: 0.6rem;
+  }
+  .spec-mini-val {
+    font-size: 0.68rem;
+  }
+}
+
+
+/* ==========================================================================
+   HIGH-CONTRAST PROFESSIONAL LIGHT MODE OVERRIDES
+   ========================================================================== */
+[data-theme="light"] .home-desc {
+  color: #0f172a !important;
+  font-weight: 600 !important;
+}
+[data-theme="light"] .nasa-agency-badge {
+  background: #e0f2fe !important;
+  color: #0369a1 !important;
+  border-color: #7dd3fc !important;
+  font-weight: 800 !important;
+}
+[data-theme="light"] .home-mission-strip .home-kicker {
+  color: #0369a1 !important;
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+  font-weight: 800 !important;
+}
+[data-theme="light"] .telemetry-live-badge {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+  font-weight: 800 !important;
+}
+
+/* 3D Observatory Station */
+[data-theme="light"] .planet-explorer-station {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+[data-theme="light"] .planet-station-header {
+  background: #f1f5f9;
+  border-bottom: 1px solid #cbd5e1;
+}
+[data-theme="light"] .planet-station-kicker {
+  color: #0369a1;
+}
+[data-theme="light"] .planet-station-title {
+  color: #091322;
+  font-weight: 800;
+}
+[data-theme="light"] .planet-tabs-group {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+[data-theme="light"] .planet-tab-btn {
+  color: #334155;
+}
+[data-theme="light"] .planet-tab-btn.active {
+  background: #ffffff;
+  color: #091322;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+[data-theme="light"] .planet-hint-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0f172a;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+[data-theme="light"] .hint-highlight {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+/* Telemetry strip */
+[data-theme="light"] .planet-telemetry-strip {
+  background: #ffffff;
+  border-top: 1px solid #cbd5e1;
+}
+[data-theme="light"] .telemetry-cell {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .telemetry-cell:hover {
+  background: #f8fafc;
+}
+[data-theme="light"] .telemetry-cell-label {
+  color: #475569;
+  font-weight: 700;
+}
+[data-theme="light"] .telemetry-cell-val {
+  color: #091322;
+  font-weight: 800;
+}
+[data-theme="light"] .telemetry-cell-val.highlight {
+  color: #0369a1;
+}
+
+/* Twin Pair Showcase */
+[data-theme="light"] .twin-showcase-container {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+}
+[data-theme="light"] .showcase-sync-hint {
+  color: #0369a1;
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+}
+[data-theme="light"] .twin-site-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+[data-theme="light"] .site-card-name {
+  color: #091322;
+  font-weight: 800;
+}
+[data-theme="light"] .site-card-region {
+  color: #334155;
+  font-weight: 600;
+}
+[data-theme="light"] .site-card-insight {
+  background: #f8fafc;
+  color: #1e293b;
+  border-color: #cbd5e1;
+  font-weight: 500;
+}
+[data-theme="light"] .spec-mini-item {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .spec-mini-label {
+  color: #475569;
+  font-weight: 600;
+}
+[data-theme="light"] .spec-mini-val {
+  color: #091322;
+  font-weight: 800;
+}
+
+/* Center Similarity Ring */
+[data-theme="light"] .ring-score-number {
+  color: #091322;
+}
+[data-theme="light"] .ring-score-label {
+  color: #475569;
+}
+[data-theme="light"] .ring-bg-circle {
+  stroke: #e2e8f0;
+}
+[data-theme="light"] .ring-uncertainty {
+  color: #475569;
+  font-weight: 600;
+}
+[data-theme="light"] .ring-status-pill {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #86efac;
+  font-weight: 800;
+}
+
+/* Comparative Matrix Bar */
+[data-theme="light"] .twin-comparative-matrix-bar {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+[data-theme="light"] .matrix-title {
+  color: #0369a1;
+  font-weight: 800;
+}
+[data-theme="light"] .matrix-note {
+  color: #475569;
+  font-weight: 600;
+}
+[data-theme="light"] .matrix-metric-item {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .metric-item-name {
+  color: #091322;
+  font-weight: 700;
+}
+[data-theme="light"] .metric-match-tag {
+  color: #15803d;
+  background: #dcfce7;
+  border-color: #86efac;
+  font-weight: 800;
+}
+[data-theme="light"] .metric-bar-dual {
+  background: #e2e8f0;
+}
+[data-theme="light"] .metric-item-vals {
+  color: #334155;
+  font-weight: 700;
+}
+
+/* KPI Cards */
+[data-theme="light"] .kpi-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+[data-theme="light"] .kpi-card-label {
+  color: #091322;
+  font-weight: 700;
+}
+[data-theme="light"] .kpi-card-desc {
+  color: #334155;
+  font-weight: 500;
+}
+[data-theme="light"] .kpi-card-number {
+  color: #091322;
+}
+
+/* Mission Demarcation and Footer */
+[data-theme="light"] .footer-mission-boundary {
+  background: #f1f5f9;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+}
+[data-theme="light"] .boundary-telemetry-tag {
+  color: #0369a1;
+}
+[data-theme="light"] .boundary-coordinates {
+  color: #475569;
+}
+[data-theme="light"] .boundary-status {
+  color: #15803d;
+}
+[data-theme="light"] .site-footer {
+  background: #f8fafc;
+  border-top: 1px solid #cbd5e1;
+}
+[data-theme="light"] .footer-tech-banner {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  color: #0369a1;
+}
+[data-theme="light"] .footer-col-title {
+  color: #091322;
+  font-weight: 800;
+}
+[data-theme="light"] .footer-about-text {
+  color: #1e293b;
+  font-weight: 500;
+}
+[data-theme="light"] .team-member-name {
+  color: #091322;
+  font-weight: 700;
+}
+[data-theme="light"] .team-member-role {
+  color: #334155;
+  font-weight: 500;
+}
+[data-theme="light"] .footer-contact-item a {
+  color: #0369a1;
+  font-weight: 600;
+}
+[data-theme="light"] .footer-source-item {
+  color: #334155;
+  font-weight: 500;
+}
+[data-theme="light"] .footer-bottom-bar {
+  border-color: #e2e8f0;
+}
+[data-theme="light"] .footer-copyright {
+  color: #475569;
+  font-weight: 500;
 }

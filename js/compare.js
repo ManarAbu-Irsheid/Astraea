@@ -329,6 +329,7 @@ const SiteComparator = {
         this.selectedTarget = this.targets.find(t => t.id === e.target.value) || this.targets[0];
         this.renderComparison();
         if (window.UserSystem) {
+          window.UserSystem.recordComparison();
           window.UserSystem.addXP(20, 'Recalibrated baseline target', 'إعادة معايرة الجرم الكوكبي الأساسي');
         }
       });
@@ -340,6 +341,7 @@ const SiteComparator = {
         this.siteA = this.cells.find(c => c.id === e.target.value) || this.cells[0];
         this.renderComparison();
         if (window.UserSystem) {
+          window.UserSystem.recordComparison();
           window.UserSystem.addXP(25, 'Benchmarked analog site matrix', 'تحليل مقارنة موقع تناظري');
         }
       });
@@ -351,6 +353,7 @@ const SiteComparator = {
         this.siteB = this.cells.find(c => c.id === e.target.value) || this.cells[1];
         this.renderComparison();
         if (window.UserSystem) {
+          window.UserSystem.recordComparison();
           window.UserSystem.addXP(25, 'Benchmarked analog candidate site', 'تحليل مقارنة موقع مرشح جديد');
         }
       });
