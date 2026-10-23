@@ -12,15 +12,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Stylesheets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/compare.css">
 </head>
-<body>
+<body data-page="compare">
+  <!-- Accessibility Skip Link -->
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
 
-  <!-- ==========================================================================
-       PERSISTENT NAVIGATION HEADER
-       ========================================================================== -->
-  <header class="site-header">
+<header class="site-header">
     <div class="header-container">
       
       <!-- Brand Logo -->
@@ -216,14 +216,11 @@
     </div>
   </header>
 
-  <!-- ==========================================================================
-       PAGE 3 CONTENT: COMPARE SITES
-       ========================================================================== -->
-  <main class="page-container">
+<main class="page-container">
     
     <!-- Print-Only Header for 1-Page PDF Brief -->
     <div class="print-only-header">
-      <div class="print-title">TERRATWIN SCIENTIFIC BENCHMARKING REPORT</div>
+      <div class="print-title" id="printReportTitle">TERRATWIN SCIENTIFIC BENCHMARKING REPORT</div>
       <div class="print-meta" id="printMetaDetails">
         Official Planetary Analog Evaluation Brief • NASA PDS & ESA Copernicus Data Calibration
       </div>
@@ -231,16 +228,19 @@
 
     <div class="compare-page-layout">
       
-      <!-- Top Bar: Title & Selectors Grid -->
+      <!-- Top Bar: Title & Action Engine (Cleaned up, no redundant subtitle) -->
       <section class="compare-header-bar">
         <div class="compare-title-row">
           <div class="compare-title-text">
-            <h1 data-i18n="compare.title">Side-by-Side Site Benchmarking</h1>
-            <p data-i18n="compare.subtitle">Rigorous physical divergence quantification between established analogs and newly discovered planetary targets.</p>
+            <h1 data-i18n="compare.title" class="neon-shimmer-heading">Side-by-Side Site Benchmarking</h1>
           </div>
 
-          <!-- Reporting Engine: Prominent Export Report Button -->
-          <div id="compareExportSpotlight">
+          <!-- Reporting Engine: Preview Brief & Export PDF Buttons -->
+          <div class="compare-actions-group" id="compareExportSpotlight">
+            <button class="btn-preview-report" id="btnPreviewReport" title="معاينة وثيقة التقرير التنفيذي الرسمي قبل الطباعة">
+              <span class="btn-icon">👁️</span>
+              <span data-i18n="compare.btn_preview_report">معاينة التقرير (Preview)</span>
+            </button>
             <button class="btn-export-pdf" id="btnExportReportPdf" data-i18n="compare.btn_export_report">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -253,100 +253,379 @@
             </button>
           </div>
         </div>
+      </section>
 
-        <!-- Interactive Site Selectors (Target, Site A, Site B) -->
-        <div class="compare-selectors-grid">
-          <div class="selector-field-group">
-            <label class="selector-label" for="selectTarget" data-i18n="compare.select_target_label">Extraterrestrial Target Baseline</label>
-            <select class="sci-select" id="selectTarget"></select>
+      <!-- 1. SIMPLIFIED SITE SELECTION — EXACTLY TWO COMPACT DROPDOWNS -->
+      <section class="benchmark-selectors-section" id="compareHeadSpotlight">
+        <div class="dual-selector-grid">
+          
+          <!-- Dropdown 1: Planetary Target -->
+          <div class="selector-card target-card">
+            <div class="selector-card-header">
+              <div class="selector-badge-wrap">
+                <span class="selector-icon" id="arenaTargetIcon">🪐</span>
+                <span class="sci-badge mars" id="arenaTargetBody">MARS TARGET BASELINE</span>
+              </div>
+              <span class="selector-pill planetary" data-i18n="compare.planetary_target_pill">الهدف الفضائي المرجعي</span>
+            </div>
+            
+            <div class="selector-field-wrap">
+              <label for="selectTarget" class="selector-label" data-i18n="compare.select_target_label">
+                الهدف الكوكبي المستهدف (Planetary Target):
+              </label>
+              <div class="custom-select-wrap">
+                <select class="sci-select modern-select" id="selectTarget"></select>
+              </div>
+            </div>
+
+            <div class="selector-meta-row">
+              <div class="meta-item">
+                <span class="meta-lbl">COORDS:</span>
+                <span class="meta-val mono" id="arenaTargetCoord">18.38° N, 77.58° E</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-lbl">DATUM:</span>
+                <span class="meta-val mono" id="arenaTargetElev">-2.5 km (MOLA)</span>
+              </div>
+            </div>
+            <div class="selector-environment-note" id="arenaTargetEnv">
+              Hyper-arid, low pressure (6.1 mbar), diurnal range -90°C to +15°C
+            </div>
           </div>
 
-          <div class="selector-field-group">
-            <label class="selector-label" for="selectSiteA" data-i18n="compare.select_site_a_label">Benchmark Site A (Established)</label>
-            <select class="sci-select" id="selectSiteA"></select>
+          <!-- Dropdown 2: Earth Location -->
+          <div class="selector-card earth-card">
+            <div class="selector-card-header">
+              <div class="selector-badge-wrap">
+                <span class="selector-icon">🌍</span>
+                <span class="sci-badge validated" id="headSiteABadge">● موقع أرضي معتمد</span>
+              </div>
+              <div class="earth-score-badge" title="Overall Match Score">
+                <span class="score-val" id="headSiteAScore">89.2%</span>
+                <span class="score-sub" data-i18n="compare.match_similarity">مطابقة</span>
+              </div>
+            </div>
+
+            <div class="selector-field-wrap">
+              <label for="selectSiteA" class="selector-label" data-i18n="compare.select_earth_site_label">
+                الموقع الأرضي المقارن (Earth Location):
+              </label>
+              <div class="custom-select-wrap">
+                <select class="sci-select modern-select" id="selectSiteA"></select>
+              </div>
+            </div>
+
+            <div class="selector-meta-row">
+              <div class="meta-item">
+                <span class="meta-lbl">REGION:</span>
+                <span class="meta-val" id="headSiteACountry">Chile</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-lbl">TERRAIN:</span>
+                <span class="meta-val" id="headSiteATerrain">Desert Hyper-Arid</span>
+              </div>
+            </div>
+            <div class="selector-environment-note" id="headSiteAName">
+              Yungay, Atacama Desert
+            </div>
           </div>
 
-          <div class="selector-field-group">
-            <label class="selector-label" for="selectSiteB" data-i18n="compare.select_site_b_label">Candidate Site B (Comparison)</label>
-            <select class="sci-select" id="selectSiteB"></select>
+        </div>
+
+        <!-- Orange and Blue Comparison Indicator (Retained & Styled Consistently) -->
+        <div class="balance-score-container" id="balanceScoreContainer">
+          <div class="balance-labels-row">
+            <span class="balance-lbl left" id="balanceLabelA">Earth Site (50.4%)</span>
+            <div class="balance-center-badge">
+              <span class="balance-icon">⚖️</span>
+              <span class="balance-center-title" data-i18n="compare.balance_title">ميزان المطابقة التفاعلي // MATCH BALANCE</span>
+              <span class="delta-value" id="headDeltaVal">Δ 1.4%</span>
+            </div>
+            <span class="balance-lbl right" id="balanceLabelB">Benchmark (49.6%)</span>
+          </div>
+          <div class="balance-track">
+            <div class="balance-fill-a" id="balanceFillA" style="width: 50.4%;"></div>
+            <div class="balance-marker" title="Center Baseline 50:50"></div>
+            <div class="balance-fill-b" id="balanceFillB" style="width: 49.6%;"></div>
           </div>
         </div>
       </section>
 
-      <!-- Head-to-Head Benchmark Score Card -->
-      <section class="benchmark-head-to-head" id="compareHeadSpotlight">
-        <!-- Site A Card -->
-        <div class="head-site-card site-a">
-          <div>
-            <span class="sci-badge validated" id="headSiteABadge">● Benchmark Historic</span>
+      <!-- 2. 3D PLANETARY SURFACE SIMILARITY HEATMAP VISUALIZER (PRIMARY FOCUS) -->
+      <section class="compare-3d-section" id="compare3dSpotlight">
+        <!-- 3D Card Header & Controls Toolbar (Cleaned up, no redundant subtitle or badges) -->
+        <div class="terrain-3d-header">
+          <div class="terrain-3d-title-group">
+            <h2 class="terrain-main-title neon-shimmer-text" id="terrainTargetTitle">Jezero Crater Delta — 3D Topography</h2>
           </div>
-          <div class="head-site-name" id="headSiteAName">Site A</div>
-          <div class="head-site-score">
-            <span id="headSiteAScore">89.2%</span>
-            <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">similarity</span>
+
+          <!-- Controls Toolbar -->
+          <div class="terrain-controls-toolbar">
+            <!-- Scientific Layer Mode Selector (Spectral, Natural, DEM) -->
+            <div class="terrain-layer-toggle-group">
+              <button class="terrain-layer-btn active" id="btn3dLayerSpectral" title="تراكب مطيافي علمي مع التضاريس">
+                <span>🔬 Spectral Heatmap</span>
+              </button>
+              <button class="terrain-layer-btn" id="btn3dLayerNatural" title="تصوير مداري واقعي بالألوان الطبيعية">
+                <span>🛰️ True-Color Surface</span>
+              </button>
+              <button class="terrain-layer-btn" id="btn3dLayerDEM" title="نموذج الارتفاع الرقمي (DEM)">
+                <span>🗺️ Topographic DEM</span>
+              </button>
+            </div>
+
+            <!-- Scientific Overlays & Heatmap Opacity Controls -->
+            <div class="terrain-layer-subcontrols">
+              <button class="terrain-icon-btn active" id="btn3dContours" title="Toggle Elevation & Similarity Contour Isolines / إظهار خطوط الكنتور العلمية">
+                📐
+              </button>
+              <div class="heatmap-opacity-wrap" title="Heatmap Blend Opacity / شفافية طبقة التشابه">
+                <span class="opacity-label">ALPHA:</span>
+                <input type="range" id="slider3dOpacity" min="0" max="100" value="75" class="opacity-slider" aria-label="Heatmap Opacity">
+                <span class="opacity-val" id="val3dOpacity">75%</span>
+              </div>
+            </div>
+
+            <!-- Camera Utilities -->
+            <div class="terrain-util-group">
+              <button class="terrain-icon-btn active" id="btn3dAutoRotate" title="Toggle 360° Auto-Rotation / تفعيل الدوران التلقائي 360 درجة">
+                🔄
+              </button>
+              <button class="terrain-icon-btn" id="btn3dWireframe" title="Toggle Wireframe DEM / إظهار شبكة الارتفاعات">
+                🌐
+              </button>
+              <button class="terrain-icon-btn" id="btn3dReset" title="Reset Camera / إعادة توجيه الكاميرا">
+                ↺
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- VS Divider -->
-        <div class="head-versus-divider">
-          <span>VS</span>
-          <span style="font-size:0.7rem; color:var(--accent-cyan);">DELTA INDEX</span>
+        <!-- Dynamic Terrain Geomorphology Selector Strip (Volcano, Sea/Lake Bed, Flat Plain, Crater, Canyon) -->
+        <div class="terrain-morphology-strip">
+          <div class="morph-strip-title">
+            <span class="mono">TERRAIN MORPHOLOGY // نمط التضاريس:</span>
+            <span class="morph-active-indicator" id="morphActiveIndicator">نمط تلقائي (Auto)</span>
+          </div>
+          <div class="morph-options-grid" id="morphOptionsGrid">
+            <button class="morph-chip-btn active" data-morph="auto" id="morphBtn_auto">
+              <span class="morph-icon">🔄</span>
+              <span class="morph-text" data-i18n="compare.morph_auto">تلقائي (حسب الموقع)</span>
+            </button>
+            <button class="morph-chip-btn" data-morph="volcano" id="morphBtn_volcano">
+              <span class="morph-icon">🌋</span>
+              <span class="morph-text" data-i18n="compare.morph_volcano">بركان وفوهة (Volcano)</span>
+            </button>
+            <button class="morph-chip-btn" data-morph="lake" id="morphBtn_lake">
+              <span class="morph-icon">🌊</span>
+              <span class="morph-text" data-i18n="compare.morph_lake">قاع بحر / بحيرة (Lake/Sea)</span>
+            </button>
+            <button class="morph-chip-btn" data-morph="plain" id="morphBtn_plain">
+              <span class="morph-icon">🏜️</span>
+              <span class="morph-text" data-i18n="compare.morph_plain">أرض مسطحة وكثبان (Flat Plain)</span>
+            </button>
+            <button class="morph-chip-btn" data-morph="crater" id="morphBtn_crater">
+              <span class="morph-icon">☄️</span>
+              <span class="morph-text" data-i18n="compare.morph_crater">فوهة اصطدام (Crater)</span>
+            </button>
+            <button class="morph-chip-btn" data-morph="canyon" id="morphBtn_canyon">
+              <span class="morph-icon">🕳️</span>
+              <span class="morph-text" data-i18n="compare.morph_canyon">أخدود وكهوف (Canyon)</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Site B Card -->
-        <div class="head-site-card site-b">
-          <div>
-            <span class="sci-badge candidate" id="headSiteBBadge">★ New Candidate</span>
+        <!-- 3D Canvas Viewport Card -->
+        <div class="terrain-3d-viewport-card">
+          <div class="terrain-canvas-container" id="terrain3dCanvasContainer">
+            <!-- Three.js WebGL Canvas dynamically mounted here -->
           </div>
-          <div class="head-site-name" id="headSiteBName">Site B</div>
-          <div class="head-site-score">
-            <span id="headSiteBScore">87.8%</span>
-            <span style="font-size:0.85rem; color:var(--text-muted); font-weight:normal;">similarity</span>
+
+          <!-- Floating Telemetry HUD (Target Coordinates & Live Inspect) -->
+          <div class="terrain-hud-telemetry" id="terrainHudTelemetry">
+            <div class="hud-item">
+              <span class="hud-label">TARGET SENSOR:</span>
+              <span class="hud-val" id="hudSensor">NASA MRO HiRISE / ESA HRSC</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">COORDINATES:</span>
+              <span class="hud-val" id="hudCoord">18.38° N, 77.58° E</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">ELEVATION & SLOPE:</span>
+              <span class="hud-val" id="hudElevation">-2.5 km (MOLA) • 12.4°</span>
+            </div>
+            <div class="hud-item">
+              <span class="hud-label">GEOLOGIC UNIT:</span>
+              <span class="hud-val" id="hudInspectZone">Delta Fan Sedimentary Apex</span>
+            </div>
+            <div class="hud-item highlight-red">
+              <span class="hud-label">SIMILARITY MATCH:</span>
+              <span class="hud-val" id="hudSimilarityVal">92.4% ± 1.2% (Tier-1 Apex Match)</span>
+            </div>
+            <div class="hud-item hud-breakdown" id="hudBreakdownRow">
+              <span class="hud-label">BREAKDOWN:</span>
+              <span class="hud-val" id="hudBreakdownVal">Regolith 91% • Mineral 94% • Slope 89%</span>
+            </div>
+          </div>
+
+          <!-- High-Tech Spatial Scale Bar & Compass -->
+          <div class="terrain-scale-widget">
+            <div class="scale-bar-line"></div>
+            <span class="scale-bar-label">5.0 km</span>
+            <span class="scale-bar-sub">Grid: 30m LOLA / MOLA</span>
+          </div>
+          <div class="terrain-compass-indicator" title="Planetary Grid North">
+            <span class="compass-arrow">▲</span>
+            <span class="compass-lbl">N</span>
+          </div>
+
+          <!-- Color Heatmap Gradient Legend Bar -->
+          <div class="terrain-legend-bar">
+            <div class="legend-bar-title">
+              <span class="mono">CALIBRATED SPECTRAL SIMILARITY RADIOMETRY // مصفوفة التشابه الطيفي والجيولوجي</span>
+              <span class="legend-unit-tag">PDS / HRSC CALIBRATED</span>
+            </div>
+            <div class="legend-gradient-track">
+              <div class="legend-gradient-visual"></div>
+              <div class="legend-gradient-labels">
+                <span class="legend-marker marker-high">🔴 90% - 100% (تطابق طيفي وجيولوجي فائق / Tier-1 Apex)</span>
+                <span class="legend-marker marker-mid">🟠 75% - 89% (تشابه تضاريسي وميكانيكي متقدم / High Match)</span>
+                <span class="legend-marker marker-low">🟡 50% - 74% (تشابه سياقي متوسط / Baseline)</span>
+                <span class="legend-marker marker-none">🪨 &lt; 50% (صخور الأساس الطبيعية / Natural Substrate)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interaction Hint Overlay -->
+          <div class="terrain-hint-pill">
+            <span>🖱️ اسحب للتدوير 360° كامل في جميع الاتجاهات • حرّك العجلة للتكبير • مرّر الفأرة لفحص النقاط</span>
           </div>
         </div>
       </section>
 
-      <!-- TWO PERMANENT ANALYTICAL PANELS -->
+      <!-- 3. FEATURE COMPARISON (RADAR MATRIX - CLUTTER REMOVED) -->
+      <section class="compare-radar-section" id="compareRadarSpotlight">
+        <div class="radar-card-header">
+          <div class="radar-title-group">
+            <h2 class="radar-main-title neon-shimmer-text" data-i18n="compare.radar_title">Feature Comparison</h2>
+          </div>
+        </div>
+
+        <div class="radar-card-body">
+          <div class="radar-canvas-column">
+            <div class="radar-canvas-wrapper">
+              <canvas id="compareRadarCanvas" width="480" height="380"></canvas>
+            </div>
+
+            <!-- Radar Legend Strip (Compact) -->
+            <div class="radar-legend-strip">
+              <div class="radar-legend-item target">
+                <span class="legend-swatch swatch-target"></span>
+                <span class="legend-text" id="radarLegendTarget">الهدف الفضائي المرجعي (خط منقط 100%)</span>
+              </div>
+              <div class="radar-legend-item site-a">
+                <span class="legend-swatch swatch-a"></span>
+                <span class="legend-text" id="radarLegendSiteA">الموقع الأرضي المختار (أزرق علمي)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Radar Axis Breakdown Insights Grid -->
+          <div class="radar-insights-column">
+            <div class="insights-box-header">
+              <span class="insights-icon">📊</span>
+              <span class="insights-title">مقارنة المحاور الخمسة للموقع (5-Axis Multi-Spectral Breakdown)</span>
+            </div>
+            <div class="radar-axes-chips-grid" id="radarAxesChipsGrid">
+              <!-- Dynamically populated chips comparing each axis -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. TWO ANALYTICAL PANELS: WHAT EARTH CANNOT SIMULATE & WHAT CAN BE TESTED HERE -->
       <section class="compare-analytical-panels" id="comparePanelsSpotlight">
         
-        <!-- Panel 1: "What Earth Cannot Simulate" (Rigid physical divergences) -->
+        <!-- Panel 1: "ما لا تحاكيه الأرض" (الحدود الفيزيائية الصارمة 🚫) -->
         <div class="analytical-panel cannot-simulate">
           <div class="panel-header-block">
-            <h2 class="panel-main-title" data-i18n="compare.panel_cannot_simulate_title">What Earth Cannot Simulate</h2>
-            <div class="panel-sub-title" data-i18n="compare.panel_cannot_simulate_subtitle">Rigid Physical & Environmental Divergences</div>
+            <div class="panel-badge-kicker warning">الحدود الفيزيائية الصارمة 🚫 // ENVIRONMENTAL BARRIERS</div>
+            <h2 class="panel-main-title" data-i18n="compare.panel_cannot_simulate_title">ما لا تحاكيه الأرض (الحدود الفيزيائية)</h2>
+            <div class="panel-sub-title" data-i18n="compare.panel_cannot_simulate_subtitle">
+              حواجز بيئية فضائية لا يمكن تكرارها حقلياً على سطح الأرض — مع الحلول الهندسية التعويضية للجنة.
+            </div>
           </div>
           <div class="analytical-points-list" id="cannotSimulatePointsList"></div>
         </div>
 
-        <!-- Panel 2: "What Can Be Tested Here" (Mission-specific validity based on profile) -->
+        <!-- Panel 2: "ما يمكن اختباره هنا" (الفرص الميدانية حسب البروفايل ✅) -->
         <div class="analytical-panel can-test">
           <div class="panel-header-block">
-            <h2 class="panel-main-title" data-i18n="compare.panel_can_test_title">What Can Be Tested Here</h2>
-            <div class="panel-sub-title" data-i18n="compare.panel_can_test_subtitle">Mission Profile Test Validity Matrix</div>
+            <div class="panel-badge-kicker readiness">الفرص الميدانية المتاحة ✅ // MISSION READINESS</div>
+            <h2 class="panel-main-title" data-i18n="compare.panel_can_test_title">ما يمكن اختباره هنا (حسب البروفايل)</h2>
+            <div class="panel-sub-title" data-i18n="compare.panel_can_test_subtitle">
+              معايير الجاهزية الميدانية المفتوحة للاختبار الفعلي وفق ملف المهمة المختار.
+            </div>
           </div>
+
+          <!-- مؤشر الجدوى الميدانية (Profile Feasibility Index Meter) -->
+          <div class="feasibility-meter-card">
+            <div class="feasibility-meter-header">
+              <span class="feasibility-meter-title">
+                <span class="pulse-green"></span>
+                <span>جدوى الاختبار الميداني للبروفايل:</span>
+                <strong class="feasibility-val" id="feasibilityScoreVal">91.4%</strong>
+              </span>
+              <span class="sci-badge validated" id="feasibilityStatusBadge">جاهزية ممتازة (Optimal)</span>
+            </div>
+            <div class="feasibility-track">
+              <div class="feasibility-fill" id="feasibilityFill" style="width: 91.4%;"></div>
+            </div>
+          </div>
+
           <div class="analytical-points-list" id="canTestPointsList"></div>
         </div>
 
       </section>
 
-      <!-- PHYSICAL PROPERTY DIVERGENCE MATRIX TABLE -->
-      <section class="compare-matrix-table-card">
-        <div style="margin-bottom:1rem;">
-          <h2 style="font-size:1.15rem; font-weight:700;" data-i18n="compare.metric_table_title">Physical Property Divergence Matrix</h2>
+    <!-- ==========================================================================
+         6. نافذة معاينة التقرير التنفيذي الرسمي (1-Page Committee Brief Modal Preview)
+         ========================================================================== -->
+    <div class="report-language-modal" id="reportLanguageModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="reportLanguageTitle">
+      <div class="report-language-card">
+        <h2 id="reportLanguageTitle">Choose report language / اختر لغة التقرير</h2>
+        <p>اختر لغة التقرير بشكل مستقل عن لغة الموقع. / Choose the report language independently of the website language.</p>
+        <div class="report-language-actions">
+          <button type="button" data-report-language="ar" class="report-language-option">العربية</button>
+          <button type="button" data-report-language="en" class="report-language-option">English</button>
         </div>
-        <table class="compare-matrix-table">
-          <thead>
-            <tr>
-              <th data-i18n="compare.col_property">Physical Parameter</th>
-              <th data-i18n="compare.col_site_a">Site A Value</th>
-              <th data-i18n="compare.col_target">Extraterrestrial Target</th>
-              <th data-i18n="compare.col_site_b">Site B Value</th>
-            </tr>
-          </thead>
-          <tbody id="compareMatrixTableBody"></tbody>
-        </table>
-      </section>
+        <button type="button" id="btnCancelReportLanguage" class="report-language-cancel">Cancel / إلغاء</button>
+      </div>
+    </div>
 
+    <div class="report-preview-modal" id="reportPreviewModal" aria-hidden="true">
+      <div class="modal-backdrop" id="modalBackdrop"></div>
+      <div class="preview-modal-dialog">
+        <div class="preview-modal-topbar">
+          <div class="topbar-title">
+            <span class="topbar-icon">📑</span>
+            <span>معاينة شهادة التقييم الرسمية // OFFICIAL ANALOG CLEARANCE BRIEF</span>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn-modal-print" id="btnPrintFromPreview">
+              <span class="btn-icon">🖨️</span>
+              <span>طباعة الشهادة (PDF Print)</span>
+            </button>
+            <button class="btn-modal-close" id="btnClosePreview" title="إغلاق المعاينة">✕</button>
+          </div>
+        </div>
+        <div class="preview-modal-scrollable">
+          <div class="preview-certificate-sheet" id="previewCertificateSheet">
+            <!-- Dynamic Live Certificate generated here -->
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Print-Only Footer for 1-Page PDF Brief -->
@@ -357,10 +636,7 @@
     </div>
   </main>
 
-  <!-- ==========================================================================
-       PERSISTENT SCIENTIFIC MISSION FOOTER (High-Contrast Planetary Telemetry)
-       ========================================================================== -->
-  <footer class="site-footer" id="siteFooter">
+<footer class="site-footer" id="siteFooter">
     <!-- Telemetry Boundary Demarcation Bar -->
     <div class="footer-mission-boundary">
       <div class="footer-boundary-bar">
@@ -468,7 +744,7 @@
     </div>
   </footer>
 
-  <!-- Data & Scripts -->
+<!-- Data & Scripts -->
   <script src="data/data-store.js"></script>
   <script src="js/i18n.js"></script>
   <script src="js/profile.js"></script>
