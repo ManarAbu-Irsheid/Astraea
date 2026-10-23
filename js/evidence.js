@@ -64,6 +64,20 @@ const EvidenceController = {
 
     this.bindEvents();
 
+    let lastWidthWasMobile = window.innerWidth <= 640;
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const isMobile = window.innerWidth <= 640;
+        if (isMobile !== lastWidthWasMobile) {
+          lastWidthWasMobile = isMobile;
+          this.renderBoxplot();
+          this.renderHistogram();
+        }
+      }, 150);
+    });
+
     document.addEventListener('languageChanged', () => {
       this.renderKpiStrip();
       this.renderValidationRankPlot();
@@ -375,6 +389,12 @@ const EvidenceController = {
             r.setAttribute('aria-pressed', isTarget ? 'true' : 'false');
           });
           this.renderSiteDetails();
+        }
+        if (window.innerWidth <= 640) {
+          const detailsCard = document.getElementById('siteDetailsCard');
+          if (detailsCard) {
+            detailsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
         }
       };
 
@@ -828,6 +848,94 @@ const EvidenceController = {
       };
     }).filter(Boolean);
 
+    const isMobile = window.innerWidth <= 640;
+
+    if (isMobile) {
+      // Mobile HORIZONTAL Box Plot: 5 rows (one per attribute) + bottom axis 60–100
+      // Row height ~48px. Label on top, box spanning full card width, median value at end of row.
+      const rowHeight = 48;
+      const xStart = 16;
+      const xEnd = 300;
+      const plotWidth = 360;
+      const axisY = 10 + stats.length * rowHeight;
+      const totalH = axisY + 25;
+
+      const getX = (val) => xStart + ((val - 60) / 40) * (xEnd - xStart);
+
+      // Bottom Axis 60–100 ticks (60, 70, 80, 90, 100)
+      const ticks = [60, 70, 80, 90, 100];
+      const gridLinesHtml = ticks.map(t => {
+        const x = getX(t);
+        return `
+          <line x1="${x.toFixed(1)}" y1="10" x2="${x.toFixed(1)}" y2="${axisY}" class="boxplot-grid-line" stroke-dasharray="2 3"/>
+          <text x="${x.toFixed(1)}" y="${axisY + 16}" text-anchor="middle" class="boxplot-axis-text mono">${t}</text>
+        `;
+      }).join('');
+
+      const rowsHtml = stats.map((st, i) => {
+        const rowTop = 10 + i * rowHeight;
+        const yCenter = rowTop + 28;
+        const boxH = 14;
+        const capH = 10;
+
+        const xMin = getX(st.min);
+        const xQ1 = getX(st.q1);
+        const xMed = getX(st.median);
+        const xQ3 = getX(st.q3);
+        const xMax = getX(st.max);
+        const boxLeft = Math.min(xQ1, xQ3);
+        const boxWidth = Math.max(2, Math.abs(xQ3 - xQ1));
+
+        const tooltip = `${st.name} — Min: ${st.min}, Q1: ${st.q1}, Median: ${st.median}, Q3: ${st.q3}, Max: ${st.max}`;
+
+        return `
+          <g class="boxplot-h-row-group" tabindex="0" role="graphics-symbol" aria-label="${tooltip}">
+            <title>${tooltip}</title>
+
+            <!-- 1. Label on top (0.9rem) -->
+            <text x="${isAr ? xEnd : xStart}" y="${rowTop + 13}" 
+                  text-anchor="${isAr ? 'end' : 'start'}" 
+                  class="boxplot-h-attr-label" 
+                  fill="${st.color}">${st.name}</text>
+
+            <!-- 2. Median value shown at the end of each row (after xEnd) -->
+            <text x="${plotWidth - 10}" y="${yCenter + 4.5}" text-anchor="end" class="boxplot-h-median-val mono">${st.median}</text>
+
+            <!-- Whiskers & Caps (Horizontal) -->
+            <line x1="${xMin.toFixed(1)}" y1="${yCenter}" x2="${xQ1.toFixed(1)}" y2="${yCenter}" 
+                  stroke="${st.color}" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <line x1="${xMin.toFixed(1)}" y1="${yCenter - capH / 2}" x2="${xMin.toFixed(1)}" y2="${yCenter + capH / 2}" 
+                  stroke="${st.color}" stroke-width="2" stroke-linecap="round"/>
+
+            <line x1="${xQ3.toFixed(1)}" y1="${yCenter}" x2="${xMax.toFixed(1)}" y2="${yCenter}" 
+                  stroke="${st.color}" stroke-width="1.5" stroke-dasharray="3 3"/>
+            <line x1="${xMax.toFixed(1)}" y1="${yCenter - capH / 2}" x2="${xMax.toFixed(1)}" y2="${yCenter + capH / 2}" 
+                  stroke="${st.color}" stroke-width="2" stroke-linecap="round"/>
+
+            <!-- Box spanning Q1 to Q3 -->
+            <rect x="${boxLeft.toFixed(1)}" y="${(yCenter - boxH / 2).toFixed(1)}" 
+                  width="${boxWidth.toFixed(1)}" height="${boxH}" rx="4" 
+                  fill="${st.color}" fill-opacity="0.30" stroke="${st.color}" stroke-width="2"/>
+
+            <!-- Median Line (Vertical, 3px white with glow) -->
+            <line x1="${xMed.toFixed(1)}" y1="${(yCenter - boxH / 2).toFixed(1)}" 
+                  x2="${xMed.toFixed(1)}" y2="${(yCenter + boxH / 2).toFixed(1)}" 
+                  stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" 
+                  style="filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.85));"/>
+          </g>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <svg class="boxplot-svg boxplot-svg-mobile" viewBox="0 0 ${plotWidth} ${totalH}" role="img" aria-label="${isAr ? 'توزيع درجات المواقع لكل خاصية' : 'How sites score on each attribute'}">
+          ${gridLinesHtml}
+          <line x1="${xStart}" y1="${axisY}" x2="${xEnd}" y2="${axisY}" class="boxplot-axis-line"/>
+          ${rowsHtml}
+        </svg>
+      `;
+      return;
+    }
+
     // SVG coordinate space: 540 x 320
     const yTop = 45;
     const yBot = 265;
@@ -920,6 +1028,7 @@ const EvidenceController = {
 
     const lang = window.I18n ? window.I18n.currentLang : 'en';
     const isAr = lang === 'ar';
+    const isMobile = window.innerWidth <= 640;
 
     // 1. 9 bins covering real data range from lowest (58.7 in 55-60) to 100
     const binDefinitions = [
@@ -934,7 +1043,7 @@ const EvidenceController = {
       { min: 95, max: 100, label: '95–100' }
     ];
 
-    const bins = binDefinitions.map(b => ({
+    const rawBins = binDefinitions.map(b => ({
       ...b,
       validated: [],
       candidate: [],
@@ -946,9 +1055,9 @@ const EvidenceController = {
       const status = item.status;
       const name = isAr ? (item.name_ar || item.name) : item.name;
 
-      for (let i = 0; i < bins.length; i++) {
-        const b = bins[i];
-        const matches = (i === bins.length - 1) 
+      for (let i = 0; i < rawBins.length; i++) {
+        const b = rawBins[i];
+        const matches = (i === rawBins.length - 1) 
           ? (score >= b.min && score <= b.max) 
           : (score >= b.min && score < b.max);
 
@@ -965,26 +1074,34 @@ const EvidenceController = {
       }
     });
 
-    // 2. SVG coordinate space 540 x 320, Y axis with integer counts (0..6)
-    const maxCount = 7; // Headroom for count label
-    const yZero = 265;
-    const yTop = 45;
-    const plotH = yZero - yTop; // 220px
-    const unitH = plotH / maxCount; // ~31.43px per unit
+    // Mobile: only show bins that contain sites (hide empty bins). Desktop: all bins.
+    const bins = isMobile 
+      ? rawBins.filter(b => (b.validated.length + b.candidate.length + b.failure.length) > 0)
+      : rawBins;
 
-    const xStart = 52;
-    const xEnd = 525;
-    const binW = (xEnd - xStart) / bins.length; // ~52.55px
-    const barW = 37; // ~70% of bin column
-    const segGap = 1.5; // 1px separation between stacked segments
+    // Dimensions: Mobile chart height 240px, Desktop 320px
+    const svgWidth = isMobile ? 350 : 540;
+    const svgHeight = isMobile ? 240 : 320;
+    const yZero = isMobile ? 185 : 265;
+    const yTop = isMobile ? 30 : 45;
+    const plotH = yZero - yTop;
+    const maxCount = 7;
+    const unitH = plotH / maxCount;
 
-    // Integer grid lines and ticks (0, 1, 2, 3, 4, 5, 6)
+    const xStart = isMobile ? 24 : 52;
+    const xEnd = isMobile ? 336 : 525;
+    const binW = (xEnd - xStart) / bins.length;
+    // Mobile bars wide with 8px gap
+    const barW = isMobile ? Math.max(16, binW - 8) : 37;
+    const segGap = 1.5;
+
+    // Integer grid lines and ticks (0..6)
     const yTicks = [0, 1, 2, 3, 4, 5, 6];
     const gridLinesHtml = yTicks.map(t => {
       const y = yZero - t * unitH;
       return `
         <line x1="${xStart - 5}" y1="${y.toFixed(1)}" x2="${xEnd + 5}" y2="${y.toFixed(1)}" class="boxplot-grid-line"/>
-        <text x="${xStart - 12}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" class="boxplot-axis-text mono">${t}</text>
+        <text x="${xStart - (isMobile ? 8 : 12)}" y="${(y + 3.5).toFixed(1)}" text-anchor="end" class="boxplot-axis-text mono">${t}</text>
       `;
     }).join('');
 
@@ -997,7 +1114,6 @@ const EvidenceController = {
       const cFail = b.failure.length;
       const total = cVal + cCand + cFail;
 
-      // Determine segments in stack from bottom to top
       const segments = [];
       if (cVal > 0) segments.push({ count: cVal, type: 'val', cssClass: 'seg-val', items: b.validated });
       if (cCand > 0) segments.push({ count: cCand, type: 'cand', cssClass: 'seg-cand', items: b.candidate });
@@ -1009,13 +1125,12 @@ const EvidenceController = {
       segments.forEach((seg, sIdx) => {
         const isTop = (sIdx === segments.length - 1);
         const segH = seg.count * unitH;
-        // Leave 1.5px gap if stacked on top of another segment
         const actualH = (sIdx > 0) ? Math.max(2, segH - segGap) : segH;
         const segY = (sIdx > 0) ? (currentBaseY - actualH - segGap) : (currentBaseY - actualH);
 
         const rx = isTop ? 6 : 0;
         segsHtml += `
-          <rect x="${barLeft.toFixed(1)}" y="${segY.toFixed(1)}" width="${barW}" height="${actualH.toFixed(1)}" 
+          <rect x="${barLeft.toFixed(1)}" y="${segY.toFixed(1)}" width="${barW.toFixed(1)}" height="${actualH.toFixed(1)}" 
                 rx="${rx}" class="hist-seg ${seg.cssClass} chart-anim-elem"/>
         `;
         currentBaseY = segY;
@@ -1028,6 +1143,9 @@ const EvidenceController = {
         ? `${b.label} (${total}):\n• ${allSites.join('\n• ')}`
         : `${b.label}: 0`;
 
+      const countY = (yStackTop - (isMobile ? 6 : 8)).toFixed(1);
+      const labelY = isMobile ? 212 : 292;
+
       return `
         <g class="hist-bar-group" data-bin-idx="${i}" tabindex="0" role="graphics-symbol" aria-label="${b.label}: ${total}">
           <title>${tooltipText}</title>
@@ -1035,17 +1153,17 @@ const EvidenceController = {
           <!-- Stacked Bar Segments -->
           ${segsHtml}
 
-          <!-- 3. Count label above each bar (0.9rem bold) -->
-          ${total > 0 ? `<text x="${cx.toFixed(1)}" y="${(yStackTop - 8).toFixed(1)}" class="hist-count-text mono chart-anim-elem">${total}</text>` : ''}
+          <!-- Count label above each bar -->
+          ${total > 0 ? `<text x="${cx.toFixed(1)}" y="${countY}" class="hist-count-text mono chart-anim-elem">${total}</text>` : ''}
 
-          <!-- 4. X axis labels like 55–60, 85–90, readable size -->
-          <text x="${cx.toFixed(1)}" y="292" class="hist-bin-label mono">${b.label}</text>
+          <!-- X axis bin label -->
+          <text x="${cx.toFixed(1)}" y="${labelY}" class="hist-bin-label mono">${b.label}</text>
         </g>
       `;
     }).join('');
 
     container.innerHTML = `
-      <svg class="histogram-svg" viewBox="0 0 540 320" role="img" aria-label="${isAr ? 'توزيع الدرجات' : 'Score distribution'}">
+      <svg class="histogram-svg ${isMobile ? 'histogram-svg-mobile' : ''}" viewBox="0 0 ${svgWidth} ${svgHeight}" role="img" aria-label="${isAr ? 'توزيع الدرجات' : 'Score distribution'}">
         <defs>
           <linearGradient id="svgGradMain" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stop-color="#0072FF"/>
@@ -1067,59 +1185,84 @@ const EvidenceController = {
       <div class="hist-floating-tooltip" id="histFloatingTooltip" aria-hidden="true"></div>
     `;
 
-    // 5. Hover a bar: tooltip listing site names in that bin, colored by status
+    // Tooltip logic: Mobile = tap to open / tap to close; Desktop = hover
     const tooltipEl = container.querySelector('#histFloatingTooltip');
     const barGroups = container.querySelectorAll('.hist-bar-group');
+    let activeTipIdx = null;
+
+    const showTip = (idx) => {
+      const b = bins[idx];
+      if (!tooltipEl || !b) return;
+      const total = b.validated.length + b.candidate.length + b.failure.length;
+      if (total === 0) return;
+
+      const cx = xStart + (idx + 0.5) * binW;
+      const leftPct = (cx / svgWidth) * 100;
+      const tipX = Math.max(18, Math.min(82, leftPct));
+      const yStackTop = yZero - total * unitH;
+      const topPct = Math.max(8, Math.min(75, (yStackTop / svgHeight) * 100));
+
+      const valHtml = b.validated.map(s => `
+        <div class="hist-tip-item val"><span class="hist-tip-dot val"></span><span>${s}</span></div>
+      `).join('');
+      const candHtml = b.candidate.map(s => `
+        <div class="hist-tip-item cand"><span class="hist-tip-dot cand"></span><span>${s}</span></div>
+      `).join('');
+      const failHtml = b.failure.map(s => `
+        <div class="hist-tip-item fail"><span class="hist-tip-dot fail"></span><span>${s}</span></div>
+      `).join('');
+
+      const countWord = isAr ? 'مواقع' : 'sites';
+      tooltipEl.innerHTML = `
+        <div class="hist-tip-header">${b.label} &bull; ${total} ${countWord}</div>
+        <div class="hist-tip-list">
+          ${valHtml}
+          ${candHtml}
+          ${failHtml}
+        </div>
+      `;
+
+      tooltipEl.style.left = `${tipX.toFixed(1)}%`;
+      tooltipEl.style.top = `${topPct.toFixed(1)}%`;
+      tooltipEl.classList.add('visible');
+    };
+
+    const hideTip = () => {
+      if (tooltipEl) tooltipEl.classList.remove('visible');
+    };
 
     barGroups.forEach(grp => {
       const idx = parseInt(grp.getAttribute('data-bin-idx'), 10);
-      const b = bins[idx];
-      if (!b) return;
 
-      const total = b.validated.length + b.candidate.length + b.failure.length;
-
-      const showTip = () => {
-        if (!tooltipEl || total === 0) return;
-        const cx = xStart + (idx + 0.5) * binW;
-        const leftPct = (cx / 540) * 100;
-        const tipX = Math.max(22, Math.min(78, leftPct));
-        const yStackTop = yZero - total * unitH;
-        const topPct = Math.max(12, Math.min(75, (yStackTop / 320) * 100));
-
-        const valHtml = b.validated.map(s => `
-          <div class="hist-tip-item val"><span class="hist-tip-dot val"></span><span>${s}</span></div>
-        `).join('');
-        const candHtml = b.candidate.map(s => `
-          <div class="hist-tip-item cand"><span class="hist-tip-dot cand"></span><span>${s}</span></div>
-        `).join('');
-        const failHtml = b.failure.map(s => `
-          <div class="hist-tip-item fail"><span class="hist-tip-dot fail"></span><span>${s}</span></div>
-        `).join('');
-
-        const countWord = isAr ? 'مواقع' : 'sites';
-        tooltipEl.innerHTML = `
-          <div class="hist-tip-header">${b.label} &bull; ${total} ${countWord}</div>
-          <div class="hist-tip-list">
-            ${valHtml}
-            ${candHtml}
-            ${failHtml}
-          </div>
-        `;
-
-        tooltipEl.style.left = `${tipX.toFixed(1)}%`;
-        tooltipEl.style.top = `${topPct.toFixed(1)}%`;
-        tooltipEl.classList.add('visible');
-      };
-
-      const hideTip = () => {
-        if (tooltipEl) tooltipEl.classList.remove('visible');
-      };
-
-      grp.addEventListener('mouseenter', showTip);
-      grp.addEventListener('mouseleave', hideTip);
-      grp.addEventListener('focusin', showTip);
-      grp.addEventListener('focusout', hideTip);
+      if (isMobile) {
+        // Mobile tap toggle
+        grp.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (activeTipIdx === idx && tooltipEl && tooltipEl.classList.contains('visible')) {
+            hideTip();
+            activeTipIdx = null;
+          } else {
+            showTip(idx);
+            activeTipIdx = idx;
+          }
+        });
+      } else {
+        // Desktop hover
+        grp.addEventListener('mouseenter', () => showTip(idx));
+        grp.addEventListener('mouseleave', hideTip);
+        grp.addEventListener('focusin', () => showTip(idx));
+        grp.addEventListener('focusout', hideTip);
+      }
     });
+
+    if (isMobile) {
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.hist-bar-group')) {
+          hideTip();
+          activeTipIdx = null;
+        }
+      });
+    }
   },
 
   /**
