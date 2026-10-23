@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TerraTwin — Mission Purpose, Ethics & Platform Guide</title>
+  <meta name="description" content="Mission purpose, scientific ethics charter, abiotic gate framework, and comprehensive user guide for TerraTwin.">
+  
+  <!-- Space Agency & High-Tech Typography (Orbitron, Space Grotesk, Alexandria, Cairo, Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/guide.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       PERSISTENT NAVIGATION HEADER
+       ========================================================================== -->
+  <header class="site-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="brand-link" title="TerraTwin Home">
+        <div class="brand-logo-mark">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00a3ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"></circle>
+            <ellipse cx="12" cy="12" rx="9" ry="3.5" transform="rotate(-30 12 12)"></ellipse>
+            <circle cx="12" cy="12" r="2.5" fill="#00e5d4"></circle>
+          </svg>
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-title">TerraTwin<span class="brand-dot"></span></span>
+          <span class="brand-subtitle" data-i18n="nav.brand_subtitle">Planetary Analog Intelligence</span>
+        </div>
+      </a>
+
+      <!-- Page Links -->
+      <nav class="main-nav" aria-label="Main Navigation">
+        <a href="index.html" class="nav-link" data-page="home" data-i18n="nav.home">Home</a>
+        <a href="finder.html" class="nav-link" data-page="finder" data-i18n="nav.finder">Site Finder</a>
+        <a href="compare.html" class="nav-link" data-page="compare" data-i18n="nav.compare">Compare Sites</a>
+        <a href="evidence.html" class="nav-link" data-page="evidence" data-i18n="nav.evidence">Evidence & Method</a>
+        <a href="guide.html" class="nav-link active" data-page="guide" style="color:var(--accent-cyan); border-color:var(--accent-cyan);" data-i18n="nav.kebab_ethics">📜 Guide & Ethics</a>
+      </nav>
+
+      <!-- Header Controls: Lang, Profile, 3-Dots Menu -->
+      <div class="header-actions" id="headerControlsSpotlight">
+        
+        <!-- Language Switcher [ EN | AR ] -->
+        <button class="btn-control lang-toggle-btn" id="langToggleBtn" title="Switch Language">
+          عربي
+        </button>
+
+        <!-- Mission Guide Quick Button ("?") -->
+        <a href="guide.html" class="btn-control tour-help-btn active" id="navGuideBtn" title="Platform Guide & Ethics / دليل وميثاق المنصة" aria-label="Platform Guide">?</a>
+
+        <!-- User Profile Badge & Dropdown -->
+        <div class="user-profile-container">
+          <!-- Guest Sign In / Register Button (Visible when not logged in) -->
+          <a href="login.html" class="nav-auth-login-btn" id="navAuthLoginBtn">
+            <span class="auth-btn-icon">🔐</span>
+            <span class="auth-btn-text auth-btn-text-full" data-i18n="auth.nav_login_btn">تسجيل الدخول / إنشاء حساب</span>
+            <span class="auth-btn-text auth-btn-text-short" data-i18n="auth.nav_login_btn_short">دخول</span>
+          </a>
+
+          <!-- User Profile Badge & Dropdown (Visible only when logged in) -->
+          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile" style="display: none;">
+            <div class="user-avatar-badge">
+              <span>👨‍🚀</span>
+              <span class="user-status-dot" title="Status: Online"></span>
+            </div>
+            <div class="user-meta-text">
+              <span class="user-display-name" data-i18n="nav.user_name">Dr. Researcher</span>
+            </div>
+            <span class="profile-chevron">▼</span>
+          </button>
+          
+          <div class="user-profile-dropdown" id="userProfileDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-dropdown-avatar">👨‍🚀</div>
+              <div class="user-dropdown-info">
+                <div class="user-dropdown-name" data-i18n="nav.user_name">Dr. Researcher</div>
+                <div class="user-dropdown-role">Planetary Analog Specialist</div>
+                <div class="user-dropdown-email">researcher@terratwin.space</div>
+              </div>
+            </div>
+            <div class="user-dropdown-badge-strip">
+              <span class="sci-badge validated">LEVEL-4 ACCESS</span>
+              <span class="sci-badge mars">ORBITAL DATA</span>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <div class="user-dropdown-row">
+              <span class="dropdown-row-label">Assigned Mission:</span>
+              <span class="dropdown-row-val" id="userProfileActiveMission">Analog Field Recon</span>
+            </div>
+            <div class="user-dropdown-row">
+              <span class="dropdown-row-label">Data Clearance:</span>
+              <span class="dropdown-row-val" style="color:var(--accent-green);">NASA PDS / ESA Sentinel</span>
+            </div>
+            <div class="user-dropdown-divider"></div>
+            <div class="user-dropdown-links">
+              <a href="finder.html" class="user-dropdown-link">🗺️ Site Finder Dashboard</a>
+              <a href="compare.html" class="user-dropdown-link">⚖️ Benchmark Comparison</a>
+              <a href="evidence.html#dataCatalogSection" class="user-dropdown-link">📑 Catalog & Datasets</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Dots Quick Settings Menu [ ⋮ ] -->
+        <div class="kebab-menu-container">
+          <button class="btn-control btn-kebab" id="kebabMenuBtn" aria-haspopup="true" aria-expanded="false" title="More Quick Controls">
+            <span class="kebab-icon-dots">⋮</span>
+          </button>
+          
+          <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
+            <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
+            <a href="guide.html" class="kebab-item-btn active" id="kebabEthicsGuideBtn">
+              <span class="kebab-item-icon">📜</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_ethics">Mission Purpose, Ethics & Guide</span>
+            </a>
+            <button class="kebab-item-btn" id="kebabProfileBtn">
+              <span class="kebab-item-icon">👤</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabTourBtn">
+              <span class="kebab-item-icon">🧭</span>
+              <span class="kebab-item-text" data-i18n="nav.tour_btn">? Page Guided Tour</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabContactBtn">
+              <span class="kebab-item-icon">📬</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_contact">Contact Science Team</span>
+            </button>
+            <div class="kebab-divider"></div>
+            <button class="kebab-item-btn" id="kebabChatbotBtn">
+              <span class="kebab-item-icon">🤖</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_ai">AI Science Assistant</span>
+            </button>
+            <button class="kebab-item-btn" id="kebabThemeBtn">
+              <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
+              <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
+            </button>
+            <a href="login.html" class="kebab-item-btn" id="kebabAuthBtn">
+              <span class="kebab-item-icon">🔐</span>
+              <span class="kebab-item-text" data-i18n="nav.kebab_auth">Account & Sign In</span>
+            </a>
+          </div>
+        </div>
+
+        <button class="btn-control" id="themeToggleBtn" style="display:none;" aria-hidden="true"></button>
+        <button class="btn-control" id="tourGuideBtn" style="display:none;" aria-hidden="true"></button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       MAIN CONTENT: GUIDE & ETHICS
+       ========================================================================== -->
+  <main class="page-container">
+    
+    <!-- Hero Header -->
+    <section class="guide-hero">
+      <div class="guide-breadcrumb">
+        <a href="index.html">TerraTwin</a>
+        <span>/</span>
+        <span style="color:var(--text-primary);" data-i18n="guide.hero_title">Mission Purpose, Ethics & Platform Guide</span>
+      </div>
+
+      <div class="guide-hero-badge">
+        <span>🚀</span>
+        <span data-i18n="guide.hero_badge">ASTRONOMICAL RESEARCH DIRECTIVE // OPEN SCIENCE DIRECTIVE</span>
+      </div>
+
+      <h1 class="guide-hero-title" data-i18n="guide.hero_title">
+        أهداف المشروع، الميثاق الأخلاقي، ودليل الاستخدام
+      </h1>
+
+      <p class="guide-hero-desc" data-i18n="guide.hero_desc">
+        دليل علمي مرجعي شامل يوضح الرؤية الاستكشافية التي بُنيت عليها منصة TerraTwin، معايير النزاهة وحاجز العزل غير الحيوي (Abiotic Gate)، وخطوات استخدام المنصة لاستكشاف نظائر القمر والمريخ على كوكب الأرض.
+      </p>
+    </section>
+
+    <!-- Quick Navigation Anchor Bar -->
+    <nav class="guide-nav-bar" aria-label="Quick Guide Sections">
+      <a href="#secPurpose" class="guide-nav-btn active">
+        <span>🎯</span>
+        <span data-i18n="guide.nav_purpose">لماذا أنشأنا المشروع وهدفه</span>
+      </a>
+      <a href="#secEthics" class="guide-nav-btn">
+        <span>⚖️</span>
+        <span data-i18n="guide.nav_ethics">الأخلاقيات وحاجز الـ NDVI</span>
+      </a>
+      <a href="#secPlatformGuide" class="guide-nav-btn">
+        <span>🧭</span>
+        <span data-i18n="guide.nav_guide">دليل الاستخدام الشامل</span>
+      </a>
+      <a href="#secMetrics" class="guide-nav-btn">
+        <span>📊</span>
+        <span data-i18n="guide.nav_metrics">المعايير الفيزيائية وكيف تُقرأ</span>
+      </a>
+      <a href="#secTeam" class="guide-nav-btn">
+        <span>🚀</span>
+        <span data-i18n="guide.nav_team">فريق Astraea العلمي</span>
+      </a>
+    </nav>
+
+    <!-- ==========================================================================
+         SECTION 1: MISSION PURPOSE & VISION
+         ========================================================================== -->
+    <section class="guide-content-section" id="secPurpose">
+      <div class="guide-section-header">
+        <div class="guide-section-kicker">
+          <span data-i18n="guide.sec1_kicker">// SECTION 01 • EXPLORATION RATIONALE</span>
+        </div>
+        <h2 class="guide-section-title">
+          <span>🎯</span> <span data-i18n="guide.sec1_title">لماذا أنشأنا مشروع TerraTwin؟ وما هو هدفه؟</span>
+        </h2>
+      </div>
+
+      <div class="guide-grid-2">
+        
+        <!-- Card 1: The Challenge -->
+        <div class="guide-card accent-mars">
+          <div class="guide-card-icon" style="color:var(--accent-mars);">🛰️</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec1_challenge_title">التحدي الكوكبي: خطورة الإرسال دون محاكاة أرضية</h3>
+          <p class="guide-card-text" data-i18n="guide.sec1_challenge_p1">
+            إن إرسال مركبة روبوتية متجولة (Rover) أو تجهيز بدلات رواد فضاء لمهمات القمر الكبرى (مثل برنامج NASA Artemis عند القطب الجنوبي للقمر) أو مهمات استكشاف المريخ يكلف مليارات الدولارات وسنوات من البحث الدقيق.
+          </p>
+          <p class="guide-card-text" style="margin-top:0.75rem;" data-i18n="guide.sec1_challenge_p2">
+            أي مفاجأة تضاريسية غير محسوبة — مثل صخور حادة غير متوقعة، أو رمال ناعمة تُعطل عجلات الروفر، أو انحدارات حادة تسبب انقلابه — قد تؤدي إلى فشل المهمة كلياً وفقدان استثمارات علمية وهندسية هائلة.
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec1_challenge_li1"><strong>مشكلة الاختيار الوصفي القديم:</strong> تاريخياً، كان اختيار "النظائر الأرضية" (Earth Analogs) يتم بالعين المجردة وبشكل وصفي تقريبي يفتقر للدقة الرقمية متعددة الأطياف.</li>
+            <li data-i18n="guide.sec1_challenge_li2"><strong>المفاجآت البيئية:</strong> عدم تطابق الخصائص الفيزيائية (الخشونة، البياض، والتباين الحراري) يقلل من موثوقية نتائج التجارب الميدانية.</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: The Solution -->
+        <div class="guide-card accent-cyan">
+          <div class="guide-card-icon" style="color:var(--accent-cyan);">🔬</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec1_solution_title">حل TerraTwin: المطابقة الفيزيائية الرقمية المؤتمتة</h3>
+          <p class="guide-card-text" data-i18n="guide.sec1_solution_p1">
+            أنشأ فريق Astraea منصة TerraTwin لسد هذه الفجوة الاستكشافية الحرجة عبر دمج بيانات أقمار رصد الأرض مع مجسات المسبارات الكوكبية في نموذج حسابي وفيزيائي موحد.
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec1_solution_li1"><strong>دمج متعدد الأطياف والرادار:</strong> مطابقة بيانات الأقمار الصناعية الأرضية (ESA Sentinel-2, NASADEM, USGS SRTM) مع المسبارات الكوكبية المدارية (MRO HiRISE/CRISM للمريخ، و LRO LOLA/Diviner للقمر).</li>
+            <li data-i18n="guide.sec1_solution_li2"><strong>تخفيض التكاليف بنسب قياسية:</strong> إتاحة منصة ذكية مفتوحة تمكّن وكالات الفضاء والجامعات والباحثين من تحديد المواقع الأرضية الشبيهة بنسب تطابق رقمية دقيقة لاختبار الملاحة الذاتية، أنظمة الدفع، والبدلات الفضائية قبل الإطلاق.</li>
+            <li data-i18n="guide.sec1_solution_li3"><strong>اكتشاف مواقع جديدة:</strong> لم نكتفِ بالمواقع المعروفة تقليدياً، بل تمكنت الخوارزمية من تحديد أكثر من 38 موقعاً أرضياً فائق الشبه لم يُسجل مسبقاً في الأدبيات الفلكية.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 2: ETHICAL FRAMEWORK & ABIOTIC GATE
+         ========================================================================== -->
+    <section class="guide-content-section" id="secEthics">
+      <div class="guide-section-header">
+        <div class="guide-section-kicker">
+          <span data-i18n="guide.sec2_kicker">// SECTION 02 • DATA INTEGRITY & PHYSICAL FILTERS</span>
+        </div>
+        <h2 class="guide-section-title">
+          <span>⚖️</span> <span data-i18n="guide.sec2_title">الأخلاقيات العلمية ومعايير النزاهة وحاجز الـ NDVI</span>
+        </h2>
+      </div>
+
+      <!-- Callout: Abiotic Gate Highlight -->
+      <div class="guide-callout-box">
+        <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.6rem;">
+          <span style="font-size:1.4rem;">🛡️</span>
+          <h3 style="font-size:1.15rem; color:#00e5d4; margin:0;" data-i18n="guide.sec2_gate_title">حاجز العزل غير الحيوي الصارم (Physical Abiotic Gate)</h3>
+        </div>
+        <p style="font-size:0.92rem; color:var(--text-secondary); line-height:1.7; margin-bottom:0.75rem;" data-i18n="guide.sec2_gate_desc">
+          أسطح القمر والمريخ خاملة تماماً وتخلو من أي غطاء نباتي أو كتلة حيوية (NDVI = 0.000). لضمان النزاهة العلمية المطلقة ومنع أي مقارنات زائفة، تُطبّق TerraTwin حاجزاً فيزيائياً حتمياً يستبعد تلقائياً أي خلية جغرافية تتجاوز عتبة الغطاء الحيوي:
+        </p>
+        <div class="guide-code-badge" data-i18n="guide.sec2_gate_badge">
+          MODIS NDVI_Threshold &le; 0.20 (Barren & Abiotic Terrain Gate)
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.6rem; line-height:1.6; margin-bottom:0;" data-i18n="guide.sec2_gate_note">
+          هذا الحاجز يضمن استبعاد الغابات الاستوائية والمناطق الزراعية والتجمعات العمرانية كلياً استناداً إلى القياسات الفيزيائية للقمر الصناعي NASA MODIS، دون أي تدخل يدوي أو تحيز شخصي.
+        </p>
+      </div>
+
+      <div class="guide-grid-3">
+        
+        <div class="guide-card accent-green">
+          <div class="guide-card-icon" style="color:var(--accent-green);">📊</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec2_card1_title">البيانات المفتوحة وعدم الفبركة</h3>
+          <p class="guide-card-text" data-i18n="guide.sec2_card1_desc">
+            100% من بيانات المنصة مستخرجة من مستودعات مفتوحة وموثقة عالمياً تابعة لوكالة ناسا (NASA PDS)، وكالة الفضاء الأوروبية (ESA Copernicus)، وهيئة المساحة الجيولوجية الأمريكية (USGS). لا يوجد أي رقم عشوائي أو اختلاقي.
+          </p>
+        </div>
+
+        <div class="guide-card accent-gold">
+          <div class="guide-card-icon" style="color:var(--accent-gold);">⚖️</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec2_card2_title">المقارنة المعيارية الحيادية</h3>
+          <p class="guide-card-text" data-i18n="guide.sec2_card2_desc">
+            تعتمد المنصة على الرتب المئوية الموحدة (Percentile Ranking) ضمن نطاق كل كوكب، مما يلغي أي انحياز ناتج عن اختلاف المقاييس بين الغلاف الجوي الكثيف للأرض وفراغ القمر.
+          </p>
+        </div>
+
+        <div class="guide-card accent-cyan">
+          <div class="guide-card-icon" style="color:var(--accent-cyan);">🌿</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec2_card3_title">المسؤولية البيئية للأرض</h3>
+          <p class="guide-card-text" data-i18n="guide.sec2_card3_desc">
+            ندعو كافة الباحثين الميدانيين إلى الالتزام بأخلاقيات حماية الكواكب (COSPAR Planetary Protection) والحفاظ على المواقع الجيولوجية الصحراوية الحساسة على كوكب الأرض تحت شعار (Leave No Trace).
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 3: PLATFORM USER GUIDE
+         ========================================================================== -->
+    <section class="guide-content-section" id="secPlatformGuide">
+      <div class="guide-section-header">
+        <div class="guide-section-kicker">
+          <span data-i18n="guide.sec3_kicker">// SECTION 03 • OPERATIONAL WALKTHROUGH</span>
+        </div>
+        <h2 class="guide-section-title">
+          <span>🧭</span> <span data-i18n="guide.sec3_title">دليل الاستخدام الشامل لكافة صفحات المنصة</span>
+        </h2>
+      </div>
+
+      <!-- Step 1: Page 1 -->
+      <div class="guide-step-card">
+        <div class="guide-step-num">01</div>
+        <div class="guide-step-body">
+          <h3 class="guide-step-title" data-i18n="guide.sec3_step1_title">الصفحة الأولى: المستكشف ثلاثي الأبعاد والتوأم الكوكبي</h3>
+          <p class="guide-step-desc" data-i18n="guide.sec3_step1_desc">
+            تتيح لك الصفحة الأولى تجربة تفاعلية مذهلة لاستكشاف الكواكب الثلاثة ومطابقتها فورياً:
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec3_step1_li1"><strong>التبديل بين الكواكب:</strong> استخدم أزرار (الأرض • المريخ • القمر) في أعلى المجسم للتحكم في الجرم السماوي النشط.</li>
+            <li data-i18n="guide.sec3_step1_li2"><strong>التدوير والتكبير 360°:</strong> اسحب الفأرة أو إصبعك لتدوير الكوكب بحرية في الفضاء، واستخدم عجلة التمرير أو القرص للتكبير.</li>
+            <li data-i18n="guide.sec3_step1_li3"><strong>قفل التليميتري الفوري (3D Pin Lock):</strong> انقر على أي دبوس لموقع معين (سواء على المريخ كدلتا فوهة جيزيرو، أو القمر كفوهة شاكلتون، أو الأرض كسهل المفرق بالأردن) لترى إحداثياته الحقيقية (Lat/Lon) وارتفاعه فورياً.</li>
+            <li data-i18n="guide.sec3_step1_li4"><strong>عرض التوأم المناظر:</strong> بمجرد نقر الدبوس، تقفل لوحة التوأم في الأسفل بنبض نيون متوهج، وتظهر نسبة التطابق الفيزيائية المحسوبة ومصفوفة الأعمدة الخماسية المقارنة.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 2: Site Finder -->
+      <div class="guide-step-card">
+        <div class="guide-step-num">02</div>
+        <div class="guide-step-body">
+          <h3 class="guide-step-title" data-i18n="guide.sec3_step2_title">مستكشف المواقع (Site Finder)</h3>
+          <p class="guide-step-desc" data-i18n="guide.sec3_step2_desc">
+            قاعدة بيانات بحث وفلترة متقدمة تضم أكثر من 53 موقعاً معيارياً عالمياً وأكثر من 421,800 خلية أرضية ممسوحة:
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec3_step2_li1"><strong>الفلترة حسب الهدف الكوكبي:</strong> اختر البحث عن نظائر القمر (Lunar) أو نظائر المريخ (Martian).</li>
+            <li data-i18n="guide.sec3_step2_li2">تخصيص أوزان التحليل وفق متطلبات مهمتك (اختبار روفر، إنشاء قاعدة بشرية، استخراج موارد ISRU، أو ملاجئ كهوف بركانية).</li>
+            <li data-i18n="guide.sec3_step2_li3">تصدير البيانات الميدانية: يمكنك تحميل تقارير مفصلة للمواقع ومشاركتها مع فريقك البحثي بصيغة CSV.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 3: Compare Sites -->
+      <div class="guide-step-card">
+        <div class="guide-step-num">03</div>
+        <div class="guide-step-body">
+          <h3 class="guide-step-title" data-i18n="guide.sec3_step3_title">أداة المقارنة المعيارية المزدوجة (Compare Sites)</h3>
+          <p class="guide-step-desc" data-i18n="guide.sec3_step3_desc">
+            مقارنة وجهاً لوجه بين موقعين محددين لتقييم مدى التطابق قبل تنظيم أي رحلة ميدانية:
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec3_step3_li1">رادار الأضلاع المتعدد: تمثيل بصري بياني يقارن معايير الموقعين على مضلع شعاعي واحد.</li>
+            <li data-i18n="guide.sec3_step3_li2">جدول الفروقات الفيزيائية: حساب الفروقات بدقة متناهية لكل من درجة الانحدار، المتر الخشن، انعكاس الألبيدو، والفارق الحراري.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 4: Evidence & Method -->
+      <div class="guide-step-card">
+        <div class="guide-step-num">04</div>
+        <div class="guide-step-body">
+          <h3 class="guide-step-title" data-i18n="guide.sec3_step4_title">صفحة الأدلة والكتالوج المفتوح (Evidence & Method)</h3>
+          <p class="guide-step-desc" data-i18n="guide.sec3_step4_desc">
+            المرجع الأكاديمي والتوثيقي لمنهجية الحساب ومعادلات المطابقة:
+          </p>
+          <ul class="guide-card-list">
+            <li data-i18n="guide.sec3_step4_li1">كتالوج البيانات الكوكبي: جداول مفصلة لبيانات المسبارات والأقمار الصناعية المستخدمة.</li>
+            <li data-i18n="guide.sec3_step4_li2">مصفوفة الحساسية (Sensitivity Analysis): توضيح استجابة الخوارزمية لتغيير الأوزان الهندسية.</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 4: PHYSICAL METRICS GLOSSARY
+         ========================================================================== -->
+    <section class="guide-content-section" id="secMetrics">
+      <div class="guide-section-header">
+        <div class="guide-section-kicker">
+          <span data-i18n="guide.sec4_kicker">// SECTION 04 • PHYSICAL ATTRIBUTE SPECIFICATIONS</span>
+        </div>
+        <h2 class="guide-section-title">
+          <span>📊</span> <span data-i18n="guide.sec4_title">دليل المعايير الفيزيائية وكيف تُقرأ</span>
+        </h2>
+      </div>
+
+      <div class="guide-grid-4">
+        
+        <!-- Metric 1: Slope -->
+        <div class="metric-glossary-card">
+          <div>
+            <div class="metric-header">
+              <span class="metric-name" data-i18n="guide.sec4_slope_name">الانحدار السطحي (Slope)</span>
+              <span class="metric-unit" data-i18n="guide.sec4_slope_unit">بالدرجات (°)</span>
+            </div>
+            <p class="metric-def" data-i18n="guide.sec4_slope_def">
+              زاوية ميلان التضاريس عن المستوى الأفقي. مؤشر حاسم لسلامة هبوط المركبات وحمايتها من الانقلاب أثناء الملاحة الذاتية.
+            </p>
+          </div>
+          <div class="metric-threshold" data-i18n="guide.sec4_slope_thresh">
+            مستوٍ: &lt; 2° • معتدل: 2°-12° • وعر: &gt; 12°
+          </div>
+        </div>
+
+        <!-- Metric 2: Roughness -->
+        <div class="metric-glossary-card">
+          <div>
+            <div class="metric-header">
+              <span class="metric-name" data-i18n="guide.sec4_rough_name">الخشونة السطحية (Roughness)</span>
+              <span class="metric-unit" data-i18n="guide.sec4_rough_unit">بالمتر (m)</span>
+            </div>
+            <p class="metric-def" data-i18n="guide.sec4_rough_def">
+              مقدار التباين الدقيق في ارتفاعات الصخور والعقبات السطحية. يحدد مقاومة عجلات الروفر للتآكل والتمزق.
+            </p>
+          </div>
+          <div class="metric-threshold" data-i18n="guide.sec4_rough_thresh">
+            مقياس Geomorpho90m Multi-Scale
+          </div>
+        </div>
+
+        <!-- Metric 3: Albedo -->
+        <div class="metric-glossary-card">
+          <div>
+            <div class="metric-header">
+              <span class="metric-name" data-i18n="guide.sec4_albedo_name">البياض الضوئي (Albedo)</span>
+              <span class="metric-unit" data-i18n="guide.sec4_albedo_unit">مؤشر (0 - 1)</span>
+            </div>
+            <p class="metric-def" data-i18n="guide.sec4_albedo_def">
+              نسبة الطاقة الشمسية المنعكسة عن السطح. يؤثر بشكل مباشر على كفاءة الألواح الشمسية ومستشعرات الرؤية الحاسوبية.
+            </p>
+          </div>
+          <div class="metric-threshold" data-i18n="guide.sec4_albedo_thresh">
+            NASA MODIS MCD43A3 Optical Albedo
+          </div>
+        </div>
+
+        <!-- Metric 4: Thermal Swing -->
+        <div class="metric-glossary-card">
+          <div>
+            <div class="metric-header">
+              <span class="metric-name" data-i18n="guide.sec4_temp_name">التباين الحراري (Thermal Swing)</span>
+              <span class="metric-unit" data-i18n="guide.sec4_temp_unit">ΔT مئوية (°C)</span>
+            </div>
+            <p class="metric-def" data-i18n="guide.sec4_temp_def">
+              الفارق الحراري بين ذروة النهار وبرودة الليل. معيار جوهري لاختبار الإجهاد الحراري للمواد وعمر بطاريات المركبات.
+            </p>
+          </div>
+          <div class="metric-threshold" data-i18n="guide.sec4_temp_thresh">
+            NASA MODIS Land Surface Temp (LST)
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================================================
+         SECTION 5: RESEARCH TEAM & CONTACT
+         ========================================================================== -->
+    <section class="guide-content-section" id="secTeam">
+      <div class="guide-section-header">
+        <div class="guide-section-kicker">
+          <span data-i18n="guide.sec5_kicker">// SECTION 05 • CORE SCIENTIFIC COLLECTIVE</span>
+        </div>
+        <h2 class="guide-section-title">
+          <span>🚀</span> <span data-i18n="guide.sec5_title">فريق Astraea العلمي ومصادر البيانات</span>
+        </h2>
+      </div>
+
+      <div class="guide-grid-2">
+        
+        <div class="guide-card accent-cyan">
+          <div class="guide-card-icon" style="color:var(--accent-cyan);">🔬</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec5_team_title">فريق Astraea العلمي (Astraea Science Team)</h3>
+          <p class="guide-card-text" data-i18n="guide.sec5_team_desc">
+            فريق علمي وهندسي متخصص في استكشاف النظم الكوكبية، معالجة البيانات الجيومكانية والاستشعار عن بعد، وتطوير نماذج الذكاء الاصطناعي الفيزيائية لدعم مهمات الفضاء المستقبلية.
+          </p>
+          <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:0.4rem;">
+              <span data-i18n="guide.sec5_email_label">✉️ البريد الإلكتروني:</span> <a href="mailto:contact@terratwin.space" style="color:var(--accent-cyan); text-decoration:none;">contact@terratwin.space</a>
+            </div>
+            <div style="font-size:0.88rem; color:var(--text-secondary);">
+              <span data-i18n="guide.sec5_phone_label">📞 الهاتف المباشر:</span> <a href="tel:+962790000000" dir="ltr" style="color:var(--accent-cyan); text-decoration:none;">+962 7 9000 0000</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-card accent-green">
+          <div class="guide-card-icon" style="color:var(--accent-green);">⚖️</div>
+          <h3 class="guide-card-title" data-i18n="guide.sec5_license_title">الترخيص العلمي المفتوح (Open Science License)</h3>
+          <p class="guide-card-text" data-i18n="guide.sec5_license_desc">
+            كافة البيانات والمنهجيات البرمجية في منصة TerraTwin متاحة ومحمية بموجب رخصة المشاع الإبداعي Creative Commons Attribution 4.0 (CC-BY 4.0) لتمكين المجتمع العلمي العالمي والجامعات والباحثين من الاستفادة منها وتطويرها بحرية تامة.
+          </p>
+          <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <span class="sci-badge validated">OPEN ACCESS</span>
+            <span class="sci-badge mars">PLANETARY ANALOG TWINNING</span>
+            <span class="sci-badge">CC-BY 4.0</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       PERSISTENT SCIENTIFIC MISSION FOOTER
+       ========================================================================== -->
+  <footer class="site-footer" id="siteFooter">
+    <div class="footer-mission-boundary">
+      <div class="footer-boundary-bar">
+        <div class="boundary-telemetry-tag">
+          <span class="telemetry-live-dot"></span>
+          <span>TELEMETRY ARCHIVE // NASA PDS • ESA COPERNICUS • USGS ASTROGEOLOGY</span>
+        </div>
+        <div class="boundary-coordinates">SYS.LAT 00.0000° • SYS.LON 00.0000° • ELEV 0.0M • SECURE SCIENTIFIC ARCHIVE</div>
+        <div class="boundary-status">
+          <span class="status-indicator"></span>
+          <span>MISSION ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-container">
+      <div class="footer-tech-banner">
+        <div class="footer-tech-banner-left">
+          <span class="footer-tech-dot"></span>
+          <span>TERRATWIN // MULTI-ATTRIBUTE PLANETARY SURFACE MATCHING PLATFORM</span>
+        </div>
+        <div class="mono" style="font-size:0.68rem; opacity:0.85;">STATUS: OPERATIONAL // DATA: OPEN ACCESS</div>
+      </div>
+      
+      <div class="footer-main-grid">
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.about_title">TerraTwin</div>
+          <p class="footer-about-text" data-i18n="footer.about_desc">
+            An open planetary analog intelligence platform matching Earth terrain cells to lunar and Martian exploration baselines using multi-spectral orbital datasets.
+          </p>
+          <div class="footer-badges-group" style="margin-top:0.6rem;">
+            <span class="sci-badge validated">OPEN ACCESS</span>
+            <span class="sci-badge mars" data-i18n="footer.badge_mission">PLANETARY ANALOG TWINNING</span>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.creators_title">Research Team</div>
+          <div class="footer-team-card">
+            <div class="team-member-name">
+              <span>🚀</span>
+              <span data-i18n="footer.lead_name">Astraea Science Team</span>
+            </div>
+            <div class="team-member-role" data-i18n="footer.lead_role">Planetary Systems & Geospatial Engineering</div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.contact_title">Direct Telemetry & Contact</div>
+          <ul class="footer-contact-list">
+            <li class="footer-contact-item">
+              <span>✉️</span>
+              <a href="mailto:contact@terratwin.space" id="footerContactEmail" data-i18n="footer.contact_email">contact@terratwin.space</a>
+            </li>
+            <li class="footer-contact-item">
+              <span>📞</span>
+              <a href="tel:+962790000000" id="footerContactPhone" dir="ltr">+962 7 9000 0000</a>
+            </li>
+            <li class="footer-contact-item">
+              <span>📑</span>
+              <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Scientific Catalog</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-col-title" data-i18n="footer.sources_title">Primary Data Sources</div>
+          <ul class="footer-sources-list">
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_nasa">NASA Planetary Data System (LRO LOLA, Diviner, MRO CRISM/HiRISE)</span>
+            </li>
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_esa">ESA Copernicus Programme (Sentinel-2 Multi-Spectral)</span>
+            </li>
+            <li class="footer-source-item">
+              <span class="bullet">▪</span>
+              <span data-i18n="footer.source_usgs">USGS / NASA JPL (SRTM, NASADEM, ASTER GEDv4)</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom-bar">
+        <div class="footer-copyright" data-i18n="footer.copyright">
+          © 2026 TerraTwin • Planetary Analog Matching Platform.
+        </div>
+        <div class="footer-badges-group">
+          <span class="mono">v2.5-RELEASE</span>
+          <span class="footer-citation-icon">⚖️ CC-BY 4.0 Scientific License</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="data/data-store.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/user-system.js"></script>
+  <script src="js/tour.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/guide.js"></script>
+</body>
+</html>

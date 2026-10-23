@@ -20,6 +20,12 @@ const App = {
     // Initialize core persistent systems
     await window.I18n.init();
     window.MissionProfileManager.init();
+    if (window.UserSystem) {
+      window.UserSystem.init();
+      if (typeof window.UserSystem.recordPageVisit === 'function') {
+        window.UserSystem.recordPageVisit(pageName);
+      }
+    }
     window.GuidedTour.init(pageName);
     window.ScientificChatbot.init(pageName);
 
@@ -78,8 +84,9 @@ const App = {
     document.addEventListener('missionProfileChanged', (e) => {
       const missionEl = document.getElementById('userProfileActiveMission');
       if (missionEl && e.detail && e.detail.profile) {
-        const labels = { rover: 'Rover Testing', base: 'Human Base Camp', isru: 'ISRU Extraction', caves: 'Lava Tube Shelter' };
-        missionEl.textContent = labels[e.detail.profile] || e.detail.profile;
+        missionEl.textContent = window.MissionProfileManager
+          ? window.MissionProfileManager.label(e.detail.profile)
+          : e.detail.profile;
       }
     });
   },
@@ -107,9 +114,9 @@ const App = {
     // Sub-buttons inside 3-dots kebab menu
     const kebabEthicsGuideBtn = document.getElementById('kebabEthicsGuideBtn');
     if (kebabEthicsGuideBtn) {
-      kebabEthicsGuideBtn.addEventListener('click', () => {
+      kebabEthicsGuideBtn.addEventListener('click', (e) => {
         kebabDropdown.classList.remove('open');
-        if (window.UserSystem) window.UserSystem.openEthicsGuideModal();
+        window.location.href = 'guide.html';
       });
     }
     const kebabProfileBtn = document.getElementById('kebabProfileBtn');
@@ -125,7 +132,7 @@ const App = {
       kebabTourBtn.addEventListener('click', () => {
         kebabDropdown.classList.remove('open');
         if (window.GuidedTour) {
-          window.GuidedTour.start(pageName);
+          window.GuidedTour.startTour();
         }
       });
     }

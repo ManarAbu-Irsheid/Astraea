@@ -20,17 +20,20 @@ const UserSystem = {
   ],
 
   defaultUser: {
-    isLoggedIn: true,
+    isLoggedIn: false,
     name: 'Dr. Researcher',
     nameAr: 'د. باحث',
     phone: '+962 7 9000 0000',
     email: 'researcher@astraea.space',
     gender: 'female', // 'male' or 'female'
     avatar: '👩‍🚀', // 👩‍🚀 female astronaut, 👨‍🚀 male astronaut, 👽 alien, 🛸 rover
-    xp: 220,
+    xp: 150,
+    visitedPages: ['home'],
     discoveredSites: ['atacama_yungay', 'antarctica_dryvalleys'],
-    role: 'ASTRAEA LAB',
-    clearance: 'LEVEL-4 ACCESS'
+    searchesCount: 0,
+    comparisonsCount: 0,
+    role: 'Astraea Science Team',
+    clearance: 'CADET ACCESS'
   },
 
   currentUser: null,
@@ -44,6 +47,7 @@ const UserSystem = {
   },
 
   loadUser() {
+    const isAuthActive = localStorage.getItem('terratwin_auth_active') === 'true';
     const saved = localStorage.getItem('terratwin_user_profile');
     if (saved) {
       try {
@@ -55,11 +59,119 @@ const UserSystem = {
       this.currentUser = { ...this.defaultUser };
       this.saveUser();
     }
+
+    // Gate: User is only authenticated if terratwin_auth_active is explicitly true
+    this.currentUser.isLoggedIn = isAuthActive;
+
+    // Load persistent registered data if logged in
+    if (isAuthActive && this.currentUser.email) {
+      try {
+        const raw = localStorage.getItem('terratwin_registered_users');
+        if (raw) {
+          const users = JSON.parse(raw);
+          const found = users.find(u => u.email && u.email.toLowerCase() === this.currentUser.email.toLowerCase());
+          if (found) {
+            this.currentUser = { ...this.currentUser, ...found, isLoggedIn: true };
+          }
+        }
+      } catch (e) {
+        console.warn('Sync registered user profile on load:', e);
+      }
+    }
+
+    if (!Array.isArray(this.currentUser.visitedPages)) {
+      this.currentUser.visitedPages = ['home'];
+    }
+    if (!Array.isArray(this.currentUser.discoveredSites)) {
+      this.currentUser.discoveredSites = ['atacama_yungay', 'antarctica_dryvalleys'];
+    }
+    if (typeof this.currentUser.searchesCount !== 'number') {
+      this.currentUser.searchesCount = 0;
+    }
+    if (typeof this.currentUser.comparisonsCount !== 'number') {
+      this.currentUser.comparisonsCount = 0;
+    }
   },
 
   saveUser() {
     localStorage.setItem('terratwin_user_profile', JSON.stringify(this.currentUser));
+    if (this.currentUser && this.currentUser.isLoggedIn) {
+      localStorage.setItem('terratwin_auth_active', 'true');
+    }
+
+    // Synchronize to persistent registered database if present
+    try {
+      const raw = localStorage.getItem('terratwin_registered_users');
+      if (raw && this.currentUser && this.currentUser.email) {
+        let users = JSON.parse(raw);
+        if (Array.isArray(users)) {
+          const idx = users.findIndex(u => u.email && u.email.toLowerCase() === this.currentUser.email.toLowerCase());
+          if (idx !== -1) {
+            users[idx] = { ...users[idx], ...this.currentUser };
+            localStorage.setItem('terratwin_registered_users', JSON.stringify(users));
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Sync registered user profile warning:', e);
+    }
+
     this.renderUserUI();
+  },
+
+  calculateExplorationProgress() {
+    if (!this.currentUser) return 0;
+    const visited = this.currentUser.visitedPages || [];
+    const discovered = this.currentUser.discoveredSites || [];
+    const searches = this.currentUser.searchesCount || 0;
+    const comparisons = this.currentUser.comparisonsCount || 0;
+
+    // 1. Pages exploration (5 total pages: home, finder, compare, evidence, guide) -> up to 30%
+    const pageScore = (Math.min(5, visited.length) / 5) * 30;
+
+    // 2. Analog Sites/Pins inspected (up to 16 key sites) -> up to 40%
+    const siteScore = (Math.min(16, discovered.length) / 16) * 40;
+
+    // 3. Analytic Searches (target 5 searches for full marks) -> up to 15%
+    const searchScore = (Math.min(5, searches) / 5) * 15;
+
+    // 4. Comparative Matrices & Bi-directional models (target 5 runs) -> up to 15%
+    const compScore = (Math.min(5, comparisons) / 5) * 15;
+
+    const total = Math.round(pageScore + siteScore + searchScore + compScore);
+    return Math.min(100, Math.max(visited.length > 0 ? 8 : 0, total));
+  },
+
+  recordPageVisit(pageName) {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return;
+    if (!Array.isArray(this.currentUser.visitedPages)) {
+      this.currentUser.visitedPages = [];
+    }
+    if (!this.currentUser.visitedPages.includes(pageName)) {
+      this.currentUser.visitedPages.push(pageName);
+      this.addXP(25, `Explored sector: ${pageName.toUpperCase()}`, `استكشاف قسم علمي: ${pageName}`);
+      this.saveUser();
+    }
+  },
+
+  recordSearch() {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return;
+    this.currentUser.searchesCount = (this.currentUser.searchesCount || 0) + 1;
+    if (this.currentUser.searchesCount % 2 === 0) {
+      this.addXP(10, 'Executed planetary query & criteria filter', 'تنفيذ استعلام وفلترة كوكبية متقدمة');
+    } else {
+      this.saveUser();
+    }
+  },
+
+  recordComparison() {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return;
+    this.currentUser.comparisonsCount = (this.currentUser.comparisonsCount || 0) + 1;
+    if (this.currentUser.comparisonsCount % 2 === 0) {
+      this.addXP(15, 'Executed analog comparative matrix', 'مقارنة نماذج ومصفوفات كوكبية ثنائية');
+    } else {
+      this.saveUser();
+    }
   },
 
   getCurrentLevel() {
@@ -79,6 +191,7 @@ const UserSystem = {
   },
 
   addXP(amount, reasonEn, reasonAr) {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return; // Strict: Gamification XP only for registered logged-in users!
     if (!amount || amount <= 0) return;
     const prevLevel = this.getCurrentLevel().level;
     this.currentUser.xp = (this.currentUser.xp || 0) + amount;
@@ -96,6 +209,7 @@ const UserSystem = {
   },
 
   discoverSite(siteId, siteName) {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return;
     if (!this.currentUser.discoveredSites) {
       this.currentUser.discoveredSites = [];
     }
@@ -106,6 +220,7 @@ const UserSystem = {
   },
 
   showXpToast(amount, reason) {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return; // Do not show toasts to guests
     let container = document.getElementById('xpToastContainer');
     if (!container) {
       container = document.createElement('div');
@@ -132,6 +247,7 @@ const UserSystem = {
   },
 
   showLevelUpCelebration(levelNumber) {
+    if (!this.currentUser || !this.currentUser.isLoggedIn) return; // Do not show celebration to guests
     const lvl = this.LEVELS.find(l => l.level === levelNumber) || this.LEVELS[0];
     const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
     const title = isAr ? lvl.titleAr : lvl.titleEn;
@@ -165,8 +281,46 @@ const UserSystem = {
     const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
     const lvl = this.getCurrentLevel();
     const nextLvl = this.getNextLevel();
+    const isLoggedIn = !!(user && user.isLoggedIn);
 
-    // 1. Update Navbar Profile Button
+    // Manage Navbar Profile Container: Logged In Profile vs Guest Auth Button
+    const profileContainer = document.querySelector('.user-profile-container');
+    const profileBtn = document.getElementById('userProfileBtn');
+    const profileDropdown = document.getElementById('userProfileDropdown');
+
+    let navAuthBtn = document.getElementById('navAuthLoginBtn');
+    if (!navAuthBtn && profileContainer) {
+      navAuthBtn = document.createElement('a');
+      navAuthBtn.id = 'navAuthLoginBtn';
+      navAuthBtn.className = 'nav-auth-login-btn';
+      navAuthBtn.href = 'login.html';
+      profileContainer.appendChild(navAuthBtn);
+    }
+
+    if (navAuthBtn) {
+      const authLabel = window.I18n && window.I18n.t ? window.I18n.t('auth.nav_login_btn') : (isAr ? 'تسجيل الدخول / إنشاء حساب' : 'Sign In / Register');
+      navAuthBtn.innerHTML = `
+        <span class="auth-btn-icon">🔐</span>
+        <span class="auth-btn-text" data-i18n="auth.nav_login_btn">${authLabel}</span>
+      `;
+    }
+
+    // Toggle visibility based on authentication status
+    if (!isLoggedIn) {
+      if (profileBtn) profileBtn.style.setProperty('display', 'none', 'important');
+      if (profileDropdown) {
+        profileDropdown.style.setProperty('display', 'none', 'important');
+        profileDropdown.classList.remove('open');
+      }
+      if (navAuthBtn) navAuthBtn.style.setProperty('display', 'inline-flex', 'important');
+      return;
+    } else {
+      if (profileBtn) profileBtn.style.setProperty('display', 'flex', 'important');
+      if (profileDropdown) profileDropdown.style.removeProperty('display');
+      if (navAuthBtn) navAuthBtn.style.setProperty('display', 'none', 'important');
+    }
+
+    // 1. Update Navbar Profile Button for logged-in user
     const avatarBadge = document.querySelector('.user-avatar-badge');
     if (avatarBadge) {
       avatarBadge.innerHTML = `
@@ -178,6 +332,21 @@ const UserSystem = {
     const nameEl = document.querySelector('.user-display-name');
     if (nameEl) {
       nameEl.textContent = isAr && user.nameAr ? user.nameAr : user.name;
+    }
+
+    const expProgress = this.calculateExplorationProgress();
+    let progressPill = document.querySelector('.user-exploration-pill');
+    if (!progressPill) {
+      const metaContainer = document.querySelector('.user-meta-text');
+      if (metaContainer) {
+        progressPill = document.createElement('span');
+        progressPill.className = 'user-exploration-pill';
+        metaContainer.appendChild(progressPill);
+      }
+    }
+    if (progressPill) {
+      progressPill.textContent = `${expProgress}%`;
+      progressPill.title = isAr ? `نسبة استكشاف الموقع: ${expProgress}%` : `Exploration Progress: ${expProgress}%`;
     }
 
     const roleEl = document.querySelector('.user-role-tag');
@@ -228,22 +397,66 @@ const UserSystem = {
     if (xpBlock) {
       const currentXp = user.xp || 0;
       const progressPercent = Math.min(100, Math.round(((currentXp - lvl.minXp) / ((nextLvl.maxXp - lvl.minXp) || 1)) * 100));
+      const expProgress = this.calculateExplorationProgress();
+      const visitedCount = (user.visitedPages || []).length;
+      const sitesCount = (user.discoveredSites || []).length;
+      const searchesCount = user.searchesCount || 0;
+      const comparisonsCount = user.comparisonsCount || 0;
+
       xpBlock.innerHTML = `
-        <div class="xp-progress-header">
-          <span class="xp-level-tag">LEVEL ${lvl.level}: ${isAr ? lvl.titleAr : lvl.titleEn}</span>
-          <span class="xp-score-tag">${currentXp} XP</span>
+        <!-- Platform Exploration & Research Progress Meter -->
+        <div class="exploration-progress-panel">
+          <div class="exploration-panel-header">
+            <span class="exploration-panel-title">
+              <span class="exp-icon">🔭</span>
+              <span>${isAr ? 'نسبة استكشاف وبحث الموقع' : 'Exploration & Research Progress'}</span>
+            </span>
+            <span class="exploration-badge-pct">${expProgress}%</span>
+          </div>
+          <div class="exploration-bar-track">
+            <div class="exploration-bar-fill" style="width: ${expProgress}%;"></div>
+          </div>
+          <div class="exploration-metrics-grid">
+            <div class="exploration-metric-item" title="${isAr ? 'الأقسام والصفحات المستكشفة' : 'Pages Explored'}">
+              <span class="exp-metric-icon">📄</span>
+              <span class="exp-metric-num">${visitedCount} / 5</span>
+              <span class="exp-metric-lbl">${isAr ? 'أقسام' : 'Pages'}</span>
+            </div>
+            <div class="exploration-metric-item" title="${isAr ? 'المواقع والنظائر المفحوصة' : 'Analogs Inspected'}">
+              <span class="exp-metric-icon">📍</span>
+              <span class="exp-metric-num">${Math.min(16, sitesCount)} / 16</span>
+              <span class="exp-metric-lbl">${isAr ? 'نظائر' : 'Analogs'}</span>
+            </div>
+            <div class="exploration-metric-item" title="${isAr ? 'استعلامات وبحث فلكي' : 'Searches Executed'}">
+              <span class="exp-metric-icon">🔍</span>
+              <span class="exp-metric-num">${searchesCount}</span>
+              <span class="exp-metric-lbl">${isAr ? 'بحث' : 'Searches'}</span>
+            </div>
+            <div class="exploration-metric-item" title="${isAr ? 'نماذج المقارنة المنجزة' : 'Comparisons Run'}">
+              <span class="exp-metric-icon">⚖️</span>
+              <span class="exp-metric-num">${comparisonsCount}</span>
+              <span class="exp-metric-lbl">${isAr ? 'مقارنات' : 'Matrices'}</span>
+            </div>
+          </div>
         </div>
-        <div class="xp-bar-track">
-          <div class="xp-bar-fill" style="width: ${progressPercent}%;"></div>
-        </div>
-        <div class="xp-stats-footer">
-          <span>${isAr ? 'المواقع المكتشفة:' : 'Discovered:'} <strong>${(user.discoveredSites || []).length}</strong></span>
-          <span>${isAr ? 'المستوى القادم:' : 'Next Level:'} <strong>${nextLvl.maxXp} XP</strong></span>
+
+        <div class="xp-progress-subblock">
+          <div class="xp-progress-header">
+            <span class="xp-level-tag">LEVEL ${lvl.level}: ${isAr ? lvl.titleAr : lvl.titleEn}</span>
+            <span class="xp-score-tag">${currentXp} XP</span>
+          </div>
+          <div class="xp-bar-track">
+            <div class="xp-bar-fill" style="width: ${progressPercent}%;"></div>
+          </div>
+          <div class="xp-stats-footer">
+            <span>${isAr ? 'المستوى القادم:' : 'Next Level:'} <strong>${nextLvl.maxXp} XP</strong></span>
+            <span>${isAr ? 'الحالة العلمية:' : 'Status:'} <strong style="color:var(--accent-green);">${isAr ? 'نشط' : 'Active'}</strong></span>
+          </div>
         </div>
       `;
     }
 
-    // Add Edit Profile Button in Dropdown if not present
+    // Add Edit Profile Button & Sign Out in Dropdown
     let editBtn = document.getElementById('userProfileEditTriggerBtn');
     if (!editBtn) {
       const linksContainer = document.querySelector('.user-dropdown-links');
@@ -258,16 +471,22 @@ const UserSystem = {
         });
         linksContainer.prepend(editBtn);
 
-        // Sign Out / In button
+        // Sign Out button
         const authBtn = document.createElement('button');
         authBtn.id = 'userProfileAuthTriggerBtn';
         authBtn.className = 'user-dropdown-action-btn auth-toggle';
-        authBtn.innerHTML = `🔐 <span data-i18n="nav.sign_out">${isAr ? 'تسجيل الخروج' : 'Sign Out / Switch'}</span>`;
+        authBtn.innerHTML = `🚪 <span data-i18n="nav.sign_out">${isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>`;
         authBtn.addEventListener('click', () => {
           document.querySelectorAll('.user-profile-dropdown').forEach(d => d.classList.remove('open'));
-          this.openAuthModal();
+          this.signOut();
         });
         linksContainer.appendChild(authBtn);
+      }
+    } else {
+      editBtn.innerHTML = `⚙️ <span data-i18n="nav.edit_profile">${isAr ? 'تعديل الملف الشخصي' : 'Edit Profile & Info'}</span>`;
+      const authBtn = document.getElementById('userProfileAuthTriggerBtn');
+      if (authBtn) {
+        authBtn.innerHTML = `🚪 <span data-i18n="nav.sign_out">${isAr ? 'تسجيل الخروج' : 'Sign Out'}</span>`;
       }
     }
   },
@@ -770,9 +989,20 @@ const UserSystem = {
   },
 
   openAuthModal() {
-    this.injectModals();
-    const overlay = document.getElementById('authModalOverlay');
-    if (overlay) overlay.classList.add('active');
+    window.location.href = 'login.html';
+  },
+
+  signOut() {
+    localStorage.removeItem('terratwin_auth_active');
+    if (this.currentUser) {
+      this.currentUser.isLoggedIn = false;
+      this.saveUser();
+    }
+    const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
+    this.showXpToast(0, isAr ? 'تم تسجيل الخروج بنجاح. أهلاً بك كباحث زائر.' : 'Signed out successfully. Clearance reverted to Guest.');
+    setTimeout(() => {
+      window.location.reload();
+    }, 450);
   },
 
   openContactModal() {
@@ -790,12 +1020,10 @@ const UserSystem = {
 
   closeModals() {
     document.querySelectorAll('.custom-modal-overlay').forEach(m => m.classList.remove('active'));
-  }
+  },
 
   openEthicsGuideModal() {
-    this.injectModals();
-    const overlay = document.getElementById('ethicsGuideModalOverlay');
-    if (overlay) overlay.classList.add('active');
+    window.location.href = 'guide.html';
   },
 
   bindEthicsModalEvents() {
@@ -840,3 +1068,20 @@ const UserSystem = {
   },
 
 };
+
+// Expose UserSystem globally
+window.UserSystem = UserSystem;
+
+// Initialize on DOM ready or immediately if already loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => UserSystem.init());
+} else {
+  UserSystem.init();
+}
+
+// Re-render UI on language change event
+document.addEventListener('languageChanged', () => {
+  if (window.UserSystem) {
+    window.UserSystem.renderUserUI();
+  }
+});

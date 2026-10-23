@@ -454,3 +454,50 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   HIGH-CONTRAST LIGHT THEME FOR ANALOG COMPARISON MATRIX
+   ========================================================================== */
+[data-theme="light"] .compare-selectors-card,
+[data-theme="light"] .head-site-card,
+[data-theme="light"] .analytical-panel,
+[data-theme="light"] .compare-matrix-table-card {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+}
+[data-theme="light"] .compare-selector-label {
+  color: #091322;
+  font-weight: 700;
+}
+[data-theme="light"] .compare-select-input {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #091322;
+}
+[data-theme="light"] .head-site-name {
+  color: #091322;
+}
+[data-theme="light"] .head-site-region {
+  color: #334155;
+}
+[data-theme="light"] .panel-title {
+  color: #091322;
+  font-weight: 800;
+}
+[data-theme="light"] .compare-matrix-table th {
+  background: #f1f5f9;
+  color: #091322;
+  border-bottom: 2px solid #cbd5e1;
+}
+[data-theme="light"] .compare-matrix-table td {
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
+}
+[data-theme="light"] .matrix-metric-name {
+  color: #091322;
+  font-weight: 700;
+}
+[data-theme="light"] .matrix-metric-unit {
+  color: #475569;
+}

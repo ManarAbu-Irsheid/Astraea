@@ -49,21 +49,94 @@
       <!-- Header Controls: Lang, Profile, 3-Dots Menu -->
       <div class="header-actions" id="headerControlsSpotlight">
         
+        <!-- Mission Profile Selector Badge & Dropdown -->
+        <div class="profile-selector-container">
+          <button class="profile-badge-btn" id="profileBadgeBtn" aria-haspopup="true" aria-expanded="false" title="Configure Mission Profile & Weights">
+            <span class="profile-indicator-dot"></span>
+            <span id="activeProfileLabel">TASI Baseline</span>
+            <span class="profile-chevron">▼</span>
+          </button>
+
+          <!-- Dropdown Panel (Internal weights sliders editable exclusively inside) -->
+          <div class="profile-dropdown-panel" id="profileDropdownPanel">
+            <div class="profile-panel-header">
+              <span class="profile-panel-title" id="profilePanelTitle">Mission Profile</span>
+            </div>
+
+            <div class="profile-options-grid">
+              <button class="profile-option-btn active" data-profile="tasi">TASI Baseline</button>
+              <button class="profile-option-btn" data-profile="rover">Rover Traverse</button>
+              <button class="profile-option-btn" data-profile="landing">Landing Site</button>
+              <button class="profile-option-btn" data-profile="thermal">Habitat &amp; Thermal</button>
+              <button class="profile-option-btn" data-profile="optics">Optics &amp; Solar</button>
+            </div>
+
+            <div class="weights-section-title">
+              <span id="weightsSectionTitle">Criteria Weights</span>
+            </div>
+
+            <!-- Weight sliders: the 4 criteria available in the real dataset -->
+            <div class="weight-slider-group" id="weightGroup_slope">
+              <div class="weight-slider-header">
+                <span id="weightLabel_slope">Slope</span>
+                <span class="weight-val" id="weightVal_slope">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_slope" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_roughness">
+              <div class="weight-slider-header">
+                <span id="weightLabel_roughness">Roughness</span>
+                <span class="weight-val" id="weightVal_roughness">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_roughness" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_albedo">
+              <div class="weight-slider-header">
+                <span id="weightLabel_albedo">Albedo (brightness)</span>
+                <span class="weight-val" id="weightVal_albedo">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_albedo" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <div class="weight-slider-group" id="weightGroup_thermal">
+              <div class="weight-slider-header">
+                <span id="weightLabel_thermal">Thermal Swing</span>
+                <span class="weight-val" id="weightVal_thermal">25%</span>
+              </div>
+              <input type="range" class="weight-slider" id="weightSlider_thermal" min="0.05" max="0.70" step="0.05" value="0.25">
+            </div>
+
+            <button class="weights-reset-btn" id="resetWeightsBtn">Reset Defaults</button>
+          </div>
+        </div>
+
         <!-- Language Switcher [ EN | AR ] -->
         <button class="btn-control lang-toggle-btn" id="langToggleBtn" title="Switch Language">
           عربي
         </button>
 
+        <!-- Page Tour & Mission Guide button ("?"): replays guided tour or opens guide -->
+        <button class="btn-control tour-help-btn" id="tourGuideBtn" title="Page Tour & Guide / دليل وجولة الصفحة" aria-label="Page Tour">?</button>
+
         <!-- User Profile Badge & Dropdown -->
         <div class="user-profile-container">
-          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile">
+          <!-- Guest Sign In / Register Button (Visible when not logged in) -->
+          <a href="login.html" class="nav-auth-login-btn" id="navAuthLoginBtn">
+            <span class="auth-btn-icon">🔐</span>
+            <span class="auth-btn-text auth-btn-text-full" data-i18n="auth.nav_login_btn">تسجيل الدخول / إنشاء حساب</span>
+            <span class="auth-btn-text auth-btn-text-short" data-i18n="auth.nav_login_btn_short">دخول</span>
+          </a>
+
+          <!-- User Profile Badge & Dropdown (Visible only when logged in) -->
+          <button class="user-profile-btn" id="userProfileBtn" aria-haspopup="true" aria-expanded="false" title="Researcher Profile" style="display: none;">
             <div class="user-avatar-badge">
               <span>👨‍🚀</span>
               <span class="user-status-dot" title="Status: Online"></span>
             </div>
             <div class="user-meta-text">
               <span class="user-display-name" data-i18n="nav.user_name">Dr. Researcher</span>
-              <span class="user-role-tag" data-i18n="nav.user_role">TERRATWIN RESEARCH</span>
             </div>
             <span class="profile-chevron">▼</span>
           </button>
@@ -107,10 +180,10 @@
           
           <div class="kebab-dropdown-panel" id="kebabDropdownPanel">
             <div class="kebab-panel-header" data-i18n="nav.kebab_header">Quick Controls</div>
-            <button class="kebab-item-btn" id="kebabEthicsGuideBtn">
+            <a href="guide.html" class="kebab-item-btn" id="kebabEthicsGuideBtn">
               <span class="kebab-item-icon">📜</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_ethics">Mission Purpose, Ethics & Guide</span>
-            </button>
+            </a>
             <button class="kebab-item-btn" id="kebabProfileBtn">
               <span class="kebab-item-icon">👤</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_profile">Researcher Profile & Level</span>
@@ -132,16 +205,15 @@
               <span class="kebab-item-icon" id="kebabThemeIcon">☀️</span>
               <span class="kebab-item-text" id="kebabThemeText" data-i18n="nav.theme_toggle">Toggle Dark/Light Theme</span>
             </button>
-            <button class="kebab-item-btn" id="kebabAuthBtn">
+            <a href="login.html" class="kebab-item-btn" id="kebabAuthBtn">
               <span class="kebab-item-icon">🔐</span>
               <span class="kebab-item-text" data-i18n="nav.kebab_auth">Account & Sign In</span>
-            </button>
+            </a>
           </div>
         </div>
 
-        <!-- Hidden Tour & Theme triggers for compatibility with existing scripts -->
+        <!-- Hidden Theme trigger for compatibility with existing scripts -->
         <button class="btn-control" id="themeToggleBtn" style="display:none;" aria-hidden="true"></button>
-        <button class="btn-control" id="tourGuideBtn" style="display:none;" aria-hidden="true"></button>
 
       </div>
     </div>
@@ -629,10 +701,6 @@
             <li class="footer-contact-item">
               <span>📑</span>
               <a href="evidence.html#dataCatalogSection" data-i18n="footer.docs_link">Methodology & Scientific Catalog</a>
-            </li>
-            <li class="footer-contact-item">
-              <span>⚖️</span>
-              <a href="compare.html" data-i18n="nav.compare">Compare Sites & Benchmark</a>
             </li>
           </ul>
         </div>
