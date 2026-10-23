@@ -478,6 +478,24 @@ a:hover {
   white-space: nowrap;
 }
 
+/* "?" Page Tour button in the header (next to the language button) */
+.tour-help-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+/* Phones: header is tight, the tour stays inside the ⋮ menu */
+@media (max-width: 768px) {
+  .tour-help-btn {
+    display: none;
+  }
+}
+
 .btn-control:hover {
   border-color: var(--accent-blue);
   color: var(--accent-blue);
