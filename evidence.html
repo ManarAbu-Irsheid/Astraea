@@ -231,13 +231,10 @@
 
         <!-- Dedicated 16:9 Hero Video Container -->
         <div class="video-responsive-wrapper" id="videoResponsiveWrapper">
-          <video id="demoVideo" class="video-player-element" autoplay muted loop playsinline preload="auto" controls poster="assets/poster.svg">
+          <video id="demoVideo" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback controlslist="nodownload nofullscreen noremoteplayback">
             <source src="assets/demo_video.mp4" type="video/mp4">
             Your browser does not support HTML5 video.
           </video>
-          <button type="button" class="video-mute-btn" id="videoMuteBtn" aria-label="Unmute video" title="Unmute video">
-            <span class="mute-icon" aria-hidden="true">🔇</span>
-          </button>
         </div>
       </section>
 
