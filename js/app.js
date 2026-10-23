@@ -20,6 +20,12 @@ const App = {
     // Initialize core persistent systems
     await window.I18n.init();
     window.MissionProfileManager.init();
+    if (window.UserSystem) {
+      window.UserSystem.init();
+      if (typeof window.UserSystem.recordPageVisit === 'function') {
+        window.UserSystem.recordPageVisit(pageName);
+      }
+    }
     window.GuidedTour.init(pageName);
     window.ScientificChatbot.init(pageName);
 
