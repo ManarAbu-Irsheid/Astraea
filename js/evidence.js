@@ -80,18 +80,6 @@ const EvidenceController = {
         fallbackTitle.textContent = isAr ? 'الفيديو التوضيحي قريباً' : 'Demo video coming soon';
       }
 
-      const muteBtn = document.getElementById('videoMuteBtn');
-      const video = document.getElementById('demoVideo');
-      if (muteBtn && video) {
-        const isAr = (window.I18n ? window.I18n.currentLang : 'en') === 'ar';
-        const isMuted = video.muted;
-        const label = isMuted 
-          ? (isAr ? 'تشغيل الصوت' : 'Unmute video') 
-          : (isAr ? 'كتم الصوت' : 'Mute video');
-        muteBtn.setAttribute('aria-label', label);
-        muteBtn.setAttribute('title', label);
-      }
-
       // Update formula toggle button label on language change
       const formulaBtn = document.getElementById('btnFormulaToggle');
       if (formulaBtn) {
@@ -108,95 +96,53 @@ const EvidenceController = {
   },
 
   /* ==========================================================================
-     SECTION 1: HERO VIDEO DEMONSTRATION
+     SECTION 1: HERO VIDEO DEMONSTRATION (CLEAN BACKGROUND VIDEO)
      ========================================================================== */
   initVideoPlayer() {
     const video = document.getElementById('demoVideo');
     const playerContainer = document.getElementById('videoResponsiveWrapper');
-    const muteBtn = document.getElementById('videoMuteBtn');
     if (!video) return;
 
     const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // 8. Under prefers-reduced-motion: do not autoplay; show normal play button
+    // 7. Under prefers-reduced-motion: do not autoplay; the first tap on the video starts it.
     if (prefersReduced) {
       video.autoplay = false;
       video.removeAttribute('autoplay');
       video.pause();
     } else {
-      video.autoplay = true;
-      video.muted = true;
-      video.play().catch(() => {
-        // Autoplay may be restricted by browser until user interaction
-      });
+      // 4. On page load call demoVideo.play() and ignore the promise error
+      video.play().catch(() => {});
     }
 
-    // 6. Round mute/unmute button logic
-    let userManuallyMuted = false;
-
-    const updateMuteBtn = () => {
-      if (!muteBtn) return;
-      const lang = window.I18n ? window.I18n.currentLang : 'en';
-      const isAr = lang === 'ar';
-      const isMuted = video.muted;
-
-      const label = isMuted 
-        ? (isAr ? 'تشغيل الصوت' : 'Unmute video') 
-        : (isAr ? 'كتم الصوت' : 'Mute video');
-
-      muteBtn.setAttribute('aria-label', label);
-      muteBtn.setAttribute('title', label);
-      muteBtn.innerHTML = `<span class="mute-icon" aria-hidden="true">${isMuted ? '🔇' : '🔊'}</span>`;
-      muteBtn.classList.toggle('is-muted', isMuted);
-    };
-
-    // 9. Unmute automatically on user's first click or key press anywhere on the page (one time only)
-    const removeFirstInteractionListeners = () => {
+    // 4. Unmute on the user's first click/tap or key press anywhere on the page (once only, then remove the listener)
+    const handleFirstInteraction = () => {
       document.removeEventListener('click', handleFirstInteraction, true);
+      document.removeEventListener('touchstart', handleFirstInteraction, true);
       document.removeEventListener('keydown', handleFirstInteraction, true);
-    };
-
-    const handleFirstInteraction = (e) => {
-      removeFirstInteractionListeners();
-
-      // If user clicked the mute button directly, let the button click handler control state
-      if (muteBtn && (muteBtn === e.target || muteBtn.contains(e.target))) {
-        return;
-      }
-
-      // If the user already muted it with the button, do not unmute
-      if (userManuallyMuted) {
-        return;
-      }
 
       if (video.muted) {
         video.muted = false;
-        video.play().catch(() => {});
-        updateMuteBtn();
+        if (!prefersReduced || !video.paused) {
+          video.play().catch(() => {});
+        }
       }
     };
 
     document.addEventListener('click', handleFirstInteraction, true);
+    document.addEventListener('touchstart', handleFirstInteraction, true);
     document.addEventListener('keydown', handleFirstInteraction, true);
 
-    if (muteBtn) {
-      muteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        removeFirstInteractionListeners();
-        video.muted = !video.muted;
-        if (video.muted) {
-          userManuallyMuted = true;
-        } else {
-          video.play().catch(() => {});
-        }
-        updateMuteBtn();
-      });
-    }
+    // 5. Tapping/clicking on the video toggles pause/play (no visible button)
+    video.addEventListener('click', () => {
+      if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
 
-    video.addEventListener('volumechange', updateMuteBtn);
-    updateMuteBtn();
-
-    // 7. If assets/demo_video.mp4 fails to load, show clean overlay
+    // 6. If assets/demo_video.mp4 fails to load, show clean overlay
     const sourceEl = video.querySelector('source');
     const handleError = () => {
       this.showVideoFallback(playerContainer);
