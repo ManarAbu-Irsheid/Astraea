@@ -58,25 +58,25 @@ const GuidedTour = {
     ],
     compare: [
       {
-        target: '#comparePanelsSpotlight',
-        title_en: '1. Dual Scientific Panels',
-        title_ar: '1. اللوحتان التحليليتان الدائمتان',
-        body_en: 'Examine "What Earth Cannot Simulate" (hard gravitational & radiation limits) vs "What Can Be Tested Here" (mobility, dust, drills).',
-        body_ar: 'افحص ما تعجز الأرض عن محاكاته (قيود الجاذبية والإشعاع) مقابل ما يمكن اختباره هنا بدقة (العجلات، الغبار، الحفر).'
+        target: '#compareHeadSpotlight',
+        title_en: '1. Head-to-Head Arena & Dual Radar',
+        title_ar: '1. المواجهة والرادار',
+        body_en: 'Here, the established historic benchmark site is placed in direct scientific competition with the new candidate for testing the same extraterrestrial target.',
+        body_ar: 'هنا نضع الموقع التاريخي المعروف في منافسة مباشرة مع المرشح الجديد لاختبار نفس الهدف الفضائي.'
       },
       {
-        target: '#compareHeadSpotlight',
-        title_en: '2. Side-by-Side Evaluation',
-        title_ar: '2. التقييم المقارن جنباً إلى جنب',
-        body_en: 'Benchmark established historical analogs directly against newly discovered candidate sites using real multi-sensor metrics.',
-        body_ar: 'قارن المواقع التاريخية المعتمدة وجهاً لوجه مع المواقع المرشحة المكتشفة حديثاً باستخدام قياسات الأقمار الاصطناعية.'
+        target: '#comparePanelsSpotlight',
+        title_en: '2. Dual Scientific Criteria (Limits vs Opportunities)',
+        title_ar: '2. المعايير المزدوجة',
+        body_en: 'Scientific honesty: what Earth cannot simulate remains fixed with engineering mitigations, contrasted with what can be field-tested according to your mission specialization.',
+        body_ar: 'الأمانة العلمية: ما لا تستطيع الأرض محاكاته ثابتاً، مقابل ما نختبره ميدانياً وفق تخصص مهمتك.'
       },
       {
         target: '#compareExportSpotlight',
-        title_en: '3. Export Engine',
-        title_ar: '3. محرك تصدير التقارير',
-        body_en: 'Generate a clean, standardized 1-page PDF executive brief formatted specifically for space agency review committees.',
-        body_ar: 'أنشئ ملخصاً تنفيذياً معياريّاً في صفحة واحدة بصيغة PDF مهيأ لطباعة لجان وكالات الفضاء.'
+        title_en: '3. 1-Page Executive Brief & Export',
+        title_ar: '3. التقرير التنفيذي بصفحة واحدة',
+        body_en: 'With a single click, preview or extract an official standardized executive brief ready for immediate presentation to decision-makers and review committees.',
+        body_ar: 'بضغطة واحدة، استخرج ملخصاً رسمياً جاهزاً لتقديمه مباشرة لأصحاب القرار ولجنة التحكيم.'
       }
     ],
     evidence: [
