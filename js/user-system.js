@@ -300,7 +300,6 @@ const UserSystem = {
     if (navAuthBtn) {
       const authLabel = window.I18n && window.I18n.t ? window.I18n.t('auth.nav_login_btn') : (isAr ? 'تسجيل الدخول / إنشاء حساب' : 'Sign In / Register');
       navAuthBtn.innerHTML = `
-        <span class="auth-btn-icon">🔐</span>
         <span class="auth-btn-text" data-i18n="auth.nav_login_btn">${authLabel}</span>
       `;
     }
@@ -579,7 +578,6 @@ const UserSystem = {
         <div class="custom-modal-dialog">
           <div class="custom-modal-header">
             <div class="modal-header-title">
-              <span class="modal-icon">🔐</span>
               <span>Astraea Planetary Clearance / بوابة تسجيل الدخول</span>
             </div>
             <button class="custom-modal-close" id="closeAuthModalBtn">✕</button>
